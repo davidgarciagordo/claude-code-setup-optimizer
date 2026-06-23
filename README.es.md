@@ -43,7 +43,7 @@ Uso copy-paste de cada plugin, comando, hook y subagent → [examples/](examples
 | Plugin | Origen | Contenido |
 |--------|--------|-----------|
 | 🧠 `working-methods` | local | `/grill` (adversarial ×3: arquitecto · operador · ingeniero) · `/handoff` (relevo de sesión) · `forge-on-claude` (mapea Forge a herramientas de Claude Code: ultrathink, ultracode/Workflow, worktrees, subagents, context pack). Routing por modelo integrado. *(comms low-cost → usa el original [caveman](https://github.com/JuliusBrussee/caveman))* |
-| ⚡ `automations` | local | **Hook:** `guard-append-only` (bloquea editar migraciones/auditoría commiteadas — disciplina append-only). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Comando:** `/release`. **Skill:** `optimize-my-setup`. **Templates:** allow-list de permisos + bloque de rules para CLAUDE.md. |
+| ⚡ `automations` | local | **Skill `optimize-my-setup`** — optimiza TODA la config `.claude` de un repo a su medida: `CLAUDE.md`, `settings.json` (permisos/hooks/env), skills, **agents generados por invariante detectado**, `workflows/*.js`, `.mcp.json`, `output-styles` — reutilizando tus plugins donde encajan. Además: hook genérico `guard-append-only`, `/release`, y **templates** (allow-list de permisos, bloque de rules para CLAUDE.md, templates de reviewers de dominio). |
 | 🔨 `forge-methodology` | github | Loop Forja: alinear → spec → grill ×3 → plan global → ejecución → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Pipeline de diseño/rediseño/auditoría (jerarquía, IA, a11y, tokens, motion). |
 

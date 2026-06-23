@@ -27,14 +27,20 @@ Stack: pnpm monorepo, NestJS + Next.js, Drizzle/Postgres.
 
 **Language-agnostic:** works the same on a Python/Django, PHP/Laravel, Go, Rust or Ruby repo — it detects the stack from `pyproject.toml`/`composer.json`/`go.mod`/`Cargo.toml`/`Gemfile`/`package.json` and tailors the recommendations (formatter, test runner, lint hook) to that ecosystem.
 
-**What you get:** a read-only analysis (detected commit convention, branch naming, ADRs, stack, existing `.claude/` config), then 1–2 recommendations per category, and a **multi-select checklist** to pick what to apply. Nothing is written until you check it. Example of the final step:
+**What it covers:** the *whole* `.claude` surface, tailored to your repo — `CLAUDE.md`, `settings.json` (permissions/hooks/env), `settings.local.json`, skills, **agents it generates per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles`. Where a need matches one of your plugins it recommends installing the original instead of reinventing.
+
+**What you get:** a read-only analysis (commit convention, branch naming, ADRs, stack, domain invariants, existing `.claude/` config), then 1–2 recommendations per surface, and a **multi-select checklist** to pick what to apply — each tagged with its scope (project / global). Nothing is written until you check it. Example of the final step:
 
 ```
-Which automations should I apply? (pick any, or none)
- ☐ Hook: commit-msg lint (enforce your Conventional Commits)  — low risk
- ☐ Hook: guard-append-only (block editing applied migrations)
- ☐ Subagent: messagebus-reviewer (enforce the event bus)
- ☐ Permissions: allow-list (kills ~80% of Bash prompts)
+Pick what to apply (any, or none) — each shows [surface · scope]:
+ ☐ [CLAUDE.md · project]   add a rules block referencing your methodology marketplace
+ ☐ [settings.json · project] permissions allow-list (kills ~80% of Bash prompts)
+ ☐ [hook · project]        commit-msg lint enforcing your Conventional Commits
+ ☐ [hook · project]        guard-append-only (block editing applied migrations)
+ ☐ [agent · project]       GENERATE event-bus-reviewer tuned to your bus (ADR-xxxx)
+ ☐ [.mcp.json · project]   add Supabase + GitHub MCP (.example, secrets via ${VAR})
+ ☐ [skill · user]          install design-review@… for UI work (original)
+ ☐ [output-style · global] terse mode for long sessions
 ```
 
 ---
@@ -79,14 +85,18 @@ Override the append-only globs: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migr
 
 ---
 
-## Subagents (dispatch when relevant)
+## Domain reviewers — generated per repo, then dispatched
+
+`optimize-my-setup` does **not** ship fixed reviewers. It detects your repo's invariants and, if you pick them, **generates tuned reviewer agents into your `.claude/agents/`** (adapting `templates/reviewers/*` to your real names, paths and ADRs). Once generated, dispatch them like any subagent:
 
 ```
-Use the messagebus-reviewer subagent on the changes in modules/booking — check nothing emits events ad-hoc.
+Use the event-bus-reviewer subagent on the changes in <module> — check nothing emits events ad-hoc.
 ```
 ```
-Use the i18n-reviewer subagent on apps/web — find hardcoded UI strings and missing locale keys.
+Use the i18n-reviewer subagent on <app> — find hardcoded UI strings and missing locale keys.
 ```
+
+Examples of invariant → generated reviewer: event bus → `event-bus-reviewer` · i18n catalogs → `i18n-reviewer` · append-only migrations → migration guard · multi-tenancy → tenant-isolation reviewer.
 
 **What you get:** a prioritised list (CRITICAL/HIGH/MEDIUM) with file:line and the concrete fix, or an explicit "all clean".
 

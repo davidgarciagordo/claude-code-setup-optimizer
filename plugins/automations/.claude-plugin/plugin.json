@@ -3,14 +3,13 @@
   "name": "automations",
   "displayName": "Setup Automations",
   "version": "0.1.0",
-  "description": "Automatizaciones de PROCESO: hook guard-append-only (protege migraciones/auditoría ya commiteadas), subagents (messagebus-reviewer, i18n-reviewer), /release command, allow-list de permisos + plantilla de rules para CLAUDE.md, y la skill optimize-my-setup que recomienda automatizaciones y deja al usuario elegir qué aplicar. Language-agnostic.",
+  "description": "Optimiza la config de Claude Code de cualquier repo a su medida: la skill optimize-my-setup genera/ajusta CLAUDE.md, settings.json (permisos/hooks/env), skills, agents, workflows, .mcp.json y output-styles, reutilizando los plugins del usuario donde encajan. Incluye el hook genérico guard-append-only, el comando /release, y templates (permisos, rules para CLAUDE.md, reviewers de dominio). No shippea agents fijos: los GENERA por proyecto. Language-agnostic.",
   "author": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
   },
   "license": "MIT",
-  "keywords": ["process", "subagents", "append-only", "i18n", "messagebus", "release", "permissions", "git-flow"],
+  "keywords": ["setup", "optimizer", "claude-md", "hooks", "permissions", "mcp", "agents", "workflows", "output-styles", "release"],
   "skills": "./skills/",
-  "commands": ["./commands/release.md"],
-  "agents": ["./agents/messagebus-reviewer.md", "./agents/i18n-reviewer.md"]
+  "commands": ["./commands/release.md"]
 }
