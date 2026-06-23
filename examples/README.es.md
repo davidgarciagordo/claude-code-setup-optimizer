@@ -92,7 +92,29 @@ Usa el subagent i18n-reviewer en apps/web — caza strings de UI hardcoded y cla
 
 ---
 
-## caveman — comunicación de bajo coste
+## 🎯 Un prompt para todos — una pasada completa de Forge-on-Claude
+
+Cada sección de arriba ejecuta **una** skill por separado. Para usar toda la metodología de una vez, compónlas:
+
+```
+ultrathink. Pasa esto por la Forja de principio a fin:
+
+Tarea: <tu tarea>
+1. /optimize-my-setup primero — detecta mi stack, convención de commits y ADRs, y aplica solo las automatizaciones que confirme.
+2. Especifícalo, luego /grill al spec ×3 (arquitecto · operador · ingeniero); resuelve los hallazgos.
+3. Planifica global; ejecuta unidades disjuntas, cada una en su git worktree (forge-on-claude), compartiendo UN context pack (file:line) para no re-descubrir nada.
+4. Verifica contra la definición de done con subagents adversariales (messagebus-reviewer / i18n-reviewer si aplica).
+5. /handoff al final para que la siguiente sesión retome limpio.
+Muéstrame las decisiones que requieren mi input; nunca apliques nada que yo no haya elegido.
+```
+
+Encadena `optimize-my-setup` → `/grill` → `forge-on-claude` (worktrees + context pack) → reviewers → `/handoff`. Para uso independiente, coge cualquier sección de arriba.
+
+---
+
+## caveman — comunicación de bajo coste *(plugin original)*
+
+caveman **no se bundlea** aquí — instala el original ([JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)) y actívalo:
 
 ```
 /caveman full

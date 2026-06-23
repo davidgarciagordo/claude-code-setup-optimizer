@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "version": "1.0.0",
   "name": "claude-code-setup-optimizer",
-  "description": "Optimiza tu forma de trabajar con Claude Code: metodología (Forja, design-review, caveman, grill, handoff) + automatizaciones (hooks, subagents, /release, plantillas de permisos) + la skill optimize-my-setup que recomienda y deja al usuario elegir qué aplicar. Fuente única, instalable en cualquier repo.",
+  "description": "Optimiza tu forma de trabajar con Claude Code: referencia y organiza metodología (Forja, design-review, grill, handoff) + automatizaciones (hooks, subagents, /release, plantillas de permisos) + la skill optimize-my-setup que recomienda y deja al usuario elegir qué aplicar. Referencia los repos originales (auto-actualizan) y credita a sus autores. Instalable en cualquier repo.",
   "owner": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
@@ -23,7 +23,7 @@
     {
       "name": "working-methods",
       "displayName": "Working Methods (David)",
-      "description": "Cross-project working norms: caveman low-cost comms + /grill (adversarial ×3) + /handoff (session relay). Model routing and orchestration baked into the commands.",
+      "description": "Cross-project working norms: /grill (adversarial ×3) + /handoff (session relay) + forge-on-claude. Model routing and orchestration baked in. (For low-cost comms, pair with the original caveman plugin — JuliusBrussee/caveman.)",
       "source": "./plugins/working-methods"
     },
     {
