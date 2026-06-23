@@ -1,5 +1,5 @@
 {
-  "$comment": "Plantilla de allow-list para .claude/settings.json — mata los prompts repetidos de comandos read-only y de dev seguros. Copia 'permissions' a tu settings.json del proyecto y ajusta. NO incluyas aquí nada destructivo (rm, push --force, db:reset). Genera una a medida de tus transcripts con la skill /fewer-permission-prompts.",
+  "$comment": "Plantilla de allow-list para .claude/settings.json — mata los prompts repetidos de comandos read-only y de dev seguros. Copia 'permissions' a tu settings.json y AJUSTA a tu ecosistema: los `pnpm …` de abajo son un ejemplo Node; cámbialos por los tuyos (Python: `pytest`/`ruff`/`pip`; PHP: `composer`/`php artisan test`; Go: `go test`/`go build`; Rust: `cargo test`/`cargo build`). NO incluyas nada destructivo (rm, push --force, db:reset). Genera una a medida de tus transcripts con la skill /fewer-permission-prompts.",
   "permissions": {
     "allow": [
       "Bash(git status:*)",
