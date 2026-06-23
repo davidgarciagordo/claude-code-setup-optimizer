@@ -11,28 +11,19 @@
       "name": "forge-methodology",
       "displayName": "Forja / Forge",
       "description": "Human↔AI methodology: align intent → versioned spec → adversarial grill ×3 → global plan → optimised execution → verify vs DoD → owner sign-off. Domain-agnostic.",
-      "source": {
-        "type": "github",
-        "repo": "davidgarciagordo/forge-methodology"
-      }
+      "source": { "source": "github", "repo": "davidgarciagordo/forge-methodology" }
     },
     {
       "name": "design-review",
       "displayName": "Design Review",
       "description": "Integral design/redesign/audit: visual hierarchy, IA, cognitive load, accessibility, tokens, motion.",
-      "source": {
-        "type": "github",
-        "repo": "davidgarciagordo/design-review"
-      }
+      "source": { "source": "github", "repo": "davidgarciagordo/design-review" }
     },
     {
       "name": "working-methods",
       "displayName": "Working Methods (David)",
       "description": "Cross-project working norms: caveman low-cost comms + /grill (adversarial ×3) + /handoff (session relay). Model routing and orchestration baked into the commands.",
-      "source": {
-        "type": "local",
-        "path": "./plugins/working-methods"
-      }
+      "source": "./plugins/working-methods"
     }
   ]
 }
