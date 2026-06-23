@@ -1,3 +1,5 @@
+**English** | [Español](README.es.md)
+
 # 🛠️ claude-code-setup-optimizer
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.1.0-blue)
@@ -30,14 +32,18 @@ Each plugin is also installable standalone (forge/design-review are their own ma
 ```
 /optimize-my-setup
 ```
-Analyses your repo (git, CLAUDE.md, `.claude/`, stack), recommends 1–2 automations per category, and **ends with a multi-select: you pick what to apply** (can be nothing). Applies only what you choose. **The user always decides.**
+Analyses your repo (git, CLAUDE.md, `.claude/`, stack), recommends 1–2 automations per category, and **ends with a multi-select: you pick what to apply** (can be nothing). Applies only what you choose. **The user always decides.** Language-agnostic — JS/TS, Python, PHP, Go, Rust, Ruby.
+
+## 📚 Examples
+
+Copy-paste usage for every plugin, command, hook and subagent → [examples/](examples/README.md).
 
 ## 🧩 Plugins
 
 | Plugin | Source | Contents |
 |--------|--------|----------|
 | 🧠 `working-methods` | local | `caveman` (low-cost comms) · `/grill` (adversarial ×3: architect · operator · engineer) · `/handoff` (session relay). Model routing baked in. |
-| ⚡ `automations` | local | **Hooks:** `format-on-edit` (prettier/biome), `guard-append-only` (blocks editing committed migrations/audit logs). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Command:** `/release`. **Skill:** `optimize-my-setup`. **Templates:** permissions allow-list + CLAUDE.md rules block. |
+| ⚡ `automations` | local | **Hooks (polyglot):** `format-on-edit` (prettier/biome · ruff/black · gofmt · rustfmt · pint/php-cs-fixer · rubocop · shfmt), `guard-append-only` (blocks editing committed migrations/audit logs). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Command:** `/release`. **Skill:** `optimize-my-setup`. **Templates:** permissions allow-list + CLAUDE.md rules block. |
 | 🔨 `forge-methodology` | github | Forge loop: align → spec → grill ×3 → global plan → execution → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Design/redesign/audit pipeline (hierarchy, IA, a11y, tokens, motion). |
 

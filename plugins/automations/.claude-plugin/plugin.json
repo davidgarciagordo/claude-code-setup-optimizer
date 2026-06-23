@@ -3,7 +3,7 @@
   "name": "automations",
   "displayName": "Setup Automations",
   "version": "0.1.0",
-  "description": "Hooks (format-on-edit, append-only guard), subagents (messagebus-reviewer, i18n-reviewer), /release command, allow-list + CLAUDE.md rules templates, y la skill optimize-my-setup que recomienda automatizaciones y deja al usuario elegir qué aplicar.",
+  "description": "Hooks polyglot (format-on-edit: prettier/biome/ruff/black/gofmt/rustfmt/pint…; append-only guard), subagents (messagebus-reviewer, i18n-reviewer), /release command, allow-list + CLAUDE.md rules templates, y la skill optimize-my-setup que recomienda automatizaciones y deja al usuario elegir qué aplicar. Language-agnostic.",
   "author": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
