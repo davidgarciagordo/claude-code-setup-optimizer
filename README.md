@@ -1,31 +1,36 @@
-# david-methodology — Claude Code marketplace
+# claude-code-setup-optimizer
 
-Marketplace de plugins con la **metodología de trabajo cross-project de David**. Fuente única, instalable una vez, reproducible en cualquier repo/Mac/cuenta/cloud-agent. Evita copiar metodología repo a repo (anti doble-fuente-de-verdad).
+Marketplace de plugins para **optimizar tu forma de trabajar con Claude Code** en cualquier repo. Junta la metodología cross-project + automatizaciones reales (hooks, subagents, comandos) + una skill que analiza tu repo y **te deja elegir qué aplicar**. Fuente única, instalable una vez — sin copiar config repo a repo.
 
 ## Instalar
 ```bash
-/plugin marketplace add davidgarciagordo/claude-methodology
-/plugin install forge-methodology@david-methodology
-/plugin install design-review@david-methodology
-/plugin install working-methods@david-methodology
+/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
+/plugin install working-methods@claude-code-setup-optimizer
+/plugin install automations@claude-code-setup-optimizer
+/plugin install forge-methodology@claude-code-setup-optimizer
+/plugin install design-review@claude-code-setup-optimizer
 ```
 
+## Empezar
+```
+/optimize-my-setup
+```
+Analiza el repo (git, CLAUDE.md, .claude/, stack), recomienda 1–2 automatizaciones por categoría y **termina con un multi-check: tú marcas qué aplicar** (puede ser nada). Solo aplica lo elegido. El usuario siempre decide.
+
 ## Plugins
-| Plugin | Origen | Qué aporta |
-|--------|--------|------------|
-| `forge-methodology` | repo externo `davidgarciagordo/forge-methodology` | Loop Forja: align → spec → grill×3 → plan global → ejecución → verify vs DoD → sign-off. |
-| `design-review` | repo externo `davidgarciagordo/design-review` | Diseño/rediseño/auditoría integral (jerarquía, IA, a11y, tokens, motion). |
-| `working-methods` | local (`./plugins/working-methods`) | `caveman` (comms low-cost) + `/grill` (adversarial ×3) + `/handoff` (relevo de sesión). Routing por modelo (Opus dirige/revisa · Sonnet ejecuta · Haiku trivial) integrado en los commands. |
+| Plugin | Origen | Contenido |
+|--------|--------|-----------|
+| `working-methods` | local | `caveman` (comms low-cost) · `/grill` (adversarial ×3: arquitecto · operador · ingeniero) · `/handoff` (relevo de sesión). Routing por modelo integrado. |
+| `automations` | local | **Hooks:** `format-on-edit` (prettier/biome al editar), `guard-append-only` (bloquea editar migraciones/auditoría ya commiteadas). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Command:** `/release` (PR dev→main con notas). **Skill:** `optimize-my-setup`. **Templates:** allow-list de permisos + bloque de rules para CLAUDE.md. |
+| `forge-methodology` | github externo | Loop Forja: align → spec → grill×3 → plan global → ejecución → verify vs DoD → sign-off. |
+| `design-review` | github externo | Diseño/rediseño/auditoría integral (jerarquía, IA, a11y, tokens, motion). |
+
+## Normas always-on
+Estilo/testing/seguridad/orquestación son guía **permanente**, no skills on-demand → no las inyecta un plugin. Referéncialas en el `CLAUDE.md` de cada repo: usa `plugins/automations/templates/claude-md-rules-reference.md`.
 
 ## Estructura
 ```
-.claude-plugin/marketplace.json     # lista los 3 plugins (2 externos github + 1 local)
-plugins/working-methods/
-  .claude-plugin/plugin.json
-  skills/caveman/SKILL.md
-  commands/grill.md
-  commands/handoff.md
+.claude-plugin/marketplace.json          # 4 plugins (2 locales + 2 github externos)
+plugins/working-methods/  ·  plugins/automations/
 ```
-
-## Pendiente / decisión abierta
-Las **normas always-on** de `~/.claude/rules/common/*` (coding-style, testing, security, orchestration-and-tokens) son guía permanente, no skills on-demand → un plugin no las inyecta al system prompt como hace `~/.claude/rules`. Opciones: (a) dejarlas como rules globales por-Mac, (b) que cada repo las referencie en su `CLAUDE.md`, (c) shippear las que tengan sentido on-demand como skills aquí. Sin resolver hasta decidir con David.
+Validar: `claude plugin validate . --strict`.

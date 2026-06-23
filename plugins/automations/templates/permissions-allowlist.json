@@ -1,0 +1,29 @@
+{
+  "$comment": "Plantilla de allow-list para .claude/settings.json — mata los prompts repetidos de comandos read-only y de dev seguros. Copia 'permissions' a tu settings.json del proyecto y ajusta. NO incluyas aquí nada destructivo (rm, push --force, db:reset). Genera una a medida de tus transcripts con la skill /fewer-permission-prompts.",
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git fetch:*)",
+      "Bash(git show:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh repo view:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm build:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)"
+    ]
+  }
+}
