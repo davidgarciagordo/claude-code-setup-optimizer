@@ -29,7 +29,7 @@
     {
       "name": "automations",
       "displayName": "Setup Automations",
-      "description": "Automatizaciones de proceso: hook guard-append-only (protege migraciones/auditoría commiteadas), subagents (messagebus-reviewer, i18n-reviewer), /release, plantillas de permisos/CLAUDE.md y la skill optimize-my-setup (recomienda y el usuario elige qué aplicar). Language-agnostic.",
+      "description": "La skill optimize-my-setup optimiza TODA la config .claude de un repo a su medida (CLAUDE.md, settings.json permisos/hooks/env, skills, agents generados por invariante, workflows, .mcp.json, output-styles), reutilizando los plugins del usuario. Incluye hook guard-append-only, /release, y templates (permisos, rules CLAUDE.md, reviewers). El usuario elige qué aplicar. Language-agnostic.",
       "source": "./plugins/automations"
     }
   ]

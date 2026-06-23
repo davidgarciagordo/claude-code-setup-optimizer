@@ -27,14 +27,20 @@ Stack: monorepo pnpm, NestJS + Next.js, Drizzle/Postgres.
 
 **Agnóstico de lenguaje:** funciona igual en un repo Python/Django, PHP/Laravel, Go, Rust o Ruby — detecta el stack desde `pyproject.toml`/`composer.json`/`go.mod`/`Cargo.toml`/`Gemfile`/`package.json` y adapta las recomendaciones (formateador, runner de tests, hook de lint) a ese ecosistema.
 
-**Qué obtienes:** un análisis read-only (convención de commits detectada, branch naming, ADRs, stack, config `.claude/` existente), luego 1–2 recomendaciones por categoría, y un **multi-check** para marcar qué aplicar. No se escribe nada hasta que lo marcas. Ejemplo del paso final:
+**Qué cubre:** *toda* la superficie `.claude` a medida de tu repo — `CLAUDE.md`, `settings.json` (permisos/hooks/env), `settings.local.json`, skills, **agents que genera por invariante detectado**, `workflows/*.js`, `.mcp.json`, `output-styles`. Si una necesidad encaja con uno de tus plugins, recomienda instalar el original en vez de reinventar.
+
+**Qué obtienes:** un análisis read-only (convención de commits, branch naming, ADRs, stack, invariantes de dominio, config `.claude/` existente), luego 1–2 recomendaciones por superficie, y un **multi-check** para marcar qué aplicar — cada uno con su scope (project / global). No se escribe nada hasta que lo marcas. Ejemplo del paso final:
 
 ```
-¿Qué automatizaciones aplico? (marca las que quieras, o ninguna)
- ☐ Hook: commit-msg lint (valida tus Conventional Commits)   — riesgo bajo
- ☐ Hook: guard-append-only (bloquea editar migraciones aplicadas)
- ☐ Subagent: messagebus-reviewer (refuerza el bus de eventos)
- ☐ Permisos: allow-list (mata ~80% de prompts de Bash)
+Marca qué aplicar (las que quieras, o ninguna) — cada una con [superficie · scope]:
+ ☐ [CLAUDE.md · project]   bloque de rules que referencia tu marketplace de metodología
+ ☐ [settings.json · project] allow-list de permisos (mata ~80% de prompts de Bash)
+ ☐ [hook · project]        commit-msg lint con tu convención Conventional Commits
+ ☐ [hook · project]        guard-append-only (bloquea editar migraciones aplicadas)
+ ☐ [agent · project]       GENERA event-bus-reviewer tuneado a tu bus (ADR-xxxx)
+ ☐ [.mcp.json · project]   añade Supabase + GitHub MCP (.example, secretos por ${VAR})
+ ☐ [skill · user]          instala design-review@… para UI (original)
+ ☐ [output-style · global] modo terse para sesiones largas
 ```
 
 ---
@@ -79,14 +85,18 @@ Override de los globs append-only: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/m
 
 ---
 
-## Subagents (despáchalos cuando aplique)
+## Reviewers de dominio — generados por repo, luego despachados
+
+`optimize-my-setup` **no** shippea reviewers fijos. Detecta los invariantes de tu repo y, si los marcas, **genera reviewers tuneados en tu `.claude/agents/`** (adaptando `templates/reviewers/*` a tus nombres, rutas y ADRs reales). Una vez generados, los despachas como cualquier subagent:
 
 ```
-Usa el subagent messagebus-reviewer en los cambios de modules/booking — comprueba que nada emite eventos ad-hoc.
+Usa el subagent event-bus-reviewer en los cambios de <módulo> — comprueba que nada emite eventos ad-hoc.
 ```
 ```
-Usa el subagent i18n-reviewer en apps/web — caza strings de UI hardcoded y claves de locale faltantes.
+Usa el subagent i18n-reviewer en <app> — caza strings de UI hardcoded y claves de locale faltantes.
 ```
+
+Ejemplos de invariante → reviewer generado: event bus → `event-bus-reviewer` · catálogos i18n → `i18n-reviewer` · migraciones append-only → guard de migración · multi-tenancy → reviewer de aislamiento de tenant.
 
 **Qué obtienes:** lista priorizada (CRITICAL/HIGH/MEDIUM) con fichero:línea y el fix concreto, o un "todo limpio" explícito.
 
