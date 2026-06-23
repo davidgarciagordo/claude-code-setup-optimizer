@@ -12,6 +12,5 @@
   "keywords": ["process", "subagents", "append-only", "i18n", "messagebus", "release", "permissions", "git-flow"],
   "skills": "./skills/",
   "commands": ["./commands/release.md"],
-  "agents": ["./agents/messagebus-reviewer.md", "./agents/i18n-reviewer.md"],
-  "hooks": "./hooks/hooks.json"
+  "agents": ["./agents/messagebus-reviewer.md", "./agents/i18n-reviewer.md"]
 }
