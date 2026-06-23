@@ -15,7 +15,7 @@ Reúne señales del repo, sin modificar nada. **Infiere las convenciones de los 
 - **Estrategia de branch naming:** `git branch -a` + ramas remotas → patrón (`feat/…`, `f<n>/<area>-<desc>`, `release/…`), ramas principales (`main`/`dev`), si hay PR-flow.
 - **ADRs y procedimientos:** detecta y **lee** `docs/adr/` (o `docs/decisions/`), `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE*`, `CODEOWNERS`, `.github/workflows` (CI/release), `commitlint`/`husky`/`lefthook`. Extrae las invariantes para no recomendar lo que ya existe ni violarlas.
 - **Reglas del proyecto:** `CLAUDE.md` + `~/.claude/rules` referenciadas.
-- **Gaps:** formato/lint sin automatizar; convención de commits sin enforcement (sin commit-msg hook / commitlint); branch naming sin guard; ficheros sensibles o append-only sin protección; reglas no-negociables/ADRs sin reviewer; permisos que disparan prompts constantes; MCP útiles ausentes para el stack.
+- **Gaps de PROCESO** (no de formateo — el formato lo gestiona la toolchain del proyecto con su propia config; nunca recomiendes reformatear en cada edición): lint/format del proyecto **sin enforcement en CI o pre-commit**; convención de commits sin enforcement (sin commit-msg hook / commitlint); branch naming sin guard; ficheros sensibles o append-only sin protección; reglas no-negociables/ADRs sin reviewer; permisos que disparan prompts constantes; MCP útiles ausentes para el stack.
 
 Las convenciones detectadas **alimentan las recomendaciones**: p.ej. un hook `commit-msg` que valida tu formato real de commits, un guard de branch-name con tu patrón, o un subagent ADR-aware que verifica el código contra tus decisiones registradas.
 

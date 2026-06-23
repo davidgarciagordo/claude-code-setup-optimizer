@@ -43,7 +43,7 @@ Copy-paste usage for every plugin, command, hook and subagent → [examples/](ex
 | Plugin | Source | Contents |
 |--------|--------|----------|
 | 🧠 `working-methods` | local | `caveman` (low-cost comms) · `/grill` (adversarial ×3: architect · operator · engineer) · `/handoff` (session relay). Model routing baked in. |
-| ⚡ `automations` | local | **Hooks (polyglot):** `format-on-edit` (prettier/biome · ruff/black · gofmt · rustfmt · pint/php-cs-fixer · rubocop · shfmt), `guard-append-only` (blocks editing committed migrations/audit logs). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Command:** `/release`. **Skill:** `optimize-my-setup`. **Templates:** permissions allow-list + CLAUDE.md rules block. |
+| ⚡ `automations` | local | **Hook:** `guard-append-only` (blocks editing committed migrations/audit logs — append-only discipline). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Command:** `/release`. **Skill:** `optimize-my-setup`. **Templates:** permissions allow-list + CLAUDE.md rules block. |
 | 🔨 `forge-methodology` | github | Forge loop: align → spec → grill ×3 → global plan → execution → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Design/redesign/audit pipeline (hierarchy, IA, a11y, tokens, motion). |
 

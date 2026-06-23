@@ -69,12 +69,11 @@ Stack: monorepo pnpm, NestJS + Next.js, Drizzle/Postgres.
 
 ---
 
-## Hooks (pasivos — se disparan solos)
+## Hook (pasivo — se dispara solo)
 
 | Hook | Disparador | Qué hace |
 |------|-----------|----------|
-| `format-on-edit` | editas/escribes un fichero fuente (**cualquier lenguaje**) | corre el formateador del proyecto — prettier/biome (JS/TS/CSS/MD), ruff/black (Python), gofmt/goimports (Go), rustfmt (Rust), pint/php-cs-fixer (PHP), rubocop (Ruby), shfmt (shell); silencioso, no bloquea, no instala |
-| `guard-append-only` | intentas editar una migración / log de auditoría ya commiteado | bloquea con mensaje: crea un fichero NUEVO (compensatorio) en su lugar |
+| `guard-append-only` | intentas editar una migración / log de auditoría ya commiteado | bloquea con mensaje: crea un fichero NUEVO (compensatorio) en su lugar — disciplina append-only |
 
 Override de los globs append-only: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migrations/**"`.
 

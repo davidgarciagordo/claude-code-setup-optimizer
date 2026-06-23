@@ -69,12 +69,11 @@ Which automations should I apply? (pick any, or none)
 
 ---
 
-## Hooks (passive — they just fire)
+## Hook (passive — it just fires)
 
 | Hook | Trigger | What happens |
 |------|---------|--------------|
-| `format-on-edit` | you Edit/Write a source file (**any language**) | runs the project's formatter for that file — prettier/biome (JS/TS/CSS/MD), ruff/black (Python), gofmt/goimports (Go), rustfmt (Rust), pint/php-cs-fixer (PHP), rubocop (Ruby), shfmt (shell); silent, never blocks, never installs |
-| `guard-append-only` | you try to Edit a committed migration / audit file | blocks with a message: create a new (compensating) file instead |
+| `guard-append-only` | you try to Edit a committed migration / audit file | blocks with a message: create a new (compensating) file instead — append-only discipline |
 
 Override the append-only globs: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migrations/**"`.
 
