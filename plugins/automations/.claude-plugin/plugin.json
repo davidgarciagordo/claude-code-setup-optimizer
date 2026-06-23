@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "automations",
+  "displayName": "Setup Automations",
+  "version": "0.1.0",
+  "description": "Hooks (format-on-edit, append-only guard), subagents (messagebus-reviewer, i18n-reviewer), /release command, allow-list + CLAUDE.md rules templates, y la skill optimize-my-setup que recomienda automatizaciones y deja al usuario elegir qué aplicar.",
+  "author": {
+    "name": "David García Gordo",
+    "url": "https://github.com/davidgarciagordo"
+  },
+  "license": "MIT",
+  "keywords": ["hooks", "subagents", "format-on-save", "append-only", "i18n", "messagebus", "release", "permissions"],
+  "skills": "./skills/",
+  "commands": ["./commands/release.md"],
+  "agents": ["./agents/messagebus-reviewer.md", "./agents/i18n-reviewer.md"],
+  "hooks": "./hooks/hooks.json"
+}

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "version": "1.0.0",
-  "name": "david-methodology",
-  "description": "Metodología de trabajo cross-project de David: Forja, design-review y working-methods (caveman + grill ×3 + handoff). Fuente única, instalable en cualquier repo.",
+  "name": "claude-code-setup-optimizer",
+  "description": "Optimiza tu forma de trabajar con Claude Code: metodología (Forja, design-review, caveman, grill, handoff) + automatizaciones (hooks, subagents, /release, plantillas de permisos) + la skill optimize-my-setup que recomienda y deja al usuario elegir qué aplicar. Fuente única, instalable en cualquier repo.",
   "owner": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
@@ -25,6 +25,12 @@
       "displayName": "Working Methods (David)",
       "description": "Cross-project working norms: caveman low-cost comms + /grill (adversarial ×3) + /handoff (session relay). Model routing and orchestration baked into the commands.",
       "source": "./plugins/working-methods"
+    },
+    {
+      "name": "automations",
+      "displayName": "Setup Automations",
+      "description": "Hooks (format-on-edit, append-only guard), subagents (messagebus-reviewer, i18n-reviewer), /release, plantillas de permisos/CLAUDE.md y la skill optimize-my-setup (recomienda y el usuario elige qué aplicar).",
+      "source": "./plugins/automations"
     }
   ]
 }
