@@ -3,13 +3,13 @@
   "name": "working-methods",
   "displayName": "Working Methods (David)",
   "version": "0.1.0",
-  "description": "Cross-project working norms of David: caveman comms, adversarial grilling ×3, session handoff. Model routing (Opus dirige/revisa · Sonnet ejecuta · Haiku trivial) baked into the commands.",
+  "description": "Cross-project working norms of David: caveman comms, adversarial grilling ×3, session handoff, y forge-on-claude (mapea Forge a Claude Code: ultrathink, ultracode/Workflow, worktrees, subagents, context pack). Model routing (Opus dirige/revisa · Sonnet ejecuta · Haiku trivial) baked into the commands.",
   "author": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
   },
   "license": "MIT",
-  "keywords": ["methodology", "orchestration", "grill", "handoff", "caveman"],
+  "keywords": ["methodology", "orchestration", "grill", "handoff", "caveman", "forge", "worktrees", "ultrathink"],
   "skills": "./skills/",
   "commands": ["./commands/grill.md", "./commands/handoff.md"]
 }
