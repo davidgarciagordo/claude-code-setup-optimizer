@@ -31,7 +31,7 @@ Stack: monorepo pnpm, NestJS + Next.js, Drizzle/Postgres.
 
 ```
 ¿Qué automatizaciones aplico? (marca las que quieras, o ninguna)
- ☐ Hook: format-on-edit (formatea en cada Edit, cualquier lenguaje)  — riesgo bajo
+ ☐ Hook: commit-msg lint (valida tus Conventional Commits)   — riesgo bajo
  ☐ Hook: guard-append-only (bloquea editar migraciones aplicadas)
  ☐ Subagent: messagebus-reviewer (refuerza el bus de eventos)
  ☐ Permisos: allow-list (mata ~80% de prompts de Bash)

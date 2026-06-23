@@ -31,7 +31,7 @@ Stack: pnpm monorepo, NestJS + Next.js, Drizzle/Postgres.
 
 ```
 Which automations should I apply? (pick any, or none)
- ☐ Hook: format-on-edit (prettier on every Edit)            — low risk
+ ☐ Hook: commit-msg lint (enforce your Conventional Commits)  — low risk
  ☐ Hook: guard-append-only (block editing applied migrations)
  ☐ Subagent: messagebus-reviewer (enforce the event bus)
  ☐ Permissions: allow-list (kills ~80% of Bash prompts)
