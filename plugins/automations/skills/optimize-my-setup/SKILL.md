@@ -8,12 +8,16 @@ description: Analiza el repo actual (git, CLAUDE.md, carpeta .claude, stack) y r
 Recomienda y, solo con permiso explícito, aplica automatizaciones de Claude Code a este repo. **El usuario SIEMPRE decide qué se hace.**
 
 ## Fase 1 — Analiza (read-only)
-Reúne señales del repo, sin modificar nada:
-- **Stack:** `package.json`/`pyproject.toml`/`go.mod`… (gestor, scripts, deps de lint/format/test/CI).
+Reúne señales del repo, sin modificar nada. **Infiere las convenciones de los datos reales, no de supuestos** (cita fichero/comando):
+- **Stack:** `package.json`/`pyproject.toml`/`go.mod`/`Cargo.toml`… (gestor, scripts, deps de lint/format/test/CI, monorepo vs single).
 - **Config Claude existente:** `.claude/` (agents, commands, hooks, settings), `CLAUDE.md`, `.mcp.json`.
-- **Flujo git:** ramas principales, convención de feature branches, PRs, hooks de git, CI (`.github/workflows`).
-- **Reglas del proyecto:** lee `CLAUDE.md` y cualquier `docs/adr|rules` para no recomendar lo que ya existe ni violar invariantes.
-- **Gaps:** formato/lint sin automatizar, ficheros sensibles sin guard, reglas no-negociables sin reviewer, permisos que disparan prompts constantes, MCP útiles ausentes para el stack.
+- **Convención de commits:** `git log --oneline -50` → ¿Conventional Commits (`feat:`/`fix:`/`chore:`…)? ¿scopes? ¿idioma del mensaje? ¿política `Co-Authored-By` o trailers? ¿gitmoji?
+- **Estrategia de branch naming:** `git branch -a` + ramas remotas → patrón (`feat/…`, `f<n>/<area>-<desc>`, `release/…`), ramas principales (`main`/`dev`), si hay PR-flow.
+- **ADRs y procedimientos:** detecta y **lee** `docs/adr/` (o `docs/decisions/`), `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE*`, `CODEOWNERS`, `.github/workflows` (CI/release), `commitlint`/`husky`/`lefthook`. Extrae las invariantes para no recomendar lo que ya existe ni violarlas.
+- **Reglas del proyecto:** `CLAUDE.md` + `~/.claude/rules` referenciadas.
+- **Gaps:** formato/lint sin automatizar; convención de commits sin enforcement (sin commit-msg hook / commitlint); branch naming sin guard; ficheros sensibles o append-only sin protección; reglas no-negociables/ADRs sin reviewer; permisos que disparan prompts constantes; MCP útiles ausentes para el stack.
+
+Las convenciones detectadas **alimentan las recomendaciones**: p.ej. un hook `commit-msg` que valida tu formato real de commits, un guard de branch-name con tu patrón, o un subagent ADR-aware que verifica el código contra tus decisiones registradas.
 
 ## Fase 2 — Recomienda (1–2 por categoría, específico al repo)
 Para cada candidato indica: **qué**, **por qué** (señal concreta del repo, citando fichero), **dónde se instala**, y **riesgo**. Categorías: Hooks · Subagents · Skills/Commands · MCP · Permisos. No recomiendes lo que ya está. Ve más allá de listas genéricas: usa web search para el stack concreto si hace falta.
