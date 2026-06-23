@@ -42,10 +42,18 @@ Uso copy-paste de cada plugin, comando, hook y subagent → [examples/](examples
 
 | Plugin | Origen | Contenido |
 |--------|--------|-----------|
-| 🧠 `working-methods` | local | `caveman` (comms low-cost) · `/grill` (adversarial ×3: arquitecto · operador · ingeniero) · `/handoff` (relevo de sesión) · `forge-on-claude` (mapea Forge a herramientas de Claude Code: ultrathink, ultracode/Workflow, worktrees, subagents, context pack). Routing por modelo integrado. |
+| 🧠 `working-methods` | local | `/grill` (adversarial ×3: arquitecto · operador · ingeniero) · `/handoff` (relevo de sesión) · `forge-on-claude` (mapea Forge a herramientas de Claude Code: ultrathink, ultracode/Workflow, worktrees, subagents, context pack). Routing por modelo integrado. *(comms low-cost → usa el original [caveman](https://github.com/JuliusBrussee/caveman))* |
 | ⚡ `automations` | local | **Hook:** `guard-append-only` (bloquea editar migraciones/auditoría commiteadas — disciplina append-only). **Subagents:** `messagebus-reviewer`, `i18n-reviewer`. **Comando:** `/release`. **Skill:** `optimize-my-setup`. **Templates:** allow-list de permisos + bloque de rules para CLAUDE.md. |
 | 🔨 `forge-methodology` | github | Loop Forja: alinear → spec → grill ×3 → plan global → ejecución → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Pipeline de diseño/rediseño/auditoría (jerarquía, IA, a11y, tokens, motion). |
+
+## 🙏 Créditos — referencia, no copia
+
+Este marketplace **referencia y organiza** buen trabajo; no vendoriza copias, así todo se mantiene al día en su origen y el crédito queda en sus autores.
+
+- **forge-methodology**, **design-review** — de [David García Gordo](https://github.com/davidgarciagordo) (esta familia).
+- **caveman** (comms low-cost) — de [JuliusBrussee](https://github.com/JuliusBrussee/caveman). Instala el original: `/plugin marketplace add JuliusBrussee/caveman`.
+- El **pipeline de design-review** orquesta skills de sus autores originales — `impeccable`, `taste-skill`, `emil-design-eng`, `ui-ux-pro-max`, `huashu-design`, `web-accessibility`, `seo` — instaladas desde su fuente vía el preflight (ver *Attribution* de design-review). Nada bundleado; cada una se actualiza en su origen.
 
 ## 📌 Normas always-on
 
