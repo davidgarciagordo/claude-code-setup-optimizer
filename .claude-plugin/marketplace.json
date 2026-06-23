@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "version": "1.0.0",
   "name": "david-methodology",
+  "description": "Metodología de trabajo cross-project de David: Forja, design-review y working-methods (caveman + grill ×3 + handoff). Fuente única, instalable en cualquier repo.",
   "owner": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
