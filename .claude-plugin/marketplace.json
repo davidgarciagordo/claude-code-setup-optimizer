@@ -29,7 +29,7 @@
     {
       "name": "automations",
       "displayName": "Setup Automations",
-      "description": "Hooks polyglot (format-on-edit en JS/TS/Python/PHP/Go/Rust/Ruby/shell, append-only guard), subagents (messagebus-reviewer, i18n-reviewer), /release, plantillas de permisos/CLAUDE.md y la skill optimize-my-setup (recomienda y el usuario elige qué aplicar). Language-agnostic.",
+      "description": "Automatizaciones de proceso: hook guard-append-only (protege migraciones/auditoría commiteadas), subagents (messagebus-reviewer, i18n-reviewer), /release, plantillas de permisos/CLAUDE.md y la skill optimize-my-setup (recomienda y el usuario elige qué aplicar). Language-agnostic.",
       "source": "./plugins/automations"
     }
   ]
