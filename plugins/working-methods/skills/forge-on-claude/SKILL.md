@@ -10,6 +10,7 @@ Forge es vendor-neutral (habla de "deep-reasoning tier", "isolated workspace", "
 | Concepto Forge (neutral) | En Claude Code |
 |---|---|
 | **Deep-reasoning tier** (grill ×3, plan global, arbitraje, review crítico) | **`ultrathink`** en el prompt (razonamiento profundo) + modelo **Opus**. |
+| **Gate de entrada + gate al usuario** (dudas del grill → owner decide: acepta/cambia/añade/discrepa) | **`AskUserQuestion`** con `multiSelect: true` (≤4 preguntas/llamada, 2–4 opciones; recomendada con "(recomendada)"; "Other" = añade-la-tuya / discrepa). **Lo corre el orquestador, NUNCA un subagente** (los subagentes no preguntan al owner). |
 | **Orquestar unidades disjuntas en paralelo** | **`ultracode`** / la tool **Workflow** (fan-out determinista) o varios **subagents `Task`** en un mismo mensaje (corren en paralelo). |
 | **Isolated workspace** (1 unidad = 1 workspace) | **git worktree + rama por unidad** (`git worktree add`). Si el repo trae un flujo propio (p.ej. `/new-session`), úsalo. **1 sesión = 1 worktree = 1 rama.** |
 | **Ownership claim** (declarar qué tocas antes) | Fichero de claim trackeado / asignación visible; subagents de una sesión = **áreas DISJUNTAS** (un fichero = un solo agente). |
