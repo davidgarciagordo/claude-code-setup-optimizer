@@ -8,7 +8,48 @@ Invocaciones reales — pega una en Claude Code tras instalar el marketplace. Ca
 
 ---
 
-## `/optimize-my-setup` — analiza el repo, tú eliges qué aplicar
+## `/forge-run` — EL entrypoint (la columna vertebral codificada)
+
+Para cualquier tarea sustancial, este es el único command. **Secuencia y enforda** toda la metodología — no llevas el orden a mano y no puedes saltarte una fase.
+
+```
+/forge-run añade idempotency keys al endpoint de charge de pagos
+```
+
+**Qué hace, en este orden fijo (gates checkeados por máquina):**
+
+```
+0. init        → docs/forge/<slug>/run.json   (arma el gate de PR)
+1. align       → intent.md           (una tanda de preguntas de alto impacto; brainstorming)
+2. references  → references.md        (Reference Standard: el listón de la competencia / de facto)
+3. spec        → spec.md + acceptance-matrix.md   (la Definition of Done verificable)
+4. grill ×3    → grill.md             (/grill: arquitecto · operador · ingeniero · completitud)
+5. plan        → plan.md              (plan global — gate de SIGN-OFF del dueño)
+6. execute     → context-pack.md      (worktrees + subagents disjuntos + context pack compartido)
+7. verify      → verify.md            (reviewers + completeness-critic + design-review en diffs de UI)
+8. handoff     → handoff.md           (/handoff; luego `forge.js complete`)
+```
+
+**Qué obtienes:** cada artefacto versionado en `docs/forge/<slug>/`, así el run sobrevive a la sesión. Un PR queda **bloqueado** (hook `guard-forge-artifacts`) hasta que existan spec + acta de grill + Acceptance Matrix + plan. El orden vive en `plugins/working-methods/workflows/forge.js`, no en un prompt que debas recordar.
+
+```bash
+node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" phases   # imprime la columna
+node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" status   # dónde estoy, ¿gate abierto?
+```
+
+---
+
+## `/install-family` — bootstrap de los 4 plugins (una vez)
+
+```
+/install-family
+```
+
+**Qué obtienes:** el marketplace añadido (idempotente), un chequeo de lo ya instalado, y los miembros que falten de la familia (`working-methods`, `automations`, `forge-methodology`, `design-review`) instalados — para que `/forge-run` tenga la herramienta de cada fase presente. `working-methods` (`forge-on-claude`) **requiere** `forge-methodology`; la fase verify llama a `design-review`.
+
+---
+
+## `/optimize-my-setup` — analiza el repo, tú eliges qué aplicar  *(setup, una vez)*
 
 **Corto** — que analice y recomiende:
 
@@ -102,23 +143,15 @@ Ejemplos de invariante → reviewer generado: event bus → `event-bus-reviewer`
 
 ---
 
-## 🎯 Un prompt para todos — una pasada completa de Forge-on-Claude
+## 🎯 Toda la metodología de una vez → eso es `/forge-run`
 
-Cada sección de arriba ejecuta **una** skill por separado. Para usar toda la metodología de una vez, compónlas:
+Antes esto era un prompt copy-paste que tenías que recordar y correr a mano — y por eso el orden se saltaba. **Ese prompt ahora es un command: `/forge-run` (arriba del todo).** Encadena las mismas piezas — `optimize-my-setup`/`install-family` para el setup → spec + Acceptance Matrix → `/grill` ×3 + completitud → plan global (sign-off del dueño) → `forge-on-claude` (worktrees + context pack compartido) → reviewers + `completeness-critic` + `design-review` en UI → `/handoff` — pero el **orden está codificado** en `workflows/forge.js` y **gateado** por el hook `guard-forge-artifacts`, no a merced de la memoria.
 
 ```
-ultrathink. Pasa esto por la Forja de principio a fin:
-
-Tarea: <tu tarea>
-1. /optimize-my-setup primero — detecta mi stack, convención de commits y ADRs, y aplica solo las automatizaciones que confirme.
-2. Especifícalo, luego /grill al spec ×3 (arquitecto · operador · ingeniero); resuelve los hallazgos.
-3. Planifica global; ejecuta unidades disjuntas, cada una en su git worktree (forge-on-claude), compartiendo UN context pack (file:line) para no re-descubrir nada.
-4. Verifica contra la definición de done con subagents adversariales (messagebus-reviewer / i18n-reviewer si aplica).
-5. /handoff al final para que la siguiente sesión retome limpio.
-Muéstrame las decisiones que requieren mi input; nunca apliques nada que yo no haya elegido.
+/forge-run <tu tarea>
 ```
 
-Encadena `optimize-my-setup` → `/grill` → `forge-on-claude` (worktrees + context pack) → reviewers → `/handoff`. Para uso independiente, coge cualquier sección de arriba.
+Para uso independiente, coge cualquier sección de arriba. `/forge-run` aplica `ultrathink` solo en las fases de razonamiento (grill, plan, verify).
 
 ---
 

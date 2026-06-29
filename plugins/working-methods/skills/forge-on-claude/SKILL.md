@@ -5,6 +5,8 @@ description: Mapea la metodología Forge (vendor-neutral) a las herramientas con
 
 # Forge en Claude Code — mapa de herramientas
 
+> **Dependencia declarada:** este skill **requiere el plugin `forge-methodology`**. `forge-on-claude` NO redefine la metodología — mapea el **loop neutral de 7 pasos del skill `forge-methodology`** a las herramientas de Claude Code. Sin él, la referencia de abajo al "loop neutral completo" cuelga. Instálalo con `/install-family` (o `claude plugin install forge-methodology@claude-code-setup-optimizer`). El command que EJECUTA este mapa en orden es **`/forge-run`**.
+
 Forge es vendor-neutral (habla de "deep-reasoning tier", "isolated workspace", "context pack"). Aquí está el equivalente concreto en **Claude Code**. No cambia la metodología; solo dice qué botón pulsar.
 
 | Concepto Forge (neutral) | En Claude Code |

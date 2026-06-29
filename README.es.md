@@ -29,10 +29,31 @@ Cada plugin se instala también suelto (forge/design-review son su propio market
 
 ## 🚀 Empieza aquí
 
+El hub tiene una **columna vertebral** — un único entrypoint que *secuencia y enforda* la metodología, para que el orden no viva en un prompt copy-paste que tengas que recordar.
+
+**1. Prepara el taller (una vez):**
 ```
-/optimize-my-setup
+/install-family        # verifica/instala los 4 plugins como unidad
+/optimize-my-setup     # ajusta la config .claude de ESTE repo — tú eliges qué aplicar
 ```
-Analiza tu repo (git, CLAUDE.md, `.claude/`, stack), recomienda 1–2 automatizaciones por categoría, y **termina con un multi-check: tú marcas qué aplicar** (puede ser nada). Solo aplica lo elegido. **El usuario siempre decide.** Agnóstico de lenguaje — JS/TS, Python, PHP, Go, Rust, Ruby.
+
+**2. Construye con la columna (cada tarea sustancial):**
+```
+/forge-run <tu tarea>
+```
+`/forge-run` corre el loop entero **en orden CODIFICADO con gates checkeados por máquina**:
+
+```
+align → reference-decomposition → spec (+ Acceptance Matrix)
+      → /grill ×3 + completitud → plan global (sign-off del dueño)
+      → ejecución (worktrees + context pack compartido)
+      → verify (reviewers + completeness-critic + design-review en diffs de UI)
+      → /handoff
+```
+
+El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), no en prosa. Cada fase **invoca** el command/skill/agente real — *aplica* `forge-methodology` y `design-review`, no solo recomienda instalarlos. Un PR no sale hasta que el spec, el acta de grill, la Acceptance Matrix y el plan estén versionados en `docs/forge/<slug>/` — lo enforda el hook `guard-forge-artifacts`. **El usuario siempre decide** (gates de plan + grill).
+
+> `/optimize-my-setup` es **setup del repo** (una vez), no un paso de construir una feature. Agnóstico de lenguaje — JS/TS, Python, PHP, Go, Rust, Ruby.
 
 ## 📚 Ejemplos
 
