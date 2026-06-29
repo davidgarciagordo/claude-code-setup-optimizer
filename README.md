@@ -29,10 +29,37 @@ Each plugin is also installable standalone (forge/design-review are their own ma
 
 ## 🚀 Start here
 
+The hub has a **spine** — one entrypoint that *sequences and enforces* the methodology, so
+the order doesn't live in a copy-paste prompt you have to remember.
+
+**1. Set up the workshop (once):**
 ```
-/optimize-my-setup
+/install-family        # verify/install the 4 plugins as a unit
+/optimize-my-setup     # tailor this repo's .claude config — you pick what to apply
 ```
-Analyses your repo (git, CLAUDE.md, `.claude/`, stack), recommends 1–2 automations per category, and **ends with a multi-select: you pick what to apply** (can be nothing). Applies only what you choose. **The user always decides.** Language-agnostic — JS/TS, Python, PHP, Go, Rust, Ruby.
+
+**2. Build with the spine (every substantial task):**
+```
+/forge-run <your task>
+```
+`/forge-run` runs the whole loop **in codified order with machine-checked gates**:
+
+```
+align → reference-decomposition → spec (+ Acceptance Matrix)
+      → /grill ×3 + completeness → global plan (owner sign-off)
+      → execution (worktrees + shared context pack)
+      → verify (reviewers + completeness-critic + design-review on UI diffs)
+      → /handoff
+```
+
+The order lives in `plugins/working-methods/workflows/forge.js` (single source of truth), not
+in prose. Each phase **invokes** the real command/skill/agent — it *applies* `forge-methodology`
+and `design-review`, it doesn't just recommend installing them. A PR can't leave until the run's
+spec, grill acta, Acceptance Matrix and plan are versioned under `docs/forge/<slug>/` — the
+`guard-forge-artifacts` hook enforces it. **The owner always decides** (plan + grill gates).
+
+> `/optimize-my-setup` is one-time **repo setup**, not a step of building a feature.
+> Language-agnostic — JS/TS, Python, PHP, Go, Rust, Ruby.
 
 ## 📚 Examples
 
@@ -42,8 +69,8 @@ Copy-paste usage for every plugin, command, hook and subagent → [examples/](ex
 
 | Plugin | Source | Contents |
 |--------|--------|----------|
-| 🧠 `working-methods` | local | `/grill` (adversarial ×3: architect · operator · engineer) · `/handoff` (session relay) · `forge-on-claude` (maps Forge to Claude Code tools: ultrathink, ultracode/Workflow, worktrees, subagents, context pack). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
-| ⚡ `automations` | local | **Skill `optimize-my-setup`** — optimizes a repo's whole `.claude` setup to fit it: `CLAUDE.md`, `settings.json` (permissions/hooks/env), skills, **agents generated per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles` — reusing your plugins where they fit. Plus generic hook `guard-append-only`, `/release`, and **templates** (permissions allow-list, CLAUDE.md rules block, domain-reviewer templates). |
+| 🧠 `working-methods` | local | **`/forge-run` — THE spine**: sequences & enforces the whole loop (`workflows/forge.js` + the `guard-forge-artifacts` PR gate). · `/install-family` (bootstrap the 4 plugins) · `/grill` (adversarial ×3 + completeness lens) · `/handoff` (session relay) · `forge-on-claude` (maps Forge to Claude Code tools; **requires `forge-methodology`**). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
+| ⚡ `automations` | local | **`/optimize-my-setup`** (skill + command) — tailors a repo's whole `.claude` setup: `CLAUDE.md`, `settings.json` (permissions/hooks/env), skills, **agents generated per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles`. Active **fail-closed** hook `guard-append-only`. `/release`. **Templates**: parametrizable **hooks** (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`), reviewer templates (incl. generic `completeness-critic`), permissions allow-list, CLAUDE.md rules block. |
 | 🔨 `forge-methodology` | github | Forge loop: align → spec → grill ×3 → global plan → execution → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Design/redesign/audit pipeline (hierarchy, IA, a11y, tokens, motion). |
 
@@ -61,8 +88,20 @@ Style/testing/security/orchestration are **permanent** guidance, not on-demand s
 
 ## 🗂️ Structure
 ```
-.claude-plugin/marketplace.json          # 4 plugins (2 local + 2 github)
-plugins/working-methods/  ·  plugins/automations/
+.claude-plugin/marketplace.json                  # 4 plugins (2 local + 2 github)
+plugins/working-methods/
+  commands/forge-run.md        # THE entrypoint — the codified spine
+  commands/install-family.md   # bootstrap the 4-plugin family
+  commands/grill.md · handoff.md
+  workflows/forge.js           # deterministic phase machine — single source of truth
+  hooks/guard-forge-artifacts.py   # PR gate: artifacts must be versioned (fail-closed)
+  skills/forge-on-claude/      # requires forge-methodology
+plugins/automations/
+  commands/optimize-my-setup.md · release.md
+  skills/optimize-my-setup/
+  hooks/guard-append-only.py   # fail-closed
+  templates/hooks/             # guard-main · commit-msg-lint · secrets-guard · ui-diff-design-review
+  templates/reviewers/         # event-bus · i18n · completeness-critic
 ```
 Validate: `claude plugin validate . --strict`.
 
