@@ -11,5 +11,5 @@
   "license": "MIT",
   "keywords": ["setup", "optimizer", "claude-md", "hooks", "permissions", "mcp", "agents", "workflows", "output-styles", "release"],
   "skills": "./skills/",
-  "commands": ["./commands/release.md"]
+  "commands": ["./commands/optimize-my-setup.md", "./commands/release.md"]
 }

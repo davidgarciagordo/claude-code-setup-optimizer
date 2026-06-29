@@ -25,6 +25,9 @@ Lee el artefacto y el repo primero. **Lo que puedas verificar leyendo el código
 2. **Operador / usuario real** — el día a día en el mostrador con mala idea y prisa. "El producto se gana en el mostrador, no en la base de datos." Casos límite de uso, flujos rotos, fricción, lo que el usuario hará MAL.
 3. **Ingeniero del dominio técnico** — concurrencia, idempotencia, edge cases, fallos parciales, lo que rompe en producción bajo carga o datos sucios.
 
+### 4ª lente — Completitud (cuando hay Acceptance Matrix)
+Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade una 4ª lente: **completeness-critic**. ¿El spec cubre **cada fila** de la matriz? ¿Hay **contradicciones o huecos en la propia intención del owner** (directivas que chocan entre sí, requisitos sin criterio de aceptación)? El rol es detectar el gap ANTES de ejecutar, no a mitad. Cada fila sin cobertura o cada contradicción = hallazgo. Reusa el agente `completeness-critic` (template en `automations/templates/reviewers/`).
+
 ## Reglas
 - **Un supuesto no verificado contra el repo = hallazgo.** No aceptes "se asume que…": ve a comprobarlo.
 - Los grillers citan `fichero:línea` cuando verifican.

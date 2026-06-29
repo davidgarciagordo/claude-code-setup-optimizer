@@ -8,7 +8,55 @@ These are real invocations — paste one into Claude Code after installing the m
 
 ---
 
-## `/optimize-my-setup` — analyse repo, you choose what to apply
+## `/forge-run` — THE entrypoint (the codified spine)
+
+For any substantial task, this is the one command. It **sequences and enforces** the whole
+methodology — you don't drive the order by hand, and you can't skip a phase.
+
+```
+/forge-run add idempotency keys to the payments charge endpoint
+```
+
+**What it does, in this fixed order (gates are machine-checked):**
+
+```
+0. init        → docs/forge/<slug>/run.json   (arms the PR gate)
+1. align       → intent.md           (one batch of high-impact questions; brainstorming)
+2. references  → references.md        (Reference Standard from competitor / de-facto bar)
+3. spec        → spec.md + acceptance-matrix.md   (the verifiable Definition of Done)
+4. grill ×3    → grill.md             (/grill: architect · operator · engineer · completeness)
+5. plan        → plan.md              (global plan — OWNER SIGN-OFF gate)
+6. execute     → context-pack.md      (worktrees + disjoint subagents + shared context pack)
+7. verify      → verify.md            (reviewers + completeness-critic + design-review on UI diffs)
+8. handoff     → handoff.md           (/handoff; then `forge.js complete`)
+```
+
+**What you get:** every artifact versioned under `docs/forge/<slug>/`, so the run survives the
+session. A PR is **blocked** (by the `guard-forge-artifacts` hook) until spec + grill acta +
+Acceptance Matrix + plan exist. The order lives in `plugins/working-methods/workflows/forge.js`,
+not in a prompt you have to remember. Inspect it anytime:
+
+```bash
+node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" phases   # print the spine
+node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" status   # where am I, is the next gate open
+```
+
+---
+
+## `/install-family` — bootstrap the four plugins (run once)
+
+```
+/install-family
+```
+
+**What you get:** the marketplace added (idempotent), a check of what's installed, and the
+missing members of the family (`working-methods`, `automations`, `forge-methodology`,
+`design-review`) installed — so `/forge-run` has every phase's tool present. `working-methods`
+(`forge-on-claude`) **requires** `forge-methodology`; the verify phase calls `design-review`.
+
+---
+
+## `/optimize-my-setup` — analyse repo, you choose what to apply  *(one-time setup)*
 
 **Short** — let it analyse and recommend:
 
@@ -75,13 +123,25 @@ Pick what to apply (any, or none) — each shows [surface · scope]:
 
 ---
 
-## Hook (passive — it just fires)
+## Hooks (passive — they just fire)
+
+**Active in the plugins:**
 
 | Hook | Trigger | What happens |
 |------|---------|--------------|
-| `guard-append-only` | you try to Edit a committed migration / audit file | blocks with a message: create a new (compensating) file instead — append-only discipline |
+| `guard-append-only` (automations) | you try to Edit a committed migration / audit file | blocks: create a new (compensating) file instead. **fail-closed** — if it can't verify git state it blocks ("could not verify"), never silently allows. |
+| `guard-forge-artifacts` (working-methods) | `gh pr create` / `git push` while a Forge run is active | blocks until `spec.md` + `grill.md` + `acceptance-matrix.md` + `plan.md` are versioned. No active run → no-op. `FORGE_ENFORCE=warn\|off` to soften. |
 
 Override the append-only globs: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migrations/**"`.
+
+**Shipped as templates** (`plugins/automations/templates/hooks/` — `optimize-my-setup` wires the ones you pick; or copy by hand, see that folder's README):
+
+| Template hook | Event | Enforces | Env |
+|---------------|-------|----------|-----|
+| `guard-main` | PreToolUse · Bash | no commit/push direct to a protected branch | `PROTECTED_BRANCHES` |
+| `commit-msg-lint` | PreToolUse · Bash | `git commit -m` follows Conventional Commits | `COMMIT_TYPES` |
+| `secrets-guard` | PreToolUse · Edit/Write | blocks writing secrets into the repo | `SECRETS_ALLOW_GLOBS` |
+| `ui-diff-design-review` | PostToolUse · Edit/Write | **fires** `design-review` on a UI diff (not just recommends) | `UI_GLOBS` |
 
 ---
 
@@ -102,23 +162,22 @@ Examples of invariant → generated reviewer: event bus → `event-bus-reviewer`
 
 ---
 
-## 🎯 One prompt for all — a full Forge-on-Claude run
+## 🎯 The whole methodology in one go → that's `/forge-run`
 
-Each section above runs **one** skill on its own. To drive the whole methodology in a single go, compose them:
+It used to be a copy-paste prompt here that you had to remember and run by hand — which meant
+the order got skipped. **That prompt is now a command: `/forge-run` (top of this page).** It
+chains the same pieces — `optimize-my-setup`/`install-family` for setup → spec + Acceptance
+Matrix → `/grill` ×3 + completeness → global plan (owner sign-off) → `forge-on-claude`
+(worktrees + shared context pack) → reviewers + `completeness-critic` + `design-review` on UI →
+`/handoff` — but the **order is codified** in `workflows/forge.js` and **gated** by the
+`guard-forge-artifacts` hook, not left to memory.
 
 ```
-ultrathink. Run this through the Forge end to end:
-
-Task: <your task>
-1. /optimize-my-setup first — detect my stack, commit convention and ADRs, and apply only the automations I confirm.
-2. Spec it, then /grill the spec ×3 (architect · operator · engineer); resolve the findings.
-3. Plan globally; execute disjoint units, each in its own git worktree (forge-on-claude), sharing ONE context pack (file:line) so nothing gets re-discovered.
-4. Verify against the definition of done with adversarial subagents (messagebus-reviewer / i18n-reviewer where relevant).
-5. /handoff at the end so the next session resumes cleanly.
-Show me the decisions that need my input; never apply anything I didn't pick.
+/forge-run <your task>
 ```
 
-This chains `optimize-my-setup` → `/grill` → `forge-on-claude` (worktrees + context pack) → reviewers → `/handoff`. Pick any single section above to run that piece standalone instead.
+Run any single section above standalone instead when you only need that one piece. `ultrathink`
+is applied automatically by `/forge-run` for the reasoning-heavy phases (grill, plan, verify).
 
 ---
 
