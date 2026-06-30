@@ -12,6 +12,13 @@ Optimiza la config de Claude Code de ESTE repo en **todas** las superficies del 
 ## Fase 0 — Bootstrap de la familia (verifica, no asumas)
 Antes de recomendar nada, comprueba que la **familia de 4 plugins** está instalada — `working-methods`, `automations`, `forge-methodology`, `design-review` — con `claude plugin list`. La metodología solo "aplica" si los 4 están: `/forge-run` (working-methods) delega en el skill `forge-methodology` y dispara `design-review` en su fase verify. Si falta alguno, recomienda correr **`/install-family`** (lo instala/verifica como unidad) como primer ítem del multi-check.
 
+## Fase 0b — Economía de tokens (read-once · terse · memoria opcional)
+Fija el presupuesto de tokens antes de analizar (lecciones del pipeline design-review v2.3):
+- **Lee el repo UNA vez** → un único *context pack* (fichero:línea de stack/git/reglas/config/invariantes). Si delegas el escaneo a sub-agentes por superficie, **pásales el pack**; no que cada uno re-lea el repo entero ni re-derive lo ya hallado.
+- **Sub-agentes terse**: su salida es dato para el orquestador, no informe humano → `OK`/`KO` + ≤8 palabras + hallazgos 1-línea (`superficie · fichero · recomendación`). Sin preámbulo, sin tablas-resumen, sin ensayos.
+- **Read-only en análisis (Fases 0–3); mutar solo en Fase 4** tras el multi-check (ya es la regla — los agentes de análisis NO llevan Edit/Write).
+- **Memoria opcional (acelerador, nunca requisito)**: si hay un memory tool (claude-mem u otro), el orquestador busca antes (`mem-search "optimize-setup <repo>"` → reúsa el análisis previo, salta redescubrimiento) y escribe el resultado al cerrar; el dueño de I/O es el orquestador (sin carreras). Sin memoria → context pack en fichero; nunca bloquees.
+
 ## Fase 1 — Analiza (read-only)
 Infiere de los datos REALES del repo, no de supuestos (cita fichero/comando):
 - **Stack:** `package.json`/`pyproject.toml`/`composer.json`/`go.mod`/`Cargo.toml`/`Gemfile`… → ecosistema, gestor, scripts, deps de lint/format/test, CI, monorepo vs single.
