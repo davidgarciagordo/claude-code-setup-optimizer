@@ -111,5 +111,22 @@ plugins/automations/
 ```
 Valida: `claude plugin validate . --strict`.
 
+## ✅ Reglas de manifest (que `/plugin install` no se rompa)
+
+`claude plugin validate` revisa el esquema, **no** que el plugin cargue de verdad — haz siempre un install real antes de publicar:
+
+```bash
+CLAUDE_CONFIG_DIR=$(mktemp -d) claude plugin marketplace add ./<repo>   # o owner/repo
+CLAUDE_CONFIG_DIR=$(mktemp -d) claude plugin install <name>@<marketplace>
+claude plugin list    # debe poner "Status: ✔ enabled", sin "Error: Hook load failed"
+```
+
+Dos errores que pasan validación pero rompen install (mordieron a esta familia — ya arreglados):
+
+- **`agents` / `commands` / `skills`**: usa string de ruta o array de rutas (`"skills": "./"`, `"commands": ["./commands/"]`). Un string de directorio en el campo equivocado se rechaza.
+- **`hooks`**: **no** declares `"hooks": "./hooks/hooks.json"`. El `hooks/hooks.json` estándar se **auto-carga**; declararlo otra vez lanza *"Duplicate hooks file detected"* y el plugin no carga. Solo pon `hooks` para ficheros de hook *adicionales*.
+
+Verificado: los 5 plugins instalan limpio desde cero vía GitHub → `enabled`.
+
 ---
 <sub>Hecho por [David García Gordo](https://github.com/davidgarciagordo) · MIT</sub>
