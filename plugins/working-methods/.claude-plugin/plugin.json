@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "working-methods",
   "displayName": "Working Methods (David)",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Cross-project working norms of David. The SPINE: /forge-run sequences and ENFORCES the whole methodology (align → reference-decomposition → spec+Acceptance-Matrix → /grill ×3+completeness → global plan → execution → verify → /handoff) via a deterministic workflows/forge.js + a PR-gate hook (guard-forge-artifacts) — the order is codified, not remembered. Plus /grill (adversarial ×3), /handoff (session relay), /install-family (bootstrap the 4-plugin family), and forge-on-claude. REQUIRES the forge-methodology plugin (forge-on-claude delegates to its skill) and uses design-review in the verify phase. Model routing baked in.",
   "author": {
     "name": "David García Gordo",

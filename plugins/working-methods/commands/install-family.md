@@ -1,5 +1,5 @@
 ---
-description: Bootstrap — install/verify the whole four-plugin family (working-methods, automations, forge-methodology, design-review) so /forge-run has every phase's tool present. Reports what's missing and installs it.
+description: Bootstrap — install/verify the whole five-plugin family (working-methods, automations, forge-methodology, design-review, token-economy) so /forge-run has every phase's tool present. Reports what's missing and installs it.
 argument-hint: (none)
 allowed-tools: Bash(claude plugin:*), Bash(claude plugin list:*), Bash(claude plugin validate:*), Read
 ---
@@ -8,7 +8,7 @@ allowed-tools: Bash(claude plugin:*), Bash(claude plugin list:*), Bash(claude pl
 
 `/forge-run` only works if every phase's tool is installed. This is **one** step (repo
 setup, run once), not part of a feature run. It installs/verifies the family as a unit
-instead of four manual installs that nothing checks.
+instead of five manual installs that nothing checks.
 
 ## Steps
 1. **Add the marketplace** (idempotent):
@@ -19,12 +19,13 @@ instead of four manual installs that nothing checks.
    ```bash
    claude plugin list
    ```
-3. **Install only the missing ones** of the family — all four are required together:
+3. **Install only the missing ones** of the family — all five are required together:
    ```bash
    claude plugin install working-methods@claude-code-setup-optimizer    # /forge-run · /grill · /handoff · forge-on-claude
    claude plugin install automations@claude-code-setup-optimizer         # optimize-my-setup · hooks · templates · /release
    claude plugin install forge-methodology@claude-code-setup-optimizer   # the neutral 7-step loop forge-on-claude delegates to
    claude plugin install design-review@claude-code-setup-optimizer       # the design pipeline /forge-run's verify phase fires
+   claude plugin install token-economy@claude-code-setup-optimizer       # input(context-pack)+output(frugal style) token economy the family's agents inherit
    ```
    > **Dependency:** `working-methods` (`forge-on-claude`) **requires** `forge-methodology` —
    > it maps that skill's neutral loop onto Claude Code tools. Installing working-methods

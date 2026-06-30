@@ -12,8 +12,8 @@ a la medida del proyecto. **El usuario SIEMPRE decide** (multi-check) — nada s
 > construye es `/forge-run`. Córrela una vez (y al cambiar stack/convenciones).
 
 ## Fase 0 — Bootstrap de la familia (verifica, no asumas)
-Antes de recomendar nada, comprueba que la **familia de 4 plugins** está instalada —
-`working-methods`, `automations`, `forge-methodology`, `design-review` — con `claude plugin list`.
+Antes de recomendar nada, comprueba que la **familia de 5 plugins** está instalada —
+`working-methods`, `automations`, `forge-methodology`, `design-review`, `token-economy` — con `claude plugin list`.
 Si falta alguno, recomienda correr **`/install-family`** como primer ítem del multi-check.
 
 ## Fase 1 — Context pack (run the scanner, do NOT re-scan by hand)
@@ -56,7 +56,8 @@ del repo. Cubre:
 - **`agents/`** — reviewers tuneados al repo (partes de `templates/reviewers/*`) + `completeness-critic`.
 - **`workflows/*.js`** — orquestación multi-paso repetible si aplica.
 - **`.mcp.json`** — entrega `.mcp.json.example` con `${VAR}` para secretos (nunca en git).
-- **`output-styles/*.md`** — si aporta (terse/caveman para sesiones largas).
+- **`output-styles/*.md`** — economía de SALIDA: recomienda el `frugal` de `token-economy` (resultado primero, sin play-by-play, resumen al final) y/o `caveman` (compresión de estilo). Apilan.
+- **token economy (entrada+salida)** — si el repo orquesta multi-agente, recomienda instalar `token-economy@claude-code-setup-optimizer`: `scripts/context-pack.mjs` (discover-once), plantilla de agente read-only, adapter de memoria pluggable, y el output-style `frugal`. Es la fuente única; el resto de la familia la hereda (no se duplica).
 
 **Scope por ítem:** marca **project** (compartido) o **global/user** (todos tus repos). Secretos nunca a git.
 
