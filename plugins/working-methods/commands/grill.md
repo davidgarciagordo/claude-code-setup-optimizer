@@ -20,18 +20,34 @@ D. Re-grill informado → una pasada automática más con las decisiones del own
 ### A. Gate de entrada (antes de las lentes)
 Lee el artefacto y el repo primero. **Lo que puedas verificar leyendo el código, NO lo preguntes.** Presenta las decisiones de alto impacto que SOLO el owner puede resolver como UNA tanda `AskUserQuestion`: cada pregunta con 2–4 respuestas candidatas, la tuya recomendada primero y marcada "(recomendada)", y el campo "Other" para que añada la suya. Solo lo que cambia la dirección del grill — un puñado, una tanda, no un interrogatorio.
 
-## Las 3 lentes (no negociables)
-1. **Arquitecto de la plataforma** — reglas, bounded contexts, precedentes del repo. **Verifica cada supuesto contra el código real citando `fichero:línea`.** ¿Rompe una invariante? ¿Crea acoplamiento cruzado? ¿Hay ya un precedente que contradice el diseño?
-2. **Operador / usuario real** — el día a día en el mostrador con mala idea y prisa. "El producto se gana en el mostrador, no en la base de datos." Casos límite de uso, flujos rotos, fricción, lo que el usuario hará MAL.
-3. **Ingeniero del dominio técnico** — concurrencia, idempotencia, edge cases, fallos parciales, lo que rompe en producción bajo carga o datos sucios.
+### B0. Context-pack — escanea UNA vez (mecanismo de coste, no opcional)
+Antes de lanzar las lentes, el orquestador lee el artefacto + el repo UNA vez y escribe
+`.forge/grill-context.md`: el target, el mapa del repo (`fichero:línea` de reglas/precedentes/invariantes
+relevantes) y `SHARED-FOUND` (lo que ya salió en el gate de entrada). **Las 3-4 lentes leen este pack; NO
+re-escanean el repo entero ni re-derivan lo de `SHARED-FOUND`.** Sin esto, cada lente re-lee el repo (≈N×
+el coste) y las actas se solapan.
+
+## Las 3 lentes (no negociables) — agentes READ-ONLY, salida TERSE
+Despáchalas **en paralelo como sub-agentes con tool-list read-only** (no pueden editar — solo devuelven
+hallazgos) pasándoles `.forge/grill-context.md`. Cada agente devuelve TERSE (`OK`/`KO` + hallazgos 1-línea
+`Pn · fichero:línea · problema → fix`):
+1. **`grill-architect`** (`agents/grill-architect.md`) — reglas, bounded contexts, precedentes; verifica cada supuesto contra el código real, cita `fichero:línea`.
+2. **`grill-operator`** (`agents/grill-operator.md`) — el día a día en el mostrador con mala idea y prisa; flujos rotos, fricción, lo que el usuario hará MAL.
+3. **`grill-engineer`** (`agents/grill-engineer.md`) — concurrencia, idempotencia, edge cases, fallos parciales, lo que rompe en producción.
 
 ### 4ª lente — Completitud (cuando hay Acceptance Matrix)
-Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade una 4ª lente: **completeness-critic**. ¿El spec cubre **cada fila** de la matriz? ¿Hay **contradicciones o huecos en la propia intención del owner** (directivas que chocan entre sí, requisitos sin criterio de aceptación)? El rol es detectar el gap ANTES de ejecutar, no a mitad. Cada fila sin cobertura o cada contradicción = hallazgo. Reusa el agente `completeness-critic` (template en `automations/templates/reviewers/`).
+Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade el agente
+**`completeness-critic`** (template en `automations/templates/reviewers/`, también read-only + terse,
+recibe el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
+del owner**? Cada fila sin cobertura o contradicción = hallazgo. Detecta el gap ANTES de ejecutar.
 
-## Reglas
-- **Un supuesto no verificado contra el repo = hallazgo.** No aceptes "se asume que…": ve a comprobarlo.
-- Los grillers citan `fichero:línea` cuando verifican.
-- Modelo: lentes en agentes (Sonnet para barrido, Opus para arbitrar). Lo que decide el resultado → Opus.
+## Reglas (mecanismo, no consejo)
+- **Lentes READ-ONLY** (tool-list sin Edit/Write): son diagnóstico, no aplican nada. El owner decide
+  (gate C) y solo entonces se aplica — fuera del grill. Una lente que edita se salta el gate.
+- **Un supuesto no verificado contra el repo = hallazgo.** Citan `fichero:línea`.
+- **Salida terse** (forzada en cada agent def): hallazgos 1-línea, sin ensayos. El último mensaje del
+  sub-agente es DATO para el orquestador, no un informe humano.
+- Modelo: lentes en Sonnet (barrido); el orquestador (arbitraje + gate al usuario) en Opus.
 
 ## C. Gate al usuario (tras las 3 actas, ANTES de las conclusiones)
 No resuelvas en silencio las dudas que surgen. Para cada duda / contradicción / supuesto sin verificar, calcula tu **respuesta recomendada + las alternativas vivas**, y preséntalas como UNA tanda multi-select:
