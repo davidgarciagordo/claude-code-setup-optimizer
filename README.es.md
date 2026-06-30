@@ -29,7 +29,7 @@
 ```
 Cada plugin se instala también suelto (forge/design-review son su propio marketplace).
 
-## 🚀 Empieza aquí
+## 🚀 Cómo se usa
 
 El hub tiene una **columna vertebral** — un único entrypoint que *secuencia y enforda* la metodología, para que el orden no viva en un prompt copy-paste que tengas que recordar.
 
