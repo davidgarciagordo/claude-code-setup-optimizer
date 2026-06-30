@@ -29,7 +29,7 @@
 ```
 Each plugin is also installable standalone (forge/design-review are their own marketplaces too).
 
-## 🚀 Start here
+## 🚀 How to use
 
 The hub has a **spine** — one entrypoint that *sequences and enforces* the methodology, so
 the order doesn't live in a copy-paste prompt you have to remember.
