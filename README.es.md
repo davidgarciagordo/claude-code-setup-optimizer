@@ -2,7 +2,7 @@
 
 # 🛠️ claude-code-setup-optimizer
 
-[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.1.0-blue)
+[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.0-blue)
 
 > El hub que optimiza tu forma de trabajar con Claude Code en cualquier repo — metodología + automatizaciones reales + una skill que analiza tu repo y **te deja elegir qué aplicar**.
 
@@ -51,7 +51,7 @@ align → reference-decomposition → spec (+ Acceptance Matrix)
       → /handoff
 ```
 
-El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), no en prosa. Cada fase **invoca** el command/skill/agente real — *aplica* `forge-methodology` y `design-review`, no solo recomienda instalarlos. Un PR no sale hasta que el spec, el acta de grill, la Acceptance Matrix y el plan estén versionados en `docs/forge/<slug>/` — lo enforda el hook `guard-forge-artifacts`. **El usuario siempre decide** (gates de plan + grill).
+El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), no en prosa. `forge.js` aplica un **gate de orden de fases** (rechaza ejecuciones huérfanas), **parsea una sola vez** (sin I/O repetido), y es la fuente única para el hook `guard-forge-artifacts` — el hook delega a `forge.js check-pr` y ya no bloquea los `git push` por fase. Cada fase **invoca** el command/skill/agente real — *aplica* `forge-methodology` y `design-review`, no solo recomienda instalarlos. Un PR no sale hasta que el spec, el acta de grill, la Acceptance Matrix y el plan estén versionados en `docs/forge/<slug>/`. **El usuario siempre decide** — el gate del plan (fase 5) es un **multi-select con recomendaciones pre-marcadas** (igual que el gate C del grill), no un simple sign-off.
 
 > `/optimize-my-setup` es **setup del repo** (una vez), no un paso de construir una feature. Agnóstico de lenguaje — JS/TS, Python, PHP, Go, Rust, Ruby.
 
@@ -63,8 +63,8 @@ Uso copy-paste de cada plugin, comando, hook y subagent → [examples/](examples
 
 | Plugin | Origen | Contenido |
 |--------|--------|-----------|
-| 🧠 `working-methods` | local | `/grill` (adversarial ×3: arquitecto · operador · ingeniero) · `/handoff` (relevo de sesión) · `forge-on-claude` (mapea Forge a herramientas de Claude Code: ultrathink, ultracode/Workflow, worktrees, subagents, context pack). Routing por modelo integrado. *(comms low-cost → usa el original [caveman](https://github.com/JuliusBrussee/caveman))* |
-| ⚡ `automations` | local | **Skill `optimize-my-setup`** — optimiza TODA la config `.claude` de un repo a su medida: `CLAUDE.md`, `settings.json` (permisos/hooks/env), skills, **agents generados por invariante detectado**, `workflows/*.js`, `.mcp.json`, `output-styles` — reutilizando tus plugins donde encajan. Además: hook genérico `guard-append-only`, `/release`, y **templates** (allow-list de permisos, bloque de rules para CLAUDE.md, templates de reviewers de dominio). |
+| 🧠 `working-methods` | local | **`/forge-run` — LA columna vertebral**: secuencia y fuerza el loop completo (`workflows/forge.js` — gate de orden de fases, parse-once, rechaza ejecuciones huérfanas; `guard-forge-artifacts` delega a `forge.js check-pr`, sin bloqueo de `git push` por fase). · `/install-family` (bootstrap de los 4 plugins) · `/grill` — adversarial ×3 con **agentes griller read-only y terse** (`agents/grill-{architect,operator,engineer}.md`, sin Edit/Write) + **`workflows/grill-context.mjs`** determinista (pack descubierto una vez) + lente **`completeness-critic`** incluida como 4ª lente. · `/handoff` (relevo de sesión) · `forge-on-claude` (mapea Forge a herramientas de Claude Code; **requiere `forge-methodology`**). Routing por modelo integrado. *(comms low-cost → usa el original [caveman](https://github.com/JuliusBrussee/caveman))* |
+| ⚡ `automations` | local | **`/optimize-my-setup`** (skill + comando) — **`scan.mjs`** determinista construye un repo→context-pack, luego ejecuta un **fan-out paralelo real read-only por superficie** y presenta un **multi-select de apply** (tú eliges qué adoptar). Optimiza toda la config `.claude`: `CLAUDE.md`, `settings.json` (permisos/hooks/env), skills, **agents generados por invariante detectado**, `workflows/*.js`, `.mcp.json`, `output-styles`. Hook **fail-closed** activo `guard-append-only`. `/release`. **Templates**: hooks parametrizables (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`), templates de reviewers (incl. `completeness-critic` genérico), allow-list de permisos, bloque de rules para CLAUDE.md. |
 | 🔨 `forge-methodology` | github | Loop Forja: alinear → spec → grill ×3 → plan global → ejecución → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Pipeline de diseño/rediseño/auditoría (jerarquía, IA, a11y, tokens, motion). |
 
@@ -82,8 +82,22 @@ Estilo/testing/seguridad/orquestación son guía **permanente**, no skills on-de
 
 ## 🗂️ Estructura
 ```
-.claude-plugin/marketplace.json          # 4 plugins (2 locales + 2 github)
-plugins/working-methods/  ·  plugins/automations/
+.claude-plugin/marketplace.json                  # 4 plugins (2 locales + 2 github)
+plugins/working-methods/
+  commands/forge-run.md · install-family.md · grill.md · handoff.md
+  workflows/forge.js           # máquina de fases determinista — gate de orden, parse-once, rechaza huérfanos
+  workflows/grill-context.mjs  # pack de contexto descubierto una vez para /grill
+  agents/grill-architect.md · grill-operator.md · grill-engineer.md   # agentes griller read-only terse
+  agents/completeness-critic.md   # 4ª lente incluida con /grill
+  hooks/guard-forge-artifacts.py   # gate de PR: delega a forge.js check-pr (fail-closed)
+  skills/forge-on-claude/
+plugins/automations/
+  commands/optimize-my-setup.md · release.md
+  skills/optimize-my-setup/
+    scan.mjs                   # repo→context-pack determinista
+  hooks/guard-append-only.py   # fail-closed
+  templates/hooks/             # guard-main · commit-msg-lint · secrets-guard · ui-diff-design-review
+  templates/reviewers/         # event-bus · i18n · completeness-critic
 ```
 Valida: `claude plugin validate . --strict`.
 
