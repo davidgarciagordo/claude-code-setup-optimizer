@@ -6,24 +6,26 @@
 
 > The hub that optimises how you work with Claude Code in any repo — methodology + real automations + a skill that analyses your repo and **lets you choose what to apply**.
 
-### 🧩 The family — same signature, three repos
+### 🧩 The family — same signature, four repos
 
 | | Repo | Role |
 |---|---|---|
 | 🛠️ | [**claude-code-setup-optimizer**](https://github.com/davidgarciagordo/claude-code-setup-optimizer) · *you are here* | **The hub** — bundles everything below + automations (hooks · subagents · commands) + `/optimize-my-setup` |
 | 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → spec → grill ×3 → plan → verify |
 | 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — structure → audit → anti-slop → a11y → live check |
+| 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
 
 ## 📦 Install
 
 ```bash
-# 🛠️ Add the hub marketplace (gets all four plugins)
+# 🛠️ Add the hub marketplace (gets all five plugins)
 /plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
 
 /plugin install working-methods@claude-code-setup-optimizer
 /plugin install automations@claude-code-setup-optimizer
 /plugin install forge-methodology@claude-code-setup-optimizer
 /plugin install design-review@claude-code-setup-optimizer
+/plugin install token-economy@claude-code-setup-optimizer
 ```
 Each plugin is also installable standalone (forge/design-review are their own marketplaces too).
 
@@ -34,7 +36,7 @@ the order doesn't live in a copy-paste prompt you have to remember.
 
 **1. Set up the workshop (once):**
 ```
-/install-family        # verify/install the 4 plugins as a unit
+/install-family        # verify/install the 5 plugins as a unit
 /optimize-my-setup     # tailor this repo's .claude config — you pick what to apply
 ```
 
@@ -73,16 +75,17 @@ Copy-paste usage for every plugin, command, hook and subagent → [examples/](ex
 
 | Plugin | Source | Contents |
 |--------|--------|----------|
-| 🧠 `working-methods` | local | **`/forge-run` — THE spine**: sequences & enforces the whole loop (`workflows/forge.js` — phase-order gate, parse-once, rejects orphan run; `guard-forge-artifacts` delegates to `forge.js check-pr`, no per-phase `git push` block). · `/install-family` (bootstrap the 4 plugins) · `/grill` — adversarial ×3 with **read-only terse griller agents** (`agents/grill-{architect,operator,engineer}.md`, no Edit/Write) + deterministic **`workflows/grill-context.mjs`** (discover-once pack) + bundled **`completeness-critic`** 4th lens. · `/handoff` (session relay) · `forge-on-claude` (maps Forge to Claude Code tools; **requires `forge-methodology`**). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
+| 🧠 `working-methods` | local | **`/forge-run` — THE spine**: sequences & enforces the whole loop (`workflows/forge.js` — phase-order gate, parse-once, rejects orphan run; `guard-forge-artifacts` delegates to `forge.js check-pr`, no per-phase `git push` block). · `/install-family` (bootstrap the 5 plugins) · `/grill` — adversarial ×3 with **read-only terse griller agents** (`agents/grill-{architect,operator,engineer}.md`, no Edit/Write) + deterministic **`workflows/grill-context.mjs`** (discover-once pack) + bundled **`completeness-critic`** 4th lens. · `/handoff` (session relay) · `forge-on-claude` (maps Forge to Claude Code tools; **requires `forge-methodology`**). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
 | ⚡ `automations` | local | **`/optimize-my-setup`** (skill + command) — deterministic **`scan.mjs`** builds a repo→context-pack, then runs **real parallel read-only per-surface fan-out**, and presents a **multi-select apply** (you pick what to adopt). Tailors the whole `.claude` setup: `CLAUDE.md`, `settings.json` (permissions/hooks/env), skills, **agents generated per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles`. Active **fail-closed** hook `guard-append-only`. `/release`. **Templates**: parametrizable **hooks** (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`), reviewer templates (incl. generic `completeness-critic`), permissions allow-list, CLAUDE.md rules block. |
 | 🔨 `forge-methodology` | github | Forge loop: align → spec → grill ×3 → global plan → execution → verify vs DoD → sign-off. |
 | 🎨 `design-review` | github | Design/redesign/audit pipeline (hierarchy, IA, a11y, tokens, motion). |
+| 💸 `token-economy` | github | Max token savings without quality loss: `scripts/context-pack.mjs` (discover-once), read-only lens template, **frugal output-style**, pluggable memory adapter. The family inherits the input/output economy from here (one source). Complements `caveman` (output) on the input/orchestration axis. |
 
 ## 🙏 Credits — referenced, not copied
 
 This marketplace **references and organizes** great work; it does not vendor copies, so everything stays current at its source and the original authors keep the credit.
 
-- **forge-methodology**, **design-review** — by [David García Gordo](https://github.com/davidgarciagordo) (this family).
+- **forge-methodology**, **design-review**, **token-economy** — by [David García Gordo](https://github.com/davidgarciagordo) (this family).
 - **caveman** (low-cost comms) — by [JuliusBrussee](https://github.com/JuliusBrussee/caveman). Install the original: `/plugin marketplace add JuliusBrussee/caveman`.
 - The **design-review pipeline** orchestrates skills by their original authors — `impeccable`, `taste-skill`, `emil-design-eng`, `ui-ux-pro-max`, `huashu-design`, `web-accessibility`, `seo` — installed from source via its preflight (see design-review's *Attribution*). Nothing bundled; each updates at its origin.
 
@@ -92,10 +95,10 @@ Style/testing/security/orchestration are **permanent** guidance, not on-demand s
 
 ## 🗂️ Structure
 ```
-.claude-plugin/marketplace.json                  # 4 plugins (2 local + 2 github)
+.claude-plugin/marketplace.json                  # 5 plugins (2 local + 3 github)
 plugins/working-methods/
   commands/forge-run.md        # THE entrypoint — the codified spine
-  commands/install-family.md   # bootstrap the 4-plugin family
+  commands/install-family.md   # bootstrap the 5-plugin family
   commands/grill.md · handoff.md
   workflows/forge.js           # deterministic phase machine — single source of truth; phase-order gate, parse-once, rejects orphan run
   workflows/grill-context.mjs  # discover-once context pack for /grill
