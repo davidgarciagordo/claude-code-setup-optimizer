@@ -34,11 +34,32 @@ Each plugin is also installable standalone (forge/design-review are their own ma
 The hub has a **spine** — one entrypoint that *sequences and enforces* the methodology, so
 the order doesn't live in a copy-paste prompt you have to remember.
 
-**1. Set up the workshop (once):**
+**1. Install the family (once).** Two ways — pick one:
+
+**Shortcut (3 lines):** add the marketplace, install the bootstrapper, let it install the rest.
 ```
-/install-family        # verify/install the 5 plugins as a unit
-/optimize-my-setup     # tailor this repo's .claude config — you pick what to apply
+/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
+/plugin install working-methods@claude-code-setup-optimizer
+/install-family        # installs/verifies the other 4 as a unit
 ```
+
+**Manual (full, explicit):** install all five yourself.
+```
+/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
+/plugin install working-methods@claude-code-setup-optimizer     # /forge-run · /grill · /handoff
+/plugin install automations@claude-code-setup-optimizer          # /optimize-my-setup · hooks · /release
+/plugin install forge-methodology@claude-code-setup-optimizer    # the 7-step loop
+/plugin install design-review@claude-code-setup-optimizer        # the design pipeline
+/plugin install token-economy@claude-code-setup-optimizer        # context-pack + frugal output-style
+```
+
+Then:
+```
+/output-style frugal   # terse, result-first sessions (off: /output-style default)
+/reload-plugins        # or restart Claude Code — plugins load at startup
+/optimize-my-setup     # optional: tailor this repo's .claude config — you pick what to apply
+```
+Verify with `/plugin` (or `claude plugin list`): the five show `✔ enabled`, no `Error`.
 
 **2. Build with the spine (every substantial task):**
 ```
