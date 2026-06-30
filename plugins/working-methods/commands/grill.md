@@ -20,12 +20,19 @@ D. Re-grill informado → una pasada automática más con las decisiones del own
 ### A. Gate de entrada (antes de las lentes)
 Lee el artefacto y el repo primero. **Lo que puedas verificar leyendo el código, NO lo preguntes.** Presenta las decisiones de alto impacto que SOLO el owner puede resolver como UNA tanda `AskUserQuestion`: cada pregunta con 2–4 respuestas candidatas, la tuya recomendada primero y marcada "(recomendada)", y el campo "Other" para que añada la suya. Solo lo que cambia la dirección del grill — un puñado, una tanda, no un interrogatorio.
 
-### B0. Context-pack — escanea UNA vez (mecanismo de coste, no opcional)
-Antes de lanzar las lentes, el orquestador lee el artefacto + el repo UNA vez y escribe
-`.forge/grill-context.md`: el target, el mapa del repo (`fichero:línea` de reglas/precedentes/invariantes
-relevantes) y `SHARED-FOUND` (lo que ya salió en el gate de entrada). **Las 3-4 lentes leen este pack; NO
-re-escanean el repo entero ni re-derivan lo de `SHARED-FOUND`.** Sin esto, cada lente re-lee el repo (≈N×
-el coste) y las actas se solapan.
+### B0. Context-pack — run the script, then hand it to the lenses (mecanismo de coste, no opcional)
+Before dispatching the lenses, the orchestrator runs:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/workflows/grill-context.mjs" <artifact>
+```
+
+This writes `.forge/grill-context.md` deterministically: the target content, the repo map
+(`file:line` of ADRs / CLAUDE.md / invariants / domain-keyword matches) and an empty `SHARED-FOUND`
+section. **The 3–4 lenses read this pack; they do NOT re-scan the repo or re-derive what
+`SHARED-FOUND` already lists.** The LLM only adds semantic relevance the script cannot derive
+(e.g. resolving ambiguous terms in the artifact against repo intent); it does NOT redo the
+mechanical file scan.
 
 ## Las 3 lentes (no negociables) — agentes READ-ONLY, salida TERSE
 Despáchalas **en paralelo como sub-agentes con tool-list read-only** (no pueden editar — solo devuelven
@@ -37,7 +44,7 @@ hallazgos) pasándoles `.forge/grill-context.md`. Cada agente devuelve TERSE (`O
 
 ### 4ª lente — Completitud (cuando hay Acceptance Matrix)
 Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade el agente
-**`completeness-critic`** (template en `automations/templates/reviewers/`, también read-only + terse,
+**`completeness-critic`** (`agents/completeness-critic.md`, bundled in this plugin — read-only + terse,
 recibe el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
 del owner**? Cada fila sin cobertura o contradicción = hallazgo. Detecta el gap ANTES de ejecutar.
 

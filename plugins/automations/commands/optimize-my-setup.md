@@ -1,7 +1,7 @@
 ---
 description: Repo setup (run once) — analyse this repo's whole .claude config and let you pick what to apply. Thin command wrapper around the optimize-my-setup skill, so it's invocable deterministically as a slash command. NOT part of a feature run; bootstrap once.
 argument-hint: [optional focus, e.g. "git flow, secrets, fewer prompts"]
-allowed-tools: Skill, Read, Glob, Grep, Bash(git log:*), Bash(git branch:*), AskUserQuestion, Write, Edit
+allowed-tools: Skill, Read, Glob, Grep, Bash(git log:*), Bash(git branch:*), Bash(node:*), AskUserQuestion, Write, Edit
 ---
 
 # /optimize-my-setup — one-time repo setup
@@ -10,22 +10,47 @@ This is **repo setup**, not a step of building a feature. Run it **once** (and a
 your stack/conventions change). It is intentionally separate from `/forge-run`: the spine
 assumes your `.claude` config already exists.
 
-Invoke the skill that does the work:
+## Phase 1 — Context pack (run the script, do NOT re-scan by hand)
 
-> Use the **`optimize-my-setup`** skill on this repo. Focus: `$ARGUMENTS`.
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/optimize-my-setup/scan.mjs" --md
+```
 
-The skill:
-1. **Analyses** (read-only) the stack, git/commit convention, ADRs, domain invariants and
-   existing `.claude/` config.
-2. **Bootstraps the family** — verifies the four plugins (`working-methods`, `automations`,
-   `forge-methodology`, `design-review`) are installed; if missing, points you to
-   `/install-family`. The spine (`/forge-run`) needs them present.
-3. **Recommends** 1–2 items per `.claude` surface (each citing a repo file), reusing your
-   plugins where they fit instead of reinventing — including the **hook templates** in
-   `templates/hooks/` (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`)
-   and the **reviewer templates** (incl. the generic `completeness-critic`).
-4. **You pick** (multi-select). Nothing is applied until you check it.
-5. **Applies** only what you chose, in the right scope, and tells you how to revert.
+Read the emitted markdown context-pack. Interpret it — infer what the project needs based
+on the detected ecosystem, commit convention, branches, existing `.claude` surfaces, and CI.
+Do NOT re-scan the repo by hand; the script already did the mechanical pass.
+
+## Phase 2 — Surface fan-out (parallel read-only terse analyzers)
+
+Dispatch **one read-only terse sub-agent per surface** in parallel (disjoint scopes; each
+receives the context-pack as input, returns `OK`/`KO` + terse recommendations):
+
+1. **settings** — permissions allowlist + hooks wiring + env vars
+2. **hooks** — which hook templates apply to this repo's invariants
+3. **agents** — which reviewer agents to generate (one per domain invariant detected)
+4. **mcp** — MCP servers for the detected stack
+5. **skills** — which skills/plugins to install or generate
+
+Each sub-agent outputs: `surface · file · recommendation` (one line per item). No essays.
+The orchestrator consolidates before presenting choices.
+
+## Phase 3 — Family bootstrap check
+
+Before any recommendation, verify the four-plugin family is installed:
+`working-methods`, `automations`, `forge-methodology`, `design-review`. If any is missing,
+that is the first item in the multi-select.
+
+## Phase 4 — You pick (multi-select)
+
+Present everything as **multi-select** (`AskUserQuestion`, `multiSelect: true`): one option
+per item with surface + effect + scope (project/global) + risk. Nothing is applied until you
+check it.
+
+## Phase 5 — Apply only what you chose
+
+Apply in the correct scope. Reuse antes de generar — if a need fits a plugin, reference
+the original; do not copy its content. For hooks: fail-closed contracts (block on doubt,
+not silent-allow). Summarise what was applied and how to revert.
 
 > Don't confuse this with `/forge-run`. `/optimize-my-setup` configures the workshop;
 > `/forge-run` builds with it.

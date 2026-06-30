@@ -1,7 +1,7 @@
 ---
 name: grill-architect
 description: "Grill lens 1/3 (platform architect). Adversarially attacks a spec/plan against the repo's rules, bounded contexts, and precedents — every assumption verified against real code, cited file:line. READ-ONLY (no edits — it returns findings, never mutates). TERSE output. Reads the shared grill context-pack instead of re-scanning the repo."
-tools: ["Read", "Grep", "Glob", "Bash"]
+tools: ["Read", "Grep", "Glob"]
 model: sonnet
 ---
 

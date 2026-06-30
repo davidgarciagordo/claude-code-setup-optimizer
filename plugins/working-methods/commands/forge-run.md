@@ -42,71 +42,24 @@ refactors / migrations · **Haiku** the trivial. See `forge-on-claude` for the t
 
 ---
 
-## The phases (CODIFIED — run in this order, do not reorder)
+## The phases
 
-### 0. Bootstrap & init
-- Ensure the family is installed (`/install-family` if needed).
-- `forge.js init "$ARGUMENTS"` → creates the run dir + manifest. The PR gate is now armed.
+Run `node "${CLAUDE_PLUGIN_ROOT}/workflows/forge.js" phases` — it prints the codified order
+with gate-in requirements, expected artifacts, and the command/skill/agent each phase invokes.
+Follow that output. The single source of truth lives in `forge.js`; do not re-narrate it here.
 
-### 1. Align intent  → `intent.md`
-- One batch of high-impact questions only (`AskUserQuestion`, `multiSelect`). The value
-  question first. Don't interrogate — what you can read from the repo, don't ask.
-- Use `superpowers:brainstorming` for the exploration. Write the agreed intent to
-  `docs/forge/<slug>/intent.md`. `advance reference-decomposition`.
+Drive each phase by invoking its listed command/skill/agent, producing its artifact(s) in
+`docs/forge/<slug>/`, then calling `advance <nextPhase>` to open the next gate.
 
-### 2. Reference decomposition  → `references.md`  (the **Reference Standard**)
-- Decompose the task against **reference implementations / de-facto standards** (competitor
-  analysis, the bar the result must clear). Fan out research subagents (Sonnet) over
-  disjoint segments; verify key claims adversarially. Synthesise the **Reference Standard**
-  the spec must meet into `references.md`. `advance spec`.
-
-### 3. Spec  → `spec.md` + **`acceptance-matrix.md`**
-- Write the spec against the Reference Standard (`forge-methodology` / `superpowers:writing-plans`).
-- Build the **Acceptance Matrix**: one row per requirement / acceptance criterion, columns
-  `[ criterion | source (reference/owner) | how-verified | status ]`. This is the
-  machine-readable Definition of Done that `verify` and `completeness-critic` check against.
-- Both files are the gate to grilling. `advance grill`.
-
-### 4. Grill ×3 + 4th completeness lens  → `grill.md`
-- Run **`/grill docs/forge/<slug>/spec.md`** — three fixed lenses (architect · operator ·
-  engineer), each citing `file:line`, plus a **4th lens: completeness** — does the spec cover
-  every row of the Acceptance Matrix? any contradictions / gaps in the owner's own intent?
-  (the completeness-critic's remit, applied here at spec time).
-- The owner gate inside `/grill` resolves the findings. Write the arbitrated acta to
-  `grill.md`. `advance plan`.
-
-### 5. Global plan  → `plan.md`  (**owner approval gate**)
-- Plan **all** phases of the work globally, no holes (`superpowers:writing-plans`). Name what
-  is explicitly OUT of scope.
-- **Owner sign-off is a hard gate:** present the plan + the decisions that need the owner's
-  input (`AskUserQuestion`); do not proceed to execution until approved. Write `plan.md`.
-  `advance execute`. (Execution's gate now requires spec + matrix + grill + plan — the hook
-  will block a PR otherwise.)
-
-### 6. Execution  → `context-pack.md`
-- `forge-on-claude`: **one git worktree + branch per disjoint unit**, subagents over
-  **disjoint areas** (one file = one agent). Phase-1 reader subagents return a **context pack**
-  with `file:line`; chain it as the shared memory so nothing is re-discovered. Commit per
-  phase so work survives the session.
-- Execute the closed plan mechanically (Sonnet). `advance verify`.
-
-### 7. Verify  → `verify.md`  (reviewers + completeness-critic + design-review)
-This phase APPLIES design-review and the generated reviewers — it does not just suggest them:
-- **Generated reviewers:** dispatch the repo's tuned reviewer subagents (event-bus, i18n,
-  tenant-isolation, append-only… whatever `optimize-my-setup` generated) over the diff.
-- **completeness-critic:** dispatch the `completeness-critic` agent — every Acceptance Matrix
-  row satisfied? any regression / contradiction / gap vs the owner's intent? Flip each matrix
-  row's status to pass/fail with evidence.
-- **design-review (conditional, codified):** if `git diff --name-only` touches UI globs
-  (`*.tsx`, `*.jsx`, `*.vue`, `*.svelte`, `*.css`, components/pages/app dirs, emails/MJML),
-  **invoke the `design-review` skill** on the changed surfaces (Storybook story or route).
-  Adversarial verify: the reviewer is never the agent that wrote the code.
-- Write the verdict + matrix status to `verify.md`. `advance handoff`.
-
-### 8. Handoff  → `handoff.md`
-- Run **`/handoff`**: versioned relay MD (copy-paste prompt for the next session, in-flight
-  work, next goal, what NOT to touch), state/memory up to date.
-- `forge.js complete` → the run closes and the PR gate stops enforcing it.
+**Execution notes that forge.js does not carry** (forge-run-specific):
+- `ultrathink` for every reasoning-heavy phase (grill, plan, arbitration, verify).
+- Model routing: **Opus** directs / decides / grills / reviews critical work ·
+  **Sonnet** executes closed plans / refactors / migrations · **Haiku** the trivial.
+- Phase 4 (grill): dispatch the bundled `completeness-critic` agent (`agents/completeness-critic.md`)
+  as the 4th lens when an Acceptance Matrix exists.
+- Phase 7 (verify): if `git diff --name-only` touches UI globs (`*.tsx`, `*.jsx`, `*.vue`,
+  `*.svelte`, `*.css`, components/pages/app dirs, emails/MJML), **invoke `design-review`** on
+  those surfaces. Adversarial verify: the reviewer must not be the agent that wrote the code.
 
 ---
 

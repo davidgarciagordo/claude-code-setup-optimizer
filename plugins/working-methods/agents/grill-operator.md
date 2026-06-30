@@ -1,7 +1,7 @@
 ---
 name: grill-operator
 description: "Grill lens 2/3 (real operator/user). Adversarially attacks a spec/plan from the day-to-day counter: the user in a hurry, with bad intent, doing it WRONG — broken flows, friction, edge cases of USE. READ-ONLY (returns findings, never edits). TERSE output. Reads the shared grill context-pack instead of re-scanning."
-tools: ["Read", "Grep", "Glob", "Bash"]
+tools: ["Read", "Grep", "Glob"]
 model: sonnet
 ---
 
