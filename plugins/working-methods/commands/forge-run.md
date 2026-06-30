@@ -56,7 +56,16 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
 - Model routing: **Opus** directs / decides / grills / reviews critical work ·
   **Sonnet** executes closed plans / refactors / migrations · **Haiku** the trivial.
 - Phase 4 (grill): dispatch the bundled `completeness-critic` agent (`agents/completeness-critic.md`)
-  as the 4th lens when an Acceptance Matrix exists.
+  as the 4th lens when an Acceptance Matrix exists. The owner gate of `/grill` (gate C) already
+  presents the spec's open decisions as a multi-select with your recommendation pre-marked.
+- Phase 5 (plan · owner sign-off): **give the owner a voice on the plan the same way `/grill` gate C
+  does — not a bare approve/reject.** After writing `plan.md`, surface its real decision points
+  (phasing/cuts/sequencing/tradeoffs and any plan-level alternatives) as ONE `AskUserQuestion`
+  (`multiSelect: true`): each item = the decision in plain language + **your recommendation pre-marked**
+  + the live alternatives; the owner may accept / pick another / add their own / disagree. Group by
+  impact (blocking → significant → minor); ≤4 questions/call, several batches if needed (most critical
+  first). `advance execute` only AFTER the owner has signed off the chosen options — never apply a plan
+  decision the owner didn't pick.
 - Phase 7 (verify): if `git diff --name-only` touches UI globs (`*.tsx`, `*.jsx`, `*.vue`,
   `*.svelte`, `*.css`, components/pages/app dirs, emails/MJML), **invoke `design-review`** on
   those surfaces. Adversarial verify: the reviewer must not be the agent that wrote the code.
