@@ -33,11 +33,32 @@ Cada plugin se instala también suelto (forge/design-review son su propio market
 
 El hub tiene una **columna vertebral** — un único entrypoint que *secuencia y enforda* la metodología, para que el orden no viva en un prompt copy-paste que tengas que recordar.
 
-**1. Prepara el taller (una vez):**
+**1. Instala la familia (una vez).** Dos formas — elige una:
+
+**Atajo (3 líneas):** añade el marketplace, instala el bootstrapper, deja que instale el resto.
 ```
-/install-family        # verifica/instala los 5 plugins como unidad
-/optimize-my-setup     # ajusta la config .claude de ESTE repo — tú eliges qué aplicar
+/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
+/plugin install working-methods@claude-code-setup-optimizer
+/install-family        # instala/verifica los otros 4 como unidad
 ```
+
+**Manual (completo, explícito):** instala los cinco a mano.
+```
+/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
+/plugin install working-methods@claude-code-setup-optimizer     # /forge-run · /grill · /handoff
+/plugin install automations@claude-code-setup-optimizer          # /optimize-my-setup · hooks · /release
+/plugin install forge-methodology@claude-code-setup-optimizer    # el loop de 7 pasos
+/plugin install design-review@claude-code-setup-optimizer        # el pipeline de diseño
+/plugin install token-economy@claude-code-setup-optimizer        # context-pack + output-style frugal
+```
+
+Luego:
+```
+/output-style frugal   # sesiones terse, resultado primero (off: /output-style default)
+/reload-plugins        # o reinicia Claude Code — los plugins cargan al arrancar
+/optimize-my-setup     # opcional: ajusta la config .claude de ESTE repo — tú eliges qué aplicar
+```
+Verifica con `/plugin` (o `claude plugin list`): los cinco en `✔ enabled`, sin `Error`.
 
 **2. Construye con la columna (cada tarea sustancial):**
 ```
