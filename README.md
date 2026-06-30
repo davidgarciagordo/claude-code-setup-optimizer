@@ -46,13 +46,20 @@ the order doesn't live in a copy-paste prompt you have to remember.
 ```
 `/forge-run` runs the whole loop **in codified order with machine-checked gates**:
 
+```mermaid
+flowchart TD
+  A[align intent] --> R[reference-decomposition<br/>name reference → req-ids]
+  R --> S[spec + Acceptance Matrix<br/>= canonical DoD]
+  S --> G{/grill ×3 + completeness<br/>owner gate · multi-select}
+  G --> P{global plan<br/>owner sign-off · multi-select}
+  P --> E[execution<br/>worktrees + shared context-pack]
+  E --> V{verify<br/>reviewers + completeness-critic<br/>+ design-review on UI diffs}
+  V -- gaps --> E
+  V -- matrix 100% traced --> H[/handoff/]
 ```
-align → reference-decomposition → spec (+ Acceptance Matrix)
-      → /grill ×3 + completeness → global plan (owner sign-off)
-      → execution (worktrees + shared context pack)
-      → verify (reviewers + completeness-critic + design-review on UI diffs)
-      → /handoff
-```
+
+> Owner-decision gates (grill · plan) are **multi-select with recommendations pre-marked** — never a bare
+> approve. A PR can't leave until spec + grill acta + Acceptance Matrix + plan are on disk.
 
 The order lives in `plugins/working-methods/workflows/forge.js` (single source of truth), not
 in prose. `forge.js` enforces **phase order** (rejects orphan runs), **parses once** (no
