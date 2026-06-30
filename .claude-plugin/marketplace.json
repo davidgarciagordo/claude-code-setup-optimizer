@@ -31,6 +31,12 @@
       "displayName": "Setup Automations",
       "description": "La skill optimize-my-setup optimiza TODA la config .claude de un repo a su medida (CLAUDE.md, settings.json permisos/hooks/env, skills, agents generados por invariante, workflows, .mcp.json, output-styles), reutilizando los plugins del usuario. Incluye hook guard-append-only, /release, y templates (permisos, rules CLAUDE.md, reviewers). El usuario elige qué aplicar. Language-agnostic.",
       "source": "./plugins/automations"
+    },
+    {
+      "name": "token-economy",
+      "displayName": "Token Economy",
+      "description": "Maximum token savings without quality loss for multi-agent work: INPUT side (context-pack scanner = discover-once, read-only lens template) + OUTPUT side (frugal output-style + terse agent contract) + pluggable memory (claude-mem|other|none→file). Complements caveman (output-style compression) on the input/orchestration axis. Mechanisms, not prose; benchmark in README.",
+      "source": { "source": "github", "repo": "davidgarciagordo/token-economy" }
     }
   ]
 }
