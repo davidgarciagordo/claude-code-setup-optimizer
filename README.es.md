@@ -45,13 +45,20 @@ El hub tiene una **columna vertebral** — un único entrypoint que *secuencia y
 ```
 `/forge-run` corre el loop entero **en orden CODIFICADO con gates checkeados por máquina**:
 
+```mermaid
+flowchart TD
+  A[alinear intención] --> R[reference-decomposition<br/>nombra referencia → req-ids]
+  R --> S[spec + Acceptance Matrix<br/>= DoD canónico]
+  S --> G{/grill ×3 + completitud<br/>gate del dueño · multi-select}
+  G --> P{plan global<br/>sign-off del dueño · multi-select}
+  P --> E[ejecución<br/>worktrees + context-pack compartido]
+  E --> V{verify<br/>reviewers + completeness-critic<br/>+ design-review en diffs de UI}
+  V -- huecos --> E
+  V -- matriz 100% trazada --> H[/handoff/]
 ```
-align → reference-decomposition → spec (+ Acceptance Matrix)
-      → /grill ×3 + completitud → plan global (sign-off del dueño)
-      → ejecución (worktrees + context pack compartido)
-      → verify (reviewers + completeness-critic + design-review en diffs de UI)
-      → /handoff
-```
+
+> Los gates de decisión del dueño (grill · plan) son **multi-select con recomendadas premarcadas** — nunca
+> un aprobar a secas. Un PR no sale hasta que spec + acta del grill + Acceptance Matrix + plan están en disco.
 
 El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), no en prosa. `forge.js` aplica un **gate de orden de fases** (rechaza ejecuciones huérfanas), **parsea una sola vez** (sin I/O repetido), y es la fuente única para el hook `guard-forge-artifacts` — el hook delega a `forge.js check-pr` y ya no bloquea los `git push` por fase. Cada fase **invoca** el command/skill/agente real — *aplica* `forge-methodology` y `design-review`, no solo recomienda instalarlos. Un PR no sale hasta que el spec, el acta de grill, la Acceptance Matrix y el plan estén versionados en `docs/forge/<slug>/`. **El usuario siempre decide** — el gate del plan (fase 5) es un **multi-select con recomendaciones pre-marcadas** (igual que el gate C del grill), no un simple sign-off.
 
