@@ -133,6 +133,16 @@ function cmdPhases() {
 function cmdInit(task) {
   if (!task) { console.error('forge init: missing "<task>"'); return 2; }
   const root = gitRoot();
+  // Reject if an active run already exists (would orphan it)
+  const existingManifest = findManifest(root);
+  if (existingManifest) {
+    const ej = readJson(existingManifest);
+    const slug = ej ? ej.slug : '?';
+    const dir  = ej ? ej.dir  : '?';
+    console.error(`forge init: an active run "${slug}" already exists at ${dir}/run.json. ` +
+      'Complete it first ("node forge.js complete") or set FORGE_RUN_MANIFEST to override.');
+    return 2;
+  }
   const slug = arg('--slug') || slugify(task);
   const baseDir = arg('--dir') || 'docs/forge';
   const relDir = path.join(baseDir, slug);
@@ -144,6 +154,7 @@ function cmdInit(task) {
     dir: relDir,
     status: 'active',
     phase: PHASES[0].id,
+    phasesEntered: [],
     preMergeArtifacts: PRE_MERGE_ARTIFACTS,
     createdAt: new Date().toISOString(),
   };
@@ -194,10 +205,11 @@ function cmdGate(id) {
   const root = gitRoot();
   const m = findManifest(root);
   if (!m) { console.error('forge gate: no active run. Run: node forge.js init "<task>"'); return 2; }
-  const dir = path.join(root, readJson(m).dir);
+  const j = readJson(m); // parse ONCE
+  const dir = path.join(root, j.dir);
   const r = gateState(dir, p);
   if (r.ok) { console.log(`gate ${id}: OPEN`); return 0; }
-  console.error(`gate ${id}: BLOCKED — produce first: ${r.missing.map((a) => path.join(readJson(m).dir, a)).join(', ')}`);
+  console.error(`gate ${id}: BLOCKED — produce first: ${r.missing.map((a) => path.join(j.dir, a)).join(', ')}`);
   return 2;
 }
 
@@ -209,8 +221,26 @@ function cmdAdvance(id) {
   if (!m) { console.error('forge advance: no active run.'); return 2; }
   const j = readJson(m);
   const dir = path.join(root, j.dir);
+
+  // Phase ORDER gate: predecessor phase must have been entered first
+  const phIdx = PHASES.findIndex((ph) => ph.id === id);
+  if (phIdx > 0) {
+    const predecessor = PHASES[phIdx - 1].id;
+    const entered = Array.isArray(j.phasesEntered) ? j.phasesEntered : [];
+    if (!entered.includes(predecessor)) {
+      console.error(`Cannot advance to "${id}": phase "${predecessor}" must be entered first (phase order). ` +
+        `Run: node forge.js advance ${predecessor}`);
+      return 2;
+    }
+  }
+
+  // Artifact gate: required inputs must exist
   const r = gateState(dir, p);
   if (!r.ok) { console.error(`Cannot advance to ${id}: gate BLOCKED — missing ${r.missing.join(', ')}`); return 2; }
+
+  // Record the advance
+  if (!Array.isArray(j.phasesEntered)) j.phasesEntered = [];
+  if (!j.phasesEntered.includes(id)) j.phasesEntered.push(id);
   j.phase = id;
   j.updatedAt = new Date().toISOString();
   fs.writeFileSync(m, JSON.stringify(j, null, 2) + '\n');
