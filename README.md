@@ -2,7 +2,7 @@
 
 # 🛠️ claude-code-setup-optimizer
 
-[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.0-blue)
+[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
 
 > The hub that optimises how you work with Claude Code in any repo — methodology + real automations + a skill that analyses your repo and **lets you choose what to apply**.
 
@@ -55,7 +55,7 @@ the order doesn't live in a copy-paste prompt you have to remember.
 
 Then:
 ```
-/output-style frugal   # terse, result-first sessions (off: /output-style default)
+# frugal output-style applies automatically once token-economy is installed (no command needed)
 /reload-plugins        # or restart Claude Code — plugins load at startup
 /optimize-my-setup     # optional: tailor this repo's .claude config — you pick what to apply
 ```
