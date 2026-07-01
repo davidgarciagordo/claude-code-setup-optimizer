@@ -2,7 +2,7 @@
 
 # 🛠️ claude-code-setup-optimizer
 
-[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.0-blue)
+[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
 
 > El hub que optimiza tu forma de trabajar con Claude Code en cualquier repo — metodología + automatizaciones reales + una skill que analiza tu repo y **te deja elegir qué aplicar**.
 
@@ -54,7 +54,7 @@ El hub tiene una **columna vertebral** — un único entrypoint que *secuencia y
 
 Luego:
 ```
-/output-style frugal   # sesiones terse, resultado primero (off: /output-style default)
+# el output-style frugal se aplica solo al instalar token-economy (no hace falta comando)
 /reload-plugins        # o reinicia Claude Code — los plugins cargan al arrancar
 /optimize-my-setup     # opcional: ajusta la config .claude de ESTE repo — tú eliges qué aplicar
 ```
