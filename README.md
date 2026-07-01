@@ -4,62 +4,57 @@
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
 
-> The hub that optimises how you work with Claude Code in any repo — methodology + real automations + a skill that analyses your repo and **lets you choose what to apply**.
-
-### 🧩 The family — same signature, four repos
-
-| | Repo | Role |
-|---|---|---|
-| 🛠️ | [**claude-code-setup-optimizer**](https://github.com/davidgarciagordo/claude-code-setup-optimizer) · *you are here* | **The hub** — bundles everything below + automations (hooks · subagents · commands) + `/optimize-my-setup` |
-| 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → spec → grill ×3 → plan → verify |
-| 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — structure → audit → anti-slop → a11y → live check |
-| 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
+> Two plugins that optimise how you work with Claude Code in any repo: `working-methods`
+> (the `/forge-run` spine — align → spec → grill ×3 → plan → verify) and `automations`
+> (`/optimize-my-setup`, hooks, `/release`). Part of a 5-plugin suite by the same author —
+> see [The wider suite](#-the-wider-suite) below.
 
 ## 📦 Install
 
+Just this repo's two plugins:
+
 ```bash
-# 🛠️ Add the hub marketplace (gets all five plugins)
-/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
-
-/plugin install working-methods@claude-code-setup-optimizer
-/plugin install automations@claude-code-setup-optimizer
-/plugin install forge-methodology@claude-code-setup-optimizer
-/plugin install design-review@claude-code-setup-optimizer
-/plugin install token-economy@claude-code-setup-optimizer
-```
-Each plugin is also installable standalone (forge/design-review are their own marketplaces too).
-
-## 🚀 How to use
-
-The hub has a **spine** — one entrypoint that *sequences and enforces* the methodology, so
-the order doesn't live in a copy-paste prompt you have to remember.
-
-**1. Install the family (once).** Two ways — pick one:
-
-**Shortcut (3 lines):** add the marketplace, install the bootstrapper, let it install the rest.
-```
-/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
-/plugin install working-methods@claude-code-setup-optimizer
-/install-family        # installs/verifies the other 4 as a unit
-```
-
-**Manual (full, explicit):** install all five yourself.
-```
 /plugin marketplace add davidgarciagordo/claude-code-setup-optimizer
 /plugin install working-methods@claude-code-setup-optimizer     # /forge-run · /grill · /handoff
 /plugin install automations@claude-code-setup-optimizer          # /optimize-my-setup · hooks · /release
-/plugin install forge-methodology@claude-code-setup-optimizer    # the 7-step loop
-/plugin install design-review@claude-code-setup-optimizer        # the design pipeline
-/plugin install token-economy@claude-code-setup-optimizer        # context-pack + frugal output-style
+```
+
+The whole suite (all 5 plugins by David García Gordo) from one dedicated catalog:
+
+```bash
+/plugin marketplace add davidgarciagordo/claude-plugins
+/plugin install working-methods@davidgarciagordo-plugins
+/plugin install automations@davidgarciagordo-plugins
+/plugin install forge-methodology@davidgarciagordo-plugins
+/plugin install design-review@davidgarciagordo-plugins
+/plugin install token-economy@davidgarciagordo-plugins
 ```
 
 Then:
 ```
-# frugal output-style applies automatically once token-economy is installed (no command needed)
 /reload-plugins        # or restart Claude Code — plugins load at startup
 /optimize-my-setup     # optional: tailor this repo's .claude config — you pick what to apply
 ```
-Verify with `/plugin` (or `claude plugin list`): the five show `✔ enabled`, no `Error`.
+Verify with `/plugin` (or `claude plugin list`): installed plugins show `✔ enabled`, no `Error`.
+
+## 🧩 The wider suite
+
+`/forge-run` (below) invokes `forge-methodology` and `design-review` at the right phases, and
+the family's agents inherit token economy from `token-economy`. Those three plugins — plus
+this repo's `working-methods` and `automations` — are catalogued together in
+[**davidgarciagordo/claude-plugins**](https://github.com/davidgarciagordo/claude-plugins), the
+single dedicated marketplace for the whole family. Install from there (above) to get all 5;
+install from this repo (above) if you only want `working-methods` + `automations`.
+
+| | Repo | Role |
+|---|---|---|
+| 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → spec → grill ×3 → plan → verify |
+| 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — structure → audit → anti-slop → a11y → live check |
+| 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
+
+## 🚀 How to use
+
+**1. Install** (above), then:
 
 **2. Build with the spine (every substantial task):**
 ```
@@ -103,17 +98,18 @@ Copy-paste usage for every plugin, command, hook and subagent → [examples/](ex
 
 | Plugin | Source | Contents |
 |--------|--------|----------|
-| 🧠 `working-methods` | local | **`/forge-run` — THE spine**: sequences & enforces the whole loop (`workflows/forge.js` — phase-order gate, parse-once, rejects orphan run; `guard-forge-artifacts` delegates to `forge.js check-pr`, no per-phase `git push` block). · `/install-family` (bootstrap the 5 plugins) · `/grill` — adversarial ×3 with **read-only terse griller agents** (`agents/grill-{architect,operator,engineer}.md`, no Edit/Write) + deterministic **`workflows/grill-context.mjs`** (discover-once pack) + bundled **`completeness-critic`** 4th lens. · `/handoff` (session relay) · `forge-on-claude` (maps Forge to Claude Code tools; **requires `forge-methodology`**). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
+| 🧠 `working-methods` | local | **`/forge-run` — THE spine**: sequences & enforces the whole loop (`workflows/forge.js` — phase-order gate, parse-once, rejects orphan run; `guard-forge-artifacts` delegates to `forge.js check-pr`, no per-phase `git push` block). · `/install-family` (bootstrap the full suite from `davidgarciagordo/claude-plugins`) · `/grill` — adversarial ×3 with **read-only terse griller agents** (`agents/grill-{architect,operator,engineer}.md`, no Edit/Write) + deterministic **`workflows/grill-context.mjs`** (discover-once pack) + bundled **`completeness-critic`** 4th lens. · `/handoff` (session relay) · `forge-on-claude` (maps Forge to Claude Code tools; **requires `forge-methodology`**). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
 | ⚡ `automations` | local | **`/optimize-my-setup`** (skill + command) — deterministic **`scan.mjs`** builds a repo→context-pack, then runs **real parallel read-only per-surface fan-out**, and presents a **multi-select apply** (you pick what to adopt). Tailors the whole `.claude` setup: `CLAUDE.md`, `settings.json` (permissions/hooks/env), skills, **agents generated per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles`. Active **fail-closed** hook `guard-append-only`. `/release`. **Templates**: parametrizable **hooks** (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`), reviewer templates (incl. generic `completeness-critic`), permissions allow-list, CLAUDE.md rules block. |
-| 🔨 `forge-methodology` | github | Forge loop: align → spec → grill ×3 → global plan → execution → verify vs DoD → sign-off. |
-| 🎨 `design-review` | github | Design/redesign/audit pipeline (hierarchy, IA, a11y, tokens, motion). |
-| 💸 `token-economy` | github | Max token savings without quality loss: `scripts/context-pack.mjs` (discover-once), read-only lens template, **frugal output-style**, pluggable memory adapter. The family inherits the input/output economy from here (one source). Complements `caveman` (output) on the input/orchestration axis. |
+
+`forge-methodology`, `design-review` and `token-economy` are no longer bundled in this
+repo's marketplace — see [The wider suite](#-the-wider-suite) above for what each does and
+where to install them from.
 
 ## 🙏 Credits — referenced, not copied
 
-This marketplace **references and organizes** great work; it does not vendor copies, so everything stays current at its source and the original authors keep the credit.
+This repo **references** great work; it does not vendor copies, so everything stays current at its source and the original authors keep the credit.
 
-- **forge-methodology**, **design-review**, **token-economy** — by [David García Gordo](https://github.com/davidgarciagordo) (this family).
+- **forge-methodology**, **design-review**, **token-economy** — by [David García Gordo](https://github.com/davidgarciagordo), catalogued in [`davidgarciagordo/claude-plugins`](https://github.com/davidgarciagordo/claude-plugins).
 - **caveman** (low-cost comms) — by [JuliusBrussee](https://github.com/JuliusBrussee/caveman). Install the original: `/plugin marketplace add JuliusBrussee/caveman`.
 - The **design-review pipeline** orchestrates skills by their original authors — `impeccable`, `taste-skill`, `emil-design-eng`, `ui-ux-pro-max`, `huashu-design`, `web-accessibility`, `seo` — installed from source via its preflight (see design-review's *Attribution*). Nothing bundled; each updates at its origin.
 
@@ -123,10 +119,10 @@ Style/testing/security/orchestration are **permanent** guidance, not on-demand s
 
 ## 🗂️ Structure
 ```
-.claude-plugin/marketplace.json                  # 5 plugins (2 local + 3 github)
+.claude-plugin/marketplace.json                  # 2 plugins (working-methods, automations)
 plugins/working-methods/
   commands/forge-run.md        # THE entrypoint — the codified spine
-  commands/install-family.md   # bootstrap the 5-plugin family
+  commands/install-family.md   # bootstrap the full 5-plugin suite from davidgarciagordo/claude-plugins
   commands/grill.md · handoff.md
   workflows/forge.js           # deterministic phase machine — single source of truth; phase-order gate, parse-once, rejects orphan run
   workflows/grill-context.mjs  # discover-once context pack for /grill
@@ -154,12 +150,12 @@ CLAUDE_CONFIG_DIR=$(mktemp -d) claude plugin install <name>@<marketplace>
 claude plugin list    # must show "Status: ✔ enabled", no "Error: Hook load failed"
 ```
 
-Two mistakes that pass validation but break install (both bit this family — fixed):
+Two mistakes that pass validation but break install (both bit this repo — fixed):
 
 - **`agents` / `commands` / `skills`**: use a path string or an array of paths (`"skills": "./"`, `"commands": ["./commands/"]`). A bare directory string in the wrong field is rejected.
 - **`hooks`**: do **not** declare `"hooks": "./hooks/hooks.json"`. The standard `hooks/hooks.json` is **auto-loaded**; declaring it again throws *"Duplicate hooks file detected"* and the plugin fails to load. Only set `hooks` for *additional* hook files.
 
-Verified: all 5 plugins install clean from scratch via GitHub → `enabled`.
+Verified: both plugins install clean from scratch via GitHub → `enabled`.
 
 ---
 <sub>Made by [David García Gordo](https://github.com/davidgarciagordo) · MIT</sub>
