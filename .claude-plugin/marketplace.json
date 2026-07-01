@@ -2,24 +2,12 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "version": "1.0.0",
   "name": "claude-code-setup-optimizer",
-  "description": "Optimiza tu forma de trabajar con Claude Code: referencia y organiza metodología (Forja, design-review, grill, handoff) + automatizaciones (hooks, subagents, /release, plantillas de permisos) + la skill optimize-my-setup que recomienda y deja al usuario elegir qué aplicar. Referencia los repos originales (auto-actualizan) y credita a sus autores. Instalable en cualquier repo.",
+  "description": "Dos plugins propios de David García Gordo para trabajar con Claude Code: working-methods (la columna /forge-run — align → spec → grill ×3 → plan → verify, /grill, /handoff) y automations (la skill optimize-my-setup, hooks, /release, plantillas de permisos). Para la suite completa (+ forge-methodology, design-review, token-economy) usa el catálogo dedicado davidgarciagordo/claude-plugins.",
   "owner": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
   },
   "plugins": [
-    {
-      "name": "forge-methodology",
-      "displayName": "Forja / Forge",
-      "description": "Human↔AI methodology: align intent → versioned spec → adversarial grill ×3 → global plan → optimised execution → verify vs DoD → owner sign-off. Domain-agnostic.",
-      "source": { "source": "github", "repo": "davidgarciagordo/forge-methodology" }
-    },
-    {
-      "name": "design-review",
-      "displayName": "Design Review",
-      "description": "Integral design/redesign/audit: visual hierarchy, IA, cognitive load, accessibility, tokens, motion.",
-      "source": { "source": "github", "repo": "davidgarciagordo/design-review" }
-    },
     {
       "name": "working-methods",
       "displayName": "Working Methods (David)",
@@ -31,12 +19,6 @@
       "displayName": "Setup Automations",
       "description": "La skill optimize-my-setup optimiza TODA la config .claude de un repo a su medida (CLAUDE.md, settings.json permisos/hooks/env, skills, agents generados por invariante, workflows, .mcp.json, output-styles), reutilizando los plugins del usuario. Incluye hook guard-append-only, /release, y templates (permisos, rules CLAUDE.md, reviewers). El usuario elige qué aplicar. Language-agnostic.",
       "source": "./plugins/automations"
-    },
-    {
-      "name": "token-economy",
-      "displayName": "Token Economy",
-      "description": "Maximum token savings without quality loss for multi-agent work: INPUT side (context-pack scanner = discover-once, read-only lens template) + OUTPUT side (frugal output-style + terse agent contract) + pluggable memory (claude-mem|other|none→file). Complements caveman (output-style compression) on the input/orchestration axis. Mechanisms, not prose; benchmark in README.",
-      "source": { "source": "github", "repo": "davidgarciagordo/token-economy" }
     }
   ]
 }

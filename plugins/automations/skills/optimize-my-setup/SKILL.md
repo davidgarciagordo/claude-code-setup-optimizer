@@ -57,7 +57,7 @@ del repo. Cubre:
 - **`workflows/*.js`** — orquestación multi-paso repetible si aplica.
 - **`.mcp.json`** — entrega `.mcp.json.example` con `${VAR}` para secretos (nunca en git).
 - **`output-styles/*.md`** — economía de SALIDA: recomienda el `frugal` de `token-economy` (resultado primero, sin play-by-play, resumen al final) y/o `caveman` (compresión de estilo). Apilan.
-- **token economy (entrada+salida)** — si el repo orquesta multi-agente, recomienda instalar `token-economy@claude-code-setup-optimizer`: `scripts/context-pack.mjs` (discover-once), plantilla de agente read-only, adapter de memoria pluggable, y el output-style `frugal`. Es la fuente única; el resto de la familia la hereda (no se duplica).
+- **token economy (entrada+salida)** — si el repo orquesta multi-agente, recomienda instalar `token-economy@davidgarciagordo-plugins` (catálogo `davidgarciagordo/claude-plugins`): `scripts/context-pack.mjs` (discover-once), plantilla de agente read-only, adapter de memoria pluggable, y el output-style `frugal`. Es la fuente única; el resto de la familia la hereda (no se duplica).
 
 **Scope por ítem:** marca **project** (compartido) o **global/user** (todos tus repos). Secretos nunca a git.
 
