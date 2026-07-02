@@ -8,7 +8,7 @@ allowed-tools: Bash(node:*), Task, AskUserQuestion, Read, Grep, Glob
 
 Ataca el artefacto ($ARGUMENTS) con **tres lentes SIEMPRE**, en paralelo (un agente por lente, áreas disjuntas). Cada lente devuelve un acta de hallazgos. El orquestador (Opus) arbitra los conflictos y produce la versión siguiente del spec.
 
-El grill corre **automático**, pero la convergencia automática esconde los momentos donde un juicio humano cambia el resultado. Dos gates los hacen explícitos sin frenar la máquina:
+El grill corre **automático**; dos gates capturan el juicio del owner sin frenar la máquina:
 
 ```
 A. Gate de entrada   → dudas de alto impacto, ancladas en código + brief, en UNA tanda multi-select.
@@ -19,7 +19,7 @@ D. Re-grill informado → una pasada automática más con las decisiones del own
 ```
 
 ### A. Gate de entrada (antes de las lentes)
-Lee el artefacto y el repo primero. **Lo que puedas verificar leyendo el código, NO lo preguntes.** Presenta las decisiones de alto impacto que SOLO el owner puede resolver como UNA tanda `AskUserQuestion`: cada pregunta con 2–4 respuestas candidatas, la tuya recomendada primero y marcada "(recomendada)", y el campo "Other" para que añada la suya. Solo lo que cambia la dirección del grill — un puñado, una tanda, no un interrogatorio.
+Lee el artefacto y el repo primero. Una duda entra en el gate SOLO si cumple AMBAS: (a) su respuesta cambia la dirección del grill, y (b) NO es verificable leyendo el código — **lo verificable NO se pregunta**. UNA tanda `AskUserQuestion`, ≤4 preguntas: cada una con 2–4 respuestas candidatas, la tuya recomendada primero y marcada "(recomendada)", y "Other" para que añada la suya.
 
 ### B0. Context-pack — run the script, then hand it to the lenses (mecanismo de coste, no opcional)
 Before dispatching the lenses, the orchestrator runs:
@@ -50,9 +50,14 @@ en `forge-methodology`, cualifica siempre; read-only + terse, recibe el mismo pa
 del owner**? Cada fila sin cobertura o contradicción = hallazgo. Detecta el gap ANTES de ejecutar.
 
 ## Reglas (mecanismo, no consejo)
+- **Criterio binario de hallazgo** — se reporta SOLO si cumple ≥1 de:
+  (a) contradice código/ADR/regla del repo, citado `fichero:línea`;
+  (b) supuesto del artefacto no verificado contra el repo (verificar era posible y no se hizo);
+  (c) escenario concreto con flujo + input + resultado erróneo nombrados;
+  (d) fila de Acceptance Matrix sin cubrir, o contradicción en la intención del owner.
+  Opinión de estilo / preferencia sin evidencia / "yo lo haría distinto" = NO es hallazgo → no se reporta.
 - **Lentes READ-ONLY** (tool-list sin Edit/Write): son diagnóstico, no aplican nada. El owner decide
   (gate C) y solo entonces se aplica — fuera del grill. Una lente que edita se salta el gate.
-- **Un supuesto no verificado contra el repo = hallazgo.** Citan `fichero:línea`.
 - **Salida terse** (forzada en cada agent def): hallazgos 1-línea, sin ensayos. El último mensaje del
   sub-agente es DATO para el orquestador, no un informe humano.
 - Modelo: lentes en Sonnet (barrido); el orquestador (arbitraje + gate al usuario) en Opus.
