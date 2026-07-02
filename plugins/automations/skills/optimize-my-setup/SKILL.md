@@ -44,7 +44,10 @@ el context-pack como entrada y devuelve `superficie · fichero · recomendación
 
 **Regla: si una necesidad encaja con un plugin/skill del usuario, recomienda INSTALARLO** (referencia
 el original); genera a medida solo lo que no tenga equivalente. Cada recomendación cita un fichero
-del repo. Cubre:
+del repo. **Todo lo que GENERES a medida (una regla de CLAUDE.md, un hook, un agente, un skill) es
+una instrucción que un LLM ejecutará → pásale el executor-eye check
+(`working-methods/references/executor-eye-check.md`) antes de proponerlo: trigger binario, sin eco,
+sin contradecir la config que ya tiene, sin supuesto tácito.** Cubre:
 
 - **`CLAUDE.md`** — si falta, generalo; si existe, mejoras puntuales + bloque de referencia al
   marketplace (`${CLAUDE_PLUGIN_ROOT}/templates/claude-md-rules-reference.md`).
