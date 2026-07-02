@@ -8,8 +8,7 @@ description: "Analiza el repo actual y optimiza TODA su config de Claude Code a 
 Optimiza la config de Claude Code de ESTE repo en **todas** las superficies del directorio `.claude`,
 a la medida del proyecto. **El usuario SIEMPRE decide** (multi-check) — nada se aplica sin marcarlo.
 
-> **Esto es SETUP del repo, no un paso de construir una feature.** Configura el taller; el run que
-> construye es `/forge-run`. Córrela una vez (y al cambiar stack/convenciones).
+> **SETUP del repo, no un paso de feature** (eso es `/forge-run`). Córrela una vez y al cambiar stack/convenciones.
 
 ## Fase 0 — Bootstrap de la familia (verifica, no asumas)
 Antes de recomendar nada, comprueba que la **familia de 5 plugins** está instalada —
@@ -61,11 +60,13 @@ del repo. Cubre:
 
 **Scope por ítem:** marca **project** (compartido) o **global/user** (todos tus repos). Secretos nunca a git.
 
-## Fase 4 — El usuario elige (OBLIGATORIO)
+## Fase 4 — Multi-check del usuario (gate mecánico, OBLIGATORIO)
 
-Presenta TODO como **multi-select** (`AskUserQuestion`, `multiSelect: true`): superficie + efecto +
-scope + riesgo. Agrupa en 2–4 preguntas si hay muchos ítems. El usuario marca lo que quiera (puede
-marcar cero).
+`AskUserQuestion` con `multiSelect: true`, ≤4 preguntas por llamada (si hay más ítems: varias
+tandas, mayor impacto primero, di cuántas quedan). Cada opción con el formato fijo
+`superficie · fichero · efecto · scope (project/global) · riesgo`. El usuario puede marcar cero.
+**PROHIBIDO cualquier Write/Edit/instalación ANTES de que el multi-check devuelva** —
+una recomendación sin marcar no existe.
 
 ## Fase 5 — Aplica SOLO lo marcado
 
