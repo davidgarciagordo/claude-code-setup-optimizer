@@ -23,4 +23,4 @@ Prepara la subida a producción. Asume `main`=producción y `dev`=integración (
    ```
 6. **No mergees aún.** Release = gate humano: deja el PR para revisión/aprobación. Verde en CI antes de mergear.
 
-Nunca commitees directo a `main`. Para que sea imposible (no solo una norma), instala el hook `guard-main.py` que se shippea en `templates/hooks/` (parametrizable por `PROTECTED_BRANCHES`; wiring en `templates/hooks/README.md`) — o deja que `/optimize-my-setup` lo cablee.
+Nunca commitees directo a `main`. Para que sea imposible (no solo una norma), instala el hook `guard-main.py` que se shippea en `${CLAUDE_PLUGIN_ROOT}/templates/hooks/guard-main.py` (parametrizable por `PROTECTED_BRANCHES`; wiring en `${CLAUDE_PLUGIN_ROOT}/templates/hooks/README.md`) — o deja que `/optimize-my-setup` lo cablee.

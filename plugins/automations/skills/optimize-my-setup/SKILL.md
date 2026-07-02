@@ -35,7 +35,7 @@ Lanza **un sub-agente read-only por superficie**, en paralelo (áreas disjuntas)
 el context-pack como entrada y devuelve `superficie · fichero · recomendación` (1 línea por ítem):
 
 1. **settings** — allow-list de permisos reales del repo + hooks que aplican + env vars de sesión.
-2. **hooks** — templates de `templates/hooks/` que encajan con los invariantes detectados.
+2. **hooks** — templates de `${CLAUDE_PLUGIN_ROOT}/templates/hooks/` que encajan con los invariantes detectados.
 3. **agents** — reviewers a generar (uno por invariante de dominio detectado: event-bus, i18n,
    append-only, multi-tenant, auth…). Incluye siempre `completeness-critic` (sin tuning de dominio).
 4. **mcp** — servidores MCP para el stack detectado.
@@ -48,12 +48,12 @@ el original); genera a medida solo lo que no tenga equivalente. Cada recomendaci
 del repo. Cubre:
 
 - **`CLAUDE.md`** — si falta, generalo; si existe, mejoras puntuales + bloque de referencia al
-  marketplace (`templates/claude-md-rules-reference.md`).
-- **`settings.json`** — permissions (base: `templates/permissions-allowlist.json`); hooks (`templates/hooks/`);
-  env vars de sesión no-secretas.
+  marketplace (`${CLAUDE_PLUGIN_ROOT}/templates/claude-md-rules-reference.md`).
+- **`settings.json`** — permissions (base: `${CLAUDE_PLUGIN_ROOT}/templates/permissions-allowlist.json`);
+  hooks (`${CLAUDE_PLUGIN_ROOT}/templates/hooks/`); env vars de sesión no-secretas.
 - **`settings.local.json`** — overrides personales gitignored (modelo, permisos extra). Nunca secretos.
 - **`skills/`** — metodología → `forge-methodology`/`working-methods`; diseño → `design-review`; etc.
-- **`agents/`** — reviewers tuneados al repo (partes de `templates/reviewers/*`) + `completeness-critic`.
+- **`agents/`** — reviewers tuneados al repo (partes de `${CLAUDE_PLUGIN_ROOT}/templates/reviewers/*`) + `completeness-critic`.
 - **`workflows/*.js`** — orquestación multi-paso repetible si aplica.
 - **`.mcp.json`** — entrega `.mcp.json.example` con `${VAR}` para secretos (nunca en git).
 - **`output-styles/*.md`** — economía de SALIDA: recomienda el `frugal` de `token-economy` (resultado primero, sin play-by-play, resumen al final) y/o `caveman` (compresión de estilo). Apilan.
