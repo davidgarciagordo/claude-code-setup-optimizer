@@ -13,7 +13,13 @@ BLOQUEA con exit 2 ("no pude verificar") en vez de permitir en silencio — que 
 justo el agujero que esta protección debía cerrar. Solo se permite (exit 0) cuando
 NO hay nada que proteger: sin file_path, fuera de un repo git, o el fichero no
 encaja con ningún patrón append-only.
-Override intencional: APPEND_ONLY_GLOBS="" .
+Override intencional: APPEND_ONLY_GLOBS="" (set-pero-vacío = guard desactivado;
+unset = defaults). Los paths se resuelven con realpath (symlinks: /tmp→/private/tmp
+en macOS) para que coincidan con lo que devuelve git.
+
+Limitación honesta: el matcher del hook es Edit|Write|MultiEdit — NO cubre
+mutaciones vía Bash (`sed -i`, `echo >>`, `mv`…). Es inherente al punto de
+enganche; para cubrir Bash haría falta otro hook que parsee comandos.
 """
 import sys, os, json, re, subprocess
 
@@ -63,13 +69,25 @@ def main():
     fp = (data.get("tool_input") or {}).get("file_path", "") or ""
     if not fp:
         sys.exit(0)
-    fp = os.path.abspath(fp)
+    # realpath (no abspath): git rev-parse resuelve symlinks (/tmp→/private/tmp en
+    # macOS); si aquí no los resolvemos, el relpath sale por ../.. y el guard
+    # fail-closea hasta la CREACIÓN de ficheros nuevos.
+    fp = os.path.realpath(fp)
 
     root = git_root(os.path.dirname(fp))
     if not root:
         sys.exit(0)  # fuera de un repo git → nada commiteado que proteger
+    root = os.path.realpath(root)
 
-    globs = [g.strip() for g in os.environ.get("APPEND_ONLY_GLOBS", "").split(",") if g.strip()] or DEFAULT_GLOBS
+    # unset → defaults; set (aunque vacío) → lo que diga el usuario. Con set-pero-
+    # vacío el guard queda DESACTIVADO explícitamente (el override documentado).
+    env_globs = os.environ.get("APPEND_ONLY_GLOBS")
+    if env_globs is None:
+        globs = DEFAULT_GLOBS
+    else:
+        globs = [g.strip() for g in env_globs.split(",") if g.strip()]
+        if not globs:
+            sys.exit(0)  # APPEND_ONLY_GLOBS="" → override intencional, guard off
     rel = os.path.relpath(fp, root)
     matched = any(glob_match(rel, g) for g in globs)
     if not matched:
