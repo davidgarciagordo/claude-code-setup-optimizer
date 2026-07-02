@@ -6,12 +6,19 @@ allowed-tools: Bash(node:*), Bash(git worktree:*), Bash(git status:*), Bash(git 
 
 # /forge-run — the spine of the whole methodology
 
-`$ARGUMENTS` is the task. This command **sequences and enforces** the Forge loop. The
-order is not advice in a README — it lives in `workflows/forge.js` (single source of
-truth) and is gated by the `guard-forge-artifacts` hook. You do not improvise the order
-and you do not skip a phase: each phase **invokes** the real command / skill / agent
+`$ARGUMENTS` is the task. This command **sequences and enforces** the Forge loop: the
+order lives in `workflows/forge.js` (single source of truth) and is gated by the
+`guard-forge-artifacts` hook. Each phase **invokes** the real command / skill / agent
 (it APPLIES `forge-methodology` and `design-review`, it does not merely recommend
 installing them).
+
+**Trigger (binary — never by vibe).** Run `/forge-run` when ANY of:
+- the task adds/changes behavior across **more than 1 file** or touches **more than 1 bounded context**;
+- it introduces a **new feature, product, integration, migration, or architecture/security decision**;
+- the owner invokes `/forge-run` or says "forge this" / "pásalo por la Forja".
+
+**Skip** (work directly) only when ALL of: single-file change · no new behavior contract ·
+reversible in one commit (formatting, typo, one-liner, config tweak).
 
 > **Prerequisite (run once):** the five-plugin family (working-methods, automations,
 > forge-methodology, design-review, token-economy) must be present. If unsure, run
@@ -33,13 +40,8 @@ node "${CLAUDE_PLUGIN_ROOT}/workflows/forge.js" advance <phase> # record entry (
 node "${CLAUDE_PLUGIN_ROOT}/workflows/forge.js" complete        # at the end; stops PR enforcement
 ```
 
-All artifacts are **versioned** under `docs/forge/<slug>/` so the run survives the session
-and the gate can check them. After producing a phase's artifact, `advance` to the next
-phase; if you try to advance with the gate shut, `forge.js` refuses (exit 2).
-
-`ultrathink` for every reasoning-heavy phase (grill, plan, arbitration, verify). Model
-routing: **Opus** directs / decides / grills / reviews · **Sonnet** executes closed plans /
-refactors / migrations · **Haiku** the trivial. See `forge-on-claude` for the tool map.
+All artifacts are **versioned** under `docs/forge/<slug>/`. After producing a phase's
+artifact, `advance` to the next phase; advancing with the gate shut → `forge.js` refuses (exit 2).
 
 ---
 
@@ -47,7 +49,7 @@ refactors / migrations · **Haiku** the trivial. See `forge-on-claude` for the t
 
 Run `node "${CLAUDE_PLUGIN_ROOT}/workflows/forge.js" phases` — it prints the codified order
 with gate-in requirements, expected artifacts, and the command/skill/agent each phase invokes.
-Follow that output. The single source of truth lives in `forge.js`; do not re-narrate it here.
+Follow that output; `forge.js` is the single source of truth.
 
 Drive each phase by invoking its listed command/skill/agent, producing its artifact(s) in
 `docs/forge/<slug>/`, then calling `advance <nextPhase>` to open the next gate.
@@ -56,6 +58,7 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
 - `ultrathink` for every reasoning-heavy phase (grill, regrill, plan, arbitration, verify).
 - Model routing: **Opus** directs / decides / grills / reviews critical work ·
   **Sonnet** executes closed plans / refactors / migrations · **Haiku** the trivial.
+  Tool map per phase: `forge-on-claude` skill.
 - Phase `draft` + `grill`: the grill attacks the **DRAFT**, not a finished spec — that is the
   point (attack while changing is cheap). Dispatch the 3 lenses + the bundled
   `working-methods:completeness-critic` agent as the 4th lens (a reference requirement not
