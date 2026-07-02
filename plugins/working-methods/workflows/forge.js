@@ -10,7 +10,7 @@
  *
  * Usage:
  *   node forge.js phases [--json]        # print the ordered phases (the spine)
- *   node forge.js init "<task>" [--slug=x] [--dir=docs/forge]
+ *   node forge.js init "<task>" [--slug=x]   # run dir is ALWAYS docs/forge/<slug>/
  *   node forge.js status                 # active run: current phase + gate state
  *   node forge.js gate <phaseId>         # can we ENTER this phase? exit 0 ok / 2 blocked
  *   node forge.js advance <phaseId>      # record that we entered <phaseId> (gates must pass)
@@ -27,37 +27,59 @@ const cp = require('child_process');
 // gateIn  = artifacts that MUST already exist to legitimately ENTER this phase.
 // produces = artifacts this phase is expected to version into the run dir.
 // invokes = the Claude Code command / skill / agent the phase drives.
+// Order mirrors the canonical forge-methodology loop: the DRAFT is grilled
+// BEFORE the spec (attack when changing is cheap), and the owner is interrupted
+// exactly TWICE (checkpoint-1 after the draft grill, checkpoint-2 after the
+// re-grill locks the spec) — both as ONE multi-select batch with the
+// orchestrator's recommendations pre-marked.
 const PHASES = [
-  { id: 'align', title: 'Align intent',
-    invokes: 'superpowers:brainstorming + AskUserQuestion (one batch)',
+  { id: 'align', title: 'Align intent + brainstorm',
+    invokes: 'superpowers:brainstorming + value question (one batch)',
     gateIn: [], produces: ['intent.md'] },
-  { id: 'reference-decomposition', title: 'Reference decomposition',
-    invokes: 'research subagents → Reference Standard',
-    gateIn: [], produces: ['references.md'] },
-  { id: 'spec', title: 'Spec (Reference Standard + Acceptance Matrix)',
-    invokes: 'superpowers:writing-plans / forge-methodology',
-    gateIn: ['references.md'], produces: ['spec.md', 'acceptance-matrix.md'] },
-  { id: 'grill', title: 'Grill ×3 + 4th completeness lens',
+  { id: 'reference-decomposition', title: 'Reference decomposition (req-ids)',
+    invokes: 'reference-decomposer → enumerated Reference Standard',
+    gateIn: ['intent.md'], produces: ['references.md'] },
+  { id: 'draft', title: 'Draft (concrete design sketch — cheap to change)',
+    invokes: 'orchestrator writes the chosen approach as a concrete draft',
+    gateIn: ['references.md'], produces: ['draft.md'] },
+  { id: 'grill', title: 'Grill ×3 + completeness lens ON THE DRAFT',
     invokes: '/grill  (architect · operator · engineer · completeness)',
-    gateIn: ['spec.md', 'acceptance-matrix.md'], produces: ['grill.md'] },
-  { id: 'plan', title: 'Global plan (owner approval gate)',
-    invokes: 'superpowers:writing-plans + AskUserQuestion (owner sign-off)',
-    gateIn: ['grill.md'], produces: ['plan.md'] },
-  { id: 'execute', title: 'Execution (worktrees + shared context pack)',
+    gateIn: ['draft.md'], produces: ['grill-verdicts.md'] },
+  { id: 'checkpoint-1', title: 'Owner checkpoint #1 (one multi-select batch)',
+    invokes: 'AskUserQuestion multiSelect — grill decisions, recommendations pre-marked',
+    gateIn: ['grill-verdicts.md'], produces: ['decisions-1.md'] },
+  { id: 'spec', title: 'Versioned spec (Acceptance Matrix = canonical DoD)',
+    invokes: 'forge-methodology spec template (draft + verdicts + owner decisions)',
+    gateIn: ['decisions-1.md'], produces: ['spec.md', 'acceptance-matrix.md'] },
+  { id: 'regrill', title: 'Re-grill ×2 (do the fixes hold? + new seams)',
+    invokes: '/grill focused ×2 on the SPEC (regression + novelty, not a 3rd full grill)',
+    gateIn: ['spec.md', 'acceptance-matrix.md'], produces: ['regrill-verdicts.md'] },
+  { id: 'checkpoint-2', title: 'Owner checkpoint #2 (spec locked after this)',
+    invokes: 'AskUserQuestion multiSelect — cut lines / phasing / budget, recommendations pre-marked',
+    gateIn: ['regrill-verdicts.md'], produces: ['decisions-2.md'] },
+  { id: 'plan', title: 'Global plan + execution proposal (multi-agent by default)',
+    invokes: 'superpowers:writing-plans + execution proposal (worktrees · context pack · model per unit)',
+    gateIn: ['decisions-2.md'], produces: ['plan.md', 'execution-proposal.md'] },
+  { id: 'execute', title: 'Execution (isolated worktrees + ONE shared context pack)',
     invokes: 'forge-on-claude (git worktrees · subagents · context pack)',
-    gateIn: ['spec.md', 'acceptance-matrix.md', 'grill.md', 'plan.md'],
+    gateIn: ['spec.md', 'acceptance-matrix.md', 'plan.md', 'execution-proposal.md'],
     produces: ['context-pack.md'] },
-  { id: 'verify', title: 'Verify (reviewers + completeness-critic + design-review if UI)',
-    invokes: 'generated reviewers · completeness-critic · design-review (on UI diff)',
-    gateIn: ['plan.md'], produces: ['verify.md'] },
-  { id: 'handoff', title: 'Handoff',
+  { id: 'verify', title: 'Verify (matrix, not diff: reviewers + completeness-critic + design-review if UI)',
+    invokes: 'independent-verifier · completeness-critic · design-review (on UI diff)',
+    gateIn: ['acceptance-matrix.md', 'plan.md'], produces: ['verify.md'] },
+  { id: 'handoff', title: 'Handoff (owner sign-off recorded)',
     invokes: '/handoff',
     gateIn: ['verify.md'], produces: ['handoff.md'] },
 ];
 
 // Artifacts that must be versioned BEFORE a PR / merge is allowed. The
 // enforcement hook reads this list off the manifest (written at init).
-const PRE_MERGE_ARTIFACTS = ['spec.md', 'grill.md', 'acceptance-matrix.md', 'plan.md'];
+const PRE_MERGE_ARTIFACTS = [
+  'spec.md', 'acceptance-matrix.md',
+  'grill-verdicts.md', 'decisions-1.md',
+  'regrill-verdicts.md', 'decisions-2.md',
+  'plan.md',
+];
 
 /* ── helpers ───────────────────────────────────────────────────────────────── */
 function gitRoot() {
@@ -144,8 +166,9 @@ function cmdInit(task) {
     return 2;
   }
   const slug = arg('--slug') || slugify(task);
-  const baseDir = arg('--dir') || 'docs/forge';
-  const relDir = path.join(baseDir, slug);
+  // The run dir is ALWAYS docs/forge/<slug>/ — findManifest() only scans there,
+  // so a configurable dir would silently disarm status/check-pr (the old --dir bug).
+  const relDir = path.join('docs', 'forge', slug);
   const dir = path.join(root, relDir);
   fs.mkdirSync(dir, { recursive: true });
   const manifest = {
@@ -154,7 +177,9 @@ function cmdInit(task) {
     dir: relDir,
     status: 'active',
     phase: PHASES[0].id,
-    phasesEntered: [],
+    // init IS entering the first phase — otherwise the very first `advance`
+    // (to PHASES[1]) is rejected because its predecessor was "never entered".
+    phasesEntered: [PHASES[0].id],
     preMergeArtifacts: PRE_MERGE_ARTIFACTS,
     createdAt: new Date().toISOString(),
   };
@@ -162,7 +187,7 @@ function cmdInit(task) {
   console.log(`Forge run initialised: ${relDir}/`);
   console.log(`  manifest: ${relDir}/run.json (status=active, phase=${manifest.phase})`);
   console.log(`  the guard-forge-artifacts hook will now block a PR until ${PRE_MERGE_ARTIFACTS.join(', ')} exist.`);
-  console.log(`  next: produce ${phase('align').produces.join(', ')}, then \`node forge.js advance reference-decomposition\``);
+  console.log(`  next: produce ${PHASES[0].produces.join(', ')}, then \`node forge.js advance ${PHASES[1].id}\``);
   return 0;
 }
 
