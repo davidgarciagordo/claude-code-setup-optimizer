@@ -5,7 +5,7 @@
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
 
 > Two plugins that optimise how you work with Claude Code in any repo: `working-methods`
-> (the `/forge-run` spine — align → spec → grill ×3 → plan → verify) and `automations`
+> (the `/forge-run` spine — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify) and `automations`
 > (`/optimize-my-setup`, hooks, `/release`). Part of a 5-plugin suite by the same author —
 > see [The wider suite](#-the-wider-suite) below.
 
@@ -48,7 +48,7 @@ install from this repo (above) if you only want `working-methods` + `automations
 
 | | Repo | Role |
 |---|---|---|
-| 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → spec → grill ×3 → plan → verify |
+| 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify (2 batched owner checkpoints) |
 | 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — structure → audit → anti-slop → a11y → live check |
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
 
@@ -64,28 +64,34 @@ install from this repo (above) if you only want `working-methods` + `automations
 
 ```mermaid
 flowchart TD
-  A[align intent] --> R[reference-decomposition<br/>name reference → req-ids]
-  R --> S[spec + Acceptance Matrix<br/>= canonical DoD]
-  S --> G{/grill ×3 + completeness<br/>owner gate · multi-select}
-  G --> P{global plan<br/>owner sign-off · multi-select}
+  A[align intent + brainstorm] --> R[reference-decomposition<br/>name reference → req-ids]
+  R --> D[draft<br/>concrete sketch — cheap to change]
+  D --> G[/grill ×3 + completeness<br/>ON THE DRAFT/]
+  G --> C1{owner checkpoint #1<br/>ONE multi-select · recs pre-marked}
+  C1 --> S[versioned spec + Acceptance Matrix<br/>= canonical DoD]
+  S --> RG[re-grill ×2<br/>fixes hold? + new seams]
+  RG --> C2{owner checkpoint #2<br/>ONE multi-select · spec locked}
+  C2 --> P[global plan + execution proposal<br/>multi-agent by default]
   P --> E[execution<br/>worktrees + shared context-pack]
   E --> V{verify<br/>reviewers + completeness-critic<br/>+ design-review on UI diffs}
   V -- gaps --> E
   V -- matrix 100% traced --> H[/handoff/]
 ```
 
-> Owner-decision gates (grill · plan) are **multi-select with recommendations pre-marked** — never a bare
-> approve. A PR can't leave until spec + grill acta + Acceptance Matrix + plan are on disk.
+> The owner is interrupted **exactly twice** (checkpoint #1 · checkpoint #2), each ONE **multi-select
+> batch with recommendations pre-marked** — never a bare approve. A PR can't leave until spec +
+> Acceptance Matrix + both grill verdicts + both decision records + plan are on disk.
 
 The order lives in `plugins/working-methods/workflows/forge.js` (single source of truth), not
 in prose. `forge.js` enforces **phase order** (rejects orphan runs), **parses once** (no
 repeated I/O), and is the single source for the `guard-forge-artifacts` hook — the hook
 delegates to `forge.js check-pr` and no longer blocks per-phase `git push`. Each phase
 **invokes** the real command/skill/agent — it *applies* `forge-methodology` and `design-review`,
-it doesn't just recommend installing them. A PR can't leave until the run's spec, grill acta,
-Acceptance Matrix and plan are versioned under `docs/forge/<slug>/`. **The owner always
-decides** — the plan gate (phase 5) is a **multi-select with recommendations pre-marked**
-(same UX as the grill gate C), not a bare sign-off.
+it doesn't just recommend installing them. A PR can't leave until the run's spec, Acceptance
+Matrix, grill + re-grill verdicts, both decision records and the plan are versioned under
+`docs/forge/<slug>/`. **The owner always decides** — at exactly two checkpoints
+(`checkpoint-1` after the draft grill, `checkpoint-2` locking the spec), each a
+**multi-select with recommendations pre-marked**, not a bare sign-off.
 
 > `/optimize-my-setup` is one-time **repo setup**, not a step of building a feature.
 > Language-agnostic — JS/TS, Python, PHP, Go, Rust, Ruby.

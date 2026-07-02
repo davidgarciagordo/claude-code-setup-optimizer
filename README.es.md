@@ -5,7 +5,7 @@
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
 
 > Dos plugins que optimizan tu forma de trabajar con Claude Code en cualquier repo:
-> `working-methods` (la columna `/forge-run` — alinear → spec → grill ×3 → plan → verificar) y
+> `working-methods` (la columna `/forge-run` — alinear → borrador + grill ×3 → spec → re-grill ×2 → plan → verificar) y
 > `automations` (`/optimize-my-setup`, hooks, `/release`). Parte de una suite de 5 plugins del
 > mismo autor — ver [La suite completa](#-la-suite-completa) más abajo.
 
@@ -48,7 +48,7 @@ instala desde este repo (arriba) si solo quieres `working-methods` + `automation
 
 | | Repo | Rol |
 |---|---|---|
-| 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Estructura *qué construir* — alinear → spec → grill ×3 → plan → verificar |
+| 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Estructura *qué construir* — alinear → borrador + grill ×3 → spec → re-grill ×2 → plan → verificar (2 checkpoints del dueño, en lote) |
 | 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Pule *cómo se ve* — estructura → auditoría → anti-slop → a11y → check en vivo |
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Gasta *menos en hacerlo* — context-pack (descubrir una vez) · agentes read-only terse · output-style frugal · memoria pluggable. Complementa a [caveman](https://github.com/JuliusBrussee/caveman) (salida) en el eje entrada/orquestación. |
 
@@ -64,20 +64,25 @@ instala desde este repo (arriba) si solo quieres `working-methods` + `automation
 
 ```mermaid
 flowchart TD
-  A[alinear intención] --> R[reference-decomposition<br/>nombra referencia → req-ids]
-  R --> S[spec + Acceptance Matrix<br/>= DoD canónico]
-  S --> G{/grill ×3 + completitud<br/>gate del dueño · multi-select}
-  G --> P{plan global<br/>sign-off del dueño · multi-select}
+  A[alinear intención + brainstorm] --> R[reference-decomposition<br/>nombra referencia → req-ids]
+  R --> D[borrador<br/>boceto concreto — barato de cambiar]
+  D --> G[/grill ×3 + completitud<br/>SOBRE EL BORRADOR/]
+  G --> C1{checkpoint #1 del dueño<br/>UN multi-select · recomendadas premarcadas}
+  C1 --> S[spec versionado + Acceptance Matrix<br/>= DoD canónico]
+  S --> RG[re-grill ×2<br/>¿aguantan los fixes? + costuras nuevas]
+  RG --> C2{checkpoint #2 del dueño<br/>UN multi-select · spec cerrado}
+  C2 --> P[plan global + propuesta de ejecución<br/>multiagente por defecto]
   P --> E[ejecución<br/>worktrees + context-pack compartido]
   E --> V{verify<br/>reviewers + completeness-critic<br/>+ design-review en diffs de UI}
   V -- huecos --> E
   V -- matriz 100% trazada --> H[/handoff/]
 ```
 
-> Los gates de decisión del dueño (grill · plan) son **multi-select con recomendadas premarcadas** — nunca
-> un aprobar a secas. Un PR no sale hasta que spec + acta del grill + Acceptance Matrix + plan están en disco.
+> Al dueño se le interrumpe **exactamente dos veces** (checkpoint #1 · checkpoint #2), cada una UN
+> **multi-select con recomendadas premarcadas** — nunca un aprobar a secas. Un PR no sale hasta que
+> spec + Acceptance Matrix + ambas actas de grill + ambos registros de decisiones + plan están en disco.
 
-El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), no en prosa. `forge.js` aplica un **gate de orden de fases** (rechaza ejecuciones huérfanas), **parsea una sola vez** (sin I/O repetido), y es la fuente única para el hook `guard-forge-artifacts` — el hook delega a `forge.js check-pr` y ya no bloquea los `git push` por fase. Cada fase **invoca** el command/skill/agente real — *aplica* `forge-methodology` y `design-review`, no solo recomienda instalarlos. Un PR no sale hasta que el spec, el acta de grill, la Acceptance Matrix y el plan estén versionados en `docs/forge/<slug>/`. **El usuario siempre decide** — el gate del plan (fase 5) es un **multi-select con recomendaciones pre-marcadas** (igual que el gate C del grill), no un simple sign-off.
+El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), no en prosa. `forge.js` aplica un **gate de orden de fases** (rechaza ejecuciones huérfanas), **parsea una sola vez** (sin I/O repetido), y es la fuente única para el hook `guard-forge-artifacts` — el hook delega a `forge.js check-pr` y ya no bloquea los `git push` por fase. Cada fase **invoca** el command/skill/agente real — *aplica* `forge-methodology` y `design-review`, no solo recomienda instalarlos. Un PR no sale hasta que el spec, la Acceptance Matrix, las actas de grill y re-grill, ambos registros de decisiones y el plan estén versionados en `docs/forge/<slug>/`. **El usuario siempre decide** — en exactamente dos checkpoints (`checkpoint-1` tras el grill del borrador, `checkpoint-2` que cierra el spec), cada uno un **multi-select con recomendaciones pre-marcadas**, no un simple sign-off.
 
 > `/optimize-my-setup` es **setup del repo** (una vez), no un paso de construir una feature. Agnóstico de lenguaje — JS/TS, Python, PHP, Go, Rust, Ruby.
 
