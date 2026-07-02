@@ -5,7 +5,21 @@ argument-hint: [siguiente objetivo acordado]
 
 # Handoff de sesión
 
-**Releva (binario) cuando CUALQUIERA de:** (a) la sesión arrastra >1 día de trabajo o ≥10 PRs de historial; (b) el bloque de trabajo actual está mergeado y el siguiente objetivo es independiente; (c) el owner lo pide.
+## Auto-propón el relevo — no esperes a que lo pidan (trigger binario, cada vez que cierras un hito)
+
+El owner pidiéndolo es un ATAJO, no el disparador. Tras cada hito mergeado, evalúa DOS señales
+verificables — si **AMBAS** valen, propón el relevo tú, en una frase:
+
+1. **Sesión larga** (mides, no intuyes): el `ctx:%` del statusline está en zona alta (≳60%), **o**
+   arrastras >1 día / ≥10 PRs de historial.
+2. **Bloque cerrado**: el trabajo actual está mergeado · `git status` limpio · 0 PRs/worktrees en
+   vuelo · el siguiente objetivo es independiente del contexto acumulado.
+
+AMBAS → una frase: *"Momento óptimo de relevo — `<hito>` mergeado, contexto al ~X%. ¿Nueva sesión
+con handoff? Rinde más que seguir compactando (tu norma)."* Solo una → sigue trabajando. Una sesión
+larga con bloque cerrado que NO propone relevo está quemando la ventana en lugar de arrancar fresca.
+
+> Nota: proponer ≠ ejecutar. Propones; el owner decide. Si dice sí → el checklist de abajo.
 
 ## Checklist (créalo como todos)
 1. **El trabajo en background sobrevive al cierre:** workflows/agentes commitean **por fases** en su worktree/rama. Al cerrar, lo parcial queda en git → la sesión nueva retoma con `git log origin/main..HEAD` + agentes "CONTINÚA" (nunca rehacer desde cero).
