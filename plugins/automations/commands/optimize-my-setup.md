@@ -1,7 +1,7 @@
 ---
 description: Repo setup (run once) — analyse this repo's whole .claude config and let you pick what to apply. Thin command wrapper around the optimize-my-setup skill, so it's invocable deterministically as a slash command. NOT part of a feature run; bootstrap once.
 argument-hint: [optional focus, e.g. "git flow, secrets, fewer prompts"]
-allowed-tools: Skill, Read, Glob, Grep, Bash(git log:*), Bash(git branch:*), Bash(node:*), AskUserQuestion, Write, Edit
+allowed-tools: Skill, Read, Glob, Grep, Bash(git log:*), Bash(git branch:*), Bash(node:*), Bash(claude plugin:*), AskUserQuestion, Write, Edit
 ---
 
 # /optimize-my-setup — one-time repo setup
@@ -9,6 +9,13 @@ allowed-tools: Skill, Read, Glob, Grep, Bash(git log:*), Bash(git branch:*), Bas
 This is **repo setup**, not a step of building a feature. Run it **once** (and again when
 your stack/conventions change). It is intentionally separate from `/forge-run`: the spine
 assumes your `.claude` config already exists.
+
+## Phase 0 — Family bootstrap check (verify, don't assume)
+
+Before any recommendation, verify the **five-plugin family** is installed —
+`working-methods`, `automations`, `forge-methodology`, `design-review`, `token-economy` —
+with `claude plugin list`. If any is missing, recommending `/install-family` is the first
+item in the multi-select. (Same order as the skill: family check comes FIRST.)
 
 ## Phase 1 — Context pack (run the script, do NOT re-scan by hand)
 
@@ -34,11 +41,11 @@ receives the context-pack as input, returns `OK`/`KO` + terse recommendations):
 Each sub-agent outputs: `surface · file · recommendation` (one line per item). No essays.
 The orchestrator consolidates before presenting choices.
 
-## Phase 3 — Family bootstrap check
+## Phase 3 — Recommend per surface
 
-Before any recommendation, verify the four-plugin family is installed:
-`working-methods`, `automations`, `forge-methodology`, `design-review`. If any is missing,
-that is the first item in the multi-select.
+Consolidate the fan-out into recommendations, each citing a repo file. Reuse before
+generating: if a need fits one of the user's plugins/skills, recommend INSTALLING it
+(reference the original); generate bespoke only what has no equivalent.
 
 ## Phase 4 — You pick (multi-select)
 
