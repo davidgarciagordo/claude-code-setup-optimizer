@@ -20,20 +20,24 @@ methodology — you don't drive the order by hand, and you can't skip a phase.
 **What it does, in this fixed order (gates are machine-checked):**
 
 ```
-0. init        → docs/forge/<slug>/run.json   (arms the PR gate)
-1. align       → intent.md           (one batch of high-impact questions; brainstorming)
-2. references  → references.md        (Reference Standard from competitor / de-facto bar)
-3. spec        → spec.md + acceptance-matrix.md   (the verifiable Definition of Done)
-4. grill ×3    → grill.md             (/grill: architect · operator · engineer · completeness)
-5. plan        → plan.md              (global plan — OWNER SIGN-OFF gate)
-6. execute     → context-pack.md      (worktrees + disjoint subagents + shared context pack)
-7. verify      → verify.md            (reviewers + completeness-critic + design-review on UI diffs)
-8. handoff     → handoff.md           (/handoff; then `forge.js complete`)
+0.  init          → docs/forge/<slug>/run.json   (arms the PR gate)
+1.  align         → intent.md            (brainstorm + one batch of high-impact questions)
+2.  references    → references.md        (Reference Standard → enumerated req-ids)
+3.  draft         → draft.md             (concrete design sketch — cheap to change)
+4.  grill ×3      → grill-verdicts.md    (/grill ON THE DRAFT: architect · operator · engineer · completeness)
+5.  checkpoint-1  → decisions-1.md       (OWNER: one multi-select batch, recommendations pre-marked)
+6.  spec          → spec.md + acceptance-matrix.md   (the verifiable Definition of Done)
+7.  regrill ×2    → regrill-verdicts.md  (do the fixes hold? + the new seams)
+8.  checkpoint-2  → decisions-2.md       (OWNER: one multi-select batch — spec locked)
+9.  plan          → plan.md + execution-proposal.md  (global plan; multi-agent by default)
+10. execute       → context-pack.md      (worktrees + disjoint subagents + shared context pack)
+11. verify        → verify.md            (reviewers + completeness-critic + design-review on UI diffs)
+12. handoff       → handoff.md           (/handoff; then `forge.js complete`)
 ```
 
 **What you get:** every artifact versioned under `docs/forge/<slug>/`, so the run survives the
-session. A PR is **blocked** (by the `guard-forge-artifacts` hook) until spec + grill acta +
-Acceptance Matrix + plan exist. The order lives in `plugins/working-methods/workflows/forge.js`,
+session. A PR is **blocked** (by the `guard-forge-artifacts` hook) until spec + Acceptance
+Matrix + both grill verdicts + both decision records + plan exist. The order lives in `plugins/working-methods/workflows/forge.js`,
 not in a prompt you have to remember. Inspect it anytime:
 
 ```bash
@@ -43,7 +47,7 @@ node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" status   # where am I, is the next
 
 ---
 
-## `/install-family` — bootstrap the four plugins (run once)
+## `/install-family` — bootstrap the five plugins (run once)
 
 ```
 /install-family
@@ -130,7 +134,7 @@ Pick what to apply (any, or none) — each shows [surface · scope]:
 | Hook | Trigger | What happens |
 |------|---------|--------------|
 | `guard-append-only` (automations) | you try to Edit a committed migration / audit file | blocks: create a new (compensating) file instead. **fail-closed** — if it can't verify git state it blocks ("could not verify"), never silently allows. |
-| `guard-forge-artifacts` (working-methods) | `gh pr create` / `git push` while a Forge run is active | blocks until `spec.md` + `grill.md` + `acceptance-matrix.md` + `plan.md` are versioned. No active run → no-op. `FORGE_ENFORCE=warn\|off` to soften. |
+| `guard-forge-artifacts` (working-methods) | `gh pr create` / `gh pr ready` / `gh pr merge` while a Forge run is active | blocks until `spec.md` + `acceptance-matrix.md` + `grill-verdicts.md` + `decisions-1.md` + `regrill-verdicts.md` + `decisions-2.md` + `plan.md` are versioned. No active run → no-op. `FORGE_ENFORCE=warn\|off` to soften. |
 
 Override the append-only globs: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migrations/**"`.
 
@@ -166,11 +170,11 @@ Examples of invariant → generated reviewer: event bus → `event-bus-reviewer`
 
 It used to be a copy-paste prompt here that you had to remember and run by hand — which meant
 the order got skipped. **That prompt is now a command: `/forge-run` (top of this page).** It
-chains the same pieces — `optimize-my-setup`/`install-family` for setup → spec + Acceptance
-Matrix → `/grill` ×3 + completeness → global plan (owner sign-off) → `forge-on-claude`
-(worktrees + shared context pack) → reviewers + `completeness-critic` + `design-review` on UI →
-`/handoff` — but the **order is codified** in `workflows/forge.js` and **gated** by the
-`guard-forge-artifacts` hook, not left to memory.
+chains the same pieces — `optimize-my-setup`/`install-family` for setup → draft + `/grill` ×3 +
+completeness → owner checkpoint #1 → spec + Acceptance Matrix → re-grill ×2 → owner checkpoint #2 →
+global plan + execution proposal → `forge-on-claude` (worktrees + shared context pack) → reviewers +
+`completeness-critic` + `design-review` on UI → `/handoff` — but the **order is codified** in
+`workflows/forge.js` and **gated** by the `guard-forge-artifacts` hook, not left to memory.
 
 ```
 /forge-run <your task>

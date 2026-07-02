@@ -19,18 +19,22 @@ Para cualquier tarea sustancial, este es el único command. **Secuencia y enford
 **Qué hace, en este orden fijo (gates checkeados por máquina):**
 
 ```
-0. init        → docs/forge/<slug>/run.json   (arma el gate de PR)
-1. align       → intent.md           (una tanda de preguntas de alto impacto; brainstorming)
-2. references  → references.md        (Reference Standard: el listón de la competencia / de facto)
-3. spec        → spec.md + acceptance-matrix.md   (la Definition of Done verificable)
-4. grill ×3    → grill.md             (/grill: arquitecto · operador · ingeniero · completitud)
-5. plan        → plan.md              (plan global — gate de SIGN-OFF del dueño)
-6. execute     → context-pack.md      (worktrees + subagents disjuntos + context pack compartido)
-7. verify      → verify.md            (reviewers + completeness-critic + design-review en diffs de UI)
-8. handoff     → handoff.md           (/handoff; luego `forge.js complete`)
+0.  init          → docs/forge/<slug>/run.json   (arma el gate de PR)
+1.  align         → intent.md            (brainstorm + una tanda de preguntas de alto impacto)
+2.  references    → references.md        (Reference Standard → req-ids enumerados)
+3.  draft         → draft.md             (boceto de diseño concreto — barato de cambiar)
+4.  grill ×3      → grill-verdicts.md    (/grill SOBRE EL BORRADOR: arquitecto · operador · ingeniero · completitud)
+5.  checkpoint-1  → decisions-1.md       (DUEÑO: una tanda multi-select, recomendadas premarcadas)
+6.  spec          → spec.md + acceptance-matrix.md   (la Definition of Done verificable)
+7.  regrill ×2    → regrill-verdicts.md  (¿aguantan los fixes? + las costuras nuevas)
+8.  checkpoint-2  → decisions-2.md       (DUEÑO: una tanda multi-select — spec cerrado)
+9.  plan          → plan.md + execution-proposal.md  (plan global; multiagente por defecto)
+10. execute       → context-pack.md      (worktrees + subagents disjuntos + context pack compartido)
+11. verify        → verify.md            (reviewers + completeness-critic + design-review en diffs de UI)
+12. handoff       → handoff.md           (/handoff; luego `forge.js complete`)
 ```
 
-**Qué obtienes:** cada artefacto versionado en `docs/forge/<slug>/`, así el run sobrevive a la sesión. Un PR queda **bloqueado** (hook `guard-forge-artifacts`) hasta que existan spec + acta de grill + Acceptance Matrix + plan. El orden vive en `plugins/working-methods/workflows/forge.js`, no en un prompt que debas recordar.
+**Qué obtienes:** cada artefacto versionado en `docs/forge/<slug>/`, así el run sobrevive a la sesión. Un PR queda **bloqueado** (hook `guard-forge-artifacts`) hasta que existan spec + Acceptance Matrix + ambas actas de grill + ambos registros de decisiones + plan. El orden vive en `plugins/working-methods/workflows/forge.js`, no en un prompt que debas recordar.
 
 ```bash
 node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" phases   # imprime la columna
@@ -39,7 +43,7 @@ node "$CLAUDE_PLUGIN_ROOT/workflows/forge.js" status   # dónde estoy, ¿gate ab
 
 ---
 
-## `/install-family` — bootstrap de los 4 plugins (una vez)
+## `/install-family` — bootstrap de los 5 plugins (una vez)
 
 ```
 /install-family
@@ -145,7 +149,7 @@ Ejemplos de invariante → reviewer generado: event bus → `event-bus-reviewer`
 
 ## 🎯 Toda la metodología de una vez → eso es `/forge-run`
 
-Antes esto era un prompt copy-paste que tenías que recordar y correr a mano — y por eso el orden se saltaba. **Ese prompt ahora es un command: `/forge-run` (arriba del todo).** Encadena las mismas piezas — `optimize-my-setup`/`install-family` para el setup → spec + Acceptance Matrix → `/grill` ×3 + completitud → plan global (sign-off del dueño) → `forge-on-claude` (worktrees + context pack compartido) → reviewers + `completeness-critic` + `design-review` en UI → `/handoff` — pero el **orden está codificado** en `workflows/forge.js` y **gateado** por el hook `guard-forge-artifacts`, no a merced de la memoria.
+Antes esto era un prompt copy-paste que tenías que recordar y correr a mano — y por eso el orden se saltaba. **Ese prompt ahora es un command: `/forge-run` (arriba del todo).** Encadena las mismas piezas — `optimize-my-setup`/`install-family` para el setup → borrador + `/grill` ×3 + completitud → checkpoint #1 del dueño → spec + Acceptance Matrix → re-grill ×2 → checkpoint #2 del dueño → plan global + propuesta de ejecución → `forge-on-claude` (worktrees + context pack compartido) → reviewers + `completeness-critic` + `design-review` en UI → `/handoff` — pero el **orden está codificado** en `workflows/forge.js` y **gateado** por el hook `guard-forge-artifacts`, no a merced de la memoria.
 
 ```
 /forge-run <tu tarea>

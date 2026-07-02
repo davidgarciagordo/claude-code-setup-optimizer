@@ -24,7 +24,7 @@ instead of five manual installs that nothing checks.
    ```bash
    claude plugin install working-methods@davidgarciagordo-plugins    # /forge-run · /grill · /handoff · forge-on-claude
    claude plugin install automations@davidgarciagordo-plugins         # optimize-my-setup · hooks · templates · /release
-   claude plugin install forge-methodology@davidgarciagordo-plugins   # the neutral 7-step loop forge-on-claude delegates to
+   claude plugin install forge-methodology@davidgarciagordo-plugins   # the neutral loop forge-on-claude delegates to
    claude plugin install design-review@davidgarciagordo-plugins       # the design pipeline /forge-run's verify phase fires
    claude plugin install token-economy@davidgarciagordo-plugins       # input(context-pack)+output(frugal style) token economy the family's agents inherit
    ```

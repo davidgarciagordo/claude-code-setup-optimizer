@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "version": "1.0.0",
   "name": "claude-code-setup-optimizer",
-  "description": "Dos plugins propios de David García Gordo para trabajar con Claude Code: working-methods (la columna /forge-run — align → spec → grill ×3 → plan → verify, /grill, /handoff) y automations (la skill optimize-my-setup, hooks, /release, plantillas de permisos). Para la suite completa (+ forge-methodology, design-review, token-economy) usa el catálogo dedicado davidgarciagordo/claude-plugins.",
+  "description": "Dos plugins propios de David García Gordo para trabajar con Claude Code: working-methods (la columna /forge-run — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify, con 2 checkpoints del dueño en lote; /grill, /handoff) y automations (la skill optimize-my-setup, hooks, /release, plantillas de permisos). Para la suite completa (+ forge-methodology, design-review, token-economy) usa el catálogo dedicado davidgarciagordo/claude-plugins.",
   "owner": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
