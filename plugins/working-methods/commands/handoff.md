@@ -5,7 +5,7 @@ argument-hint: [siguiente objetivo acordado]
 
 # Handoff de sesión
 
-Releva cuando: el contexto arrastra días/decenas de PRs (cada turno paga el historial) o se cierra un bloque natural. Una sesión fresca con buen handoff rinde más y cuesta menos que una larga compactada.
+**Releva (binario) cuando CUALQUIERA de:** (a) la sesión arrastra >1 día de trabajo o ≥10 PRs de historial; (b) el bloque de trabajo actual está mergeado y el siguiente objetivo es independiente; (c) el owner lo pide.
 
 ## Checklist (créalo como todos)
 1. **El trabajo en background sobrevive al cierre:** workflows/agentes commitean **por fases** en su worktree/rama. Al cerrar, lo parcial queda en git → la sesión nueva retoma con `git log origin/main..HEAD` + agentes "CONTINÚA" (nunca rehacer desde cero).
