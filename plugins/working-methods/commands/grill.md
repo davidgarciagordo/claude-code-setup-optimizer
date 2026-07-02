@@ -1,6 +1,7 @@
 ---
 description: Grilla adversarial ×3 de un spec/diseño/plan, con 3 lentes fijas. Un supuesto no verificado contra el repo es un hallazgo.
 argument-hint: [ruta al spec/plan, o describe qué grillar]
+allowed-tools: Bash(node:*), Task, AskUserQuestion, Read, Grep, Glob
 ---
 
 # Grill ×3 (adversarial)
@@ -38,14 +39,14 @@ mechanical file scan.
 Despáchalas **en paralelo como sub-agentes con tool-list read-only** (no pueden editar — solo devuelven
 hallazgos) pasándoles `.forge/grill-context.md`. Cada agente devuelve TERSE (`OK`/`KO` + hallazgos 1-línea
 `Pn · fichero:línea · problema → fix`):
-1. **`grill-architect`** (`agents/grill-architect.md`) — reglas, bounded contexts, precedentes; verifica cada supuesto contra el código real, cita `fichero:línea`.
-2. **`grill-operator`** (`agents/grill-operator.md`) — el día a día en el mostrador con mala idea y prisa; flujos rotos, fricción, lo que el usuario hará MAL.
-3. **`grill-engineer`** (`agents/grill-engineer.md`) — concurrencia, idempotencia, edge cases, fallos parciales, lo que rompe en producción.
+1. **`working-methods:grill-architect`** — reglas, bounded contexts, precedentes; verifica cada supuesto contra el código real, cita `fichero:línea`.
+2. **`working-methods:grill-operator`** — el día a día en el mostrador con mala idea y prisa; flujos rotos, fricción, lo que el usuario hará MAL.
+3. **`working-methods:grill-engineer`** — concurrencia, idempotencia, edge cases, fallos parciales, lo que rompe en producción.
 
 ### 4ª lente — Completitud (cuando hay Acceptance Matrix)
 Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade el agente
-**`completeness-critic`** (`agents/completeness-critic.md`, bundled in this plugin — read-only + terse,
-recibe el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
+**`working-methods:completeness-critic`** (nombre registrado — OJO: existe otro `completeness-critic`
+en `forge-methodology`, cualifica siempre; read-only + terse, recibe el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
 del owner**? Cada fila sin cobertura o contradicción = hallazgo. Detecta el gap ANTES de ejecutar.
 
 ## Reglas (mecanismo, no consejo)
