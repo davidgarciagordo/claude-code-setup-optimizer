@@ -6,9 +6,8 @@ allowed-tools: Bash(claude plugin:*), Bash(claude plugin list:*), Bash(claude pl
 
 # /install-family — make sure the whole spine is present
 
-`/forge-run` only works if every phase's tool is installed. This is **one** step (repo
-setup, run once), not part of a feature run. It installs/verifies the family as a unit
-instead of five manual installs that nothing checks.
+Repo setup, run once — not part of a feature run. Installs/verifies the five-plugin
+family as a unit; `/forge-run` requires every phase's tool present.
 
 ## Steps
 1. **Add the dedicated suite catalog** (idempotent) — `working-methods` and `automations` also
