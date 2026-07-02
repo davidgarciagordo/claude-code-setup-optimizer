@@ -3,12 +3,16 @@
   "name": "working-methods",
   "displayName": "Working Methods (David)",
   "version": "0.2.1",
-  "description": "Cross-project working norms of David. The SPINE: /forge-run sequences and ENFORCES the whole methodology (align → reference-decomposition → spec+Acceptance-Matrix → /grill ×3+completeness → global plan → execution → verify → /handoff) via a deterministic workflows/forge.js + a PR-gate hook (guard-forge-artifacts) — the order is codified, not remembered. Plus /grill (adversarial ×3), /handoff (session relay), /install-family (bootstrap the 4-plugin family), and forge-on-claude. REQUIRES the forge-methodology plugin (forge-on-claude delegates to its skill) and uses design-review in the verify phase. Model routing baked in.",
+  "description": "Cross-project working norms of David. The SPINE: /forge-run sequences and ENFORCES the whole methodology (align+brainstorm → reference-decomposition → draft + /grill ×3+completeness → owner checkpoint #1 → spec+Acceptance-Matrix → re-grill ×2 → owner checkpoint #2 → global plan+execution proposal → execution → verify → /handoff; exactly 2 batched owner interruptions) via a deterministic workflows/forge.js + a PR-gate hook (guard-forge-artifacts) — the order is codified, not remembered. Plus /grill (adversarial ×3), /handoff (session relay), /install-family (bootstrap the 5-plugin family), and forge-on-claude. REQUIRES the forge-methodology plugin (forge-on-claude delegates to its skill) and uses design-review in the verify phase. Model routing baked in.",
   "author": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
   },
   "license": "MIT",
+  "dependencies": [
+    "forge-methodology@davidgarciagordo-plugins",
+    "design-review@davidgarciagordo-plugins"
+  ],
   "keywords": [
     "methodology",
     "orchestration",
