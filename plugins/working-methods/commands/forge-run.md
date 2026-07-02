@@ -12,13 +12,17 @@ order lives in `workflows/forge.js` (single source of truth) and is gated by the
 (it APPLIES `forge-methodology` and `design-review`, it does not merely recommend
 installing them).
 
-**Trigger (binary — never by vibe).** Run `/forge-run` when ANY of:
-- the task adds/changes behavior across **more than 1 file** or touches **more than 1 bounded context**;
-- it introduces a **new feature, product, integration, migration, or architecture/security decision**;
-- the owner invokes `/forge-run` or says "forge this" / "pásalo por la Forja".
+**Trigger (binary — never by vibe).** The discriminator is **design vs execution**, NOT file
+count. Run `/forge-run` when the task needs a **design decision that is expensive to get wrong**:
+- a **new feature, product, or integration**; an **architecture or security decision**;
+- a change that **defines a behavior contract others depend on** (new API/event/schema shape a spec should pin down);
+- the owner invokes `/forge-run` / says "forge this" / "pásalo por la Forja".
 
-**Skip** (work directly) only when ALL of: single-file change · no new behavior contract ·
-reversible in one commit (formatting, typo, one-liner, config tweak).
+**Skip** — work directly, even across many files — when the task is **executing something already
+decided**: fixing an identified bug, a mechanical sweep/migration with a known transform, applying
+a written plan or a review's findings. Also skip trivial single-file edits (formatting, typo,
+config). A 12-file bug sweep is Skip; a 1-file new public port is forge-run. Count the *decisions*,
+not the files.
 
 > **Prerequisite (run once):** the five-plugin family (working-methods, automations,
 > forge-methodology, design-review, token-economy) must be present. If unsure, run
@@ -74,7 +78,10 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
   verified-by ≠ executor`) plus explicit Non-goals.
 - Phase `regrill`: two focused passes on the SPEC — (a) do the checkpoint-1 fixes hold, (b) the
   new seams those fixes created + re-verify assumptions against the real repo. Not a third full
-  grill. Verdicts → `regrill-verdicts.md`.
+  grill. Verdicts → `regrill-verdicts.md`. **Before writing the plan, run the executor-eye check
+  (`references/executor-eye-check.md`) on the spec AND on any agent prompts the plan will dispatch**
+  — the spec/plan/prompts are instructions other agents execute; catch ambiguous triggers,
+  repeated rules, cross-file contradiction, and tacit assumptions before they fan out.
 - Phase `checkpoint-2` (owner checkpoint #2): same mechanism as checkpoint-1 — **ONE multi-select
   batch, recommendations pre-marked** — covering the re-grill outcomes and the remaining
   owner-only calls (cut lines, phasing v1/v1.1/v2, budget). After this gate the spec is
