@@ -46,18 +46,23 @@ Detecta si NO hay humano mirando: la sesión la arrancó cron/`/loop`, corre en 
 que un humano lo lea y lance la sesión nueva — y si duermes, no pasa. El último acto OBLIGATORIO del
 turno es armar un **trigger activo** (esto es lo que un command/skill NO hace solo):
 
-- **Queda contexto** → `ScheduleWakeup` con el prompt de resume (abajo): re-entra en ESTA sesión y
-  sigue la MISMA tarea tras el delay.
-- **Contexto agotado / la sesión puede morir** → `CronCreate` de una rutina one-shot cuyo prompt sea
-  el resume: lanza una **sesión NUEVA** aunque esta se acabe. Es el único mecanismo que "empieza uno
-  nuevo solo" de verdad (sobrevive a muerte de sesión y a agotamiento de contexto).
+- **Queda contexto + la sesión sigue viva** → `ScheduleWakeup` / `CronCreate` con el prompt de resume
+  (abajo): re-entran en ESTA sesión tras el delay y siguen la MISMA tarea. **AVISO (verifícalo, no lo
+  asumas):** en muchos harnesses estos son **session-only** — in-memory, mueren al cerrar la sesión
+  (`CronCreate`: "gone when Claude exits", `durable` sin efecto). Sirven para continuar MIENTRAS la
+  sesión vive, **NO** para sobrevivir a su muerte.
+- **La sesión puede morir / contexto agotado** → hace falta un scheduler **DURABLE fuera de la sesión**:
+  el skill **`schedule`** (routines cloud que corren server-side) o un **cron del SO / externo** cuyo
+  prompt sea el resume. Es lo ÚNICO que arranca una sesión NUEVA sobreviviendo a que esta se acabe. Un
+  `CronCreate`/`ScheduleWakeup` en memoria **NO** cuenta aquí (se van con la sesión). Comprueba la
+  durabilidad del scheduler ANTES de confiarle el relevo; si no es durable, el relevo se pierde al dormir.
 
 **Regla dura — finales, no los confundas (el bug clásico es tratar autónomo+pendiente como stop):**
 
 | Situación | Acción correcta |
 |---|---|
 | **VIVO** + momento óptimo de relevo | **PREGUNTA** al owner; si dice sí, ejecuta el handoff autónomo en-sesión (NO auto-ejecutes sin su OK) |
-| **AUTÓNOMO** + trabajo PENDIENTE (aun con contexto agotado) | Ejecuta el handoff solo + **dispara la continuación** (`ScheduleWakeup`/`CronCreate`); NO pares a esperar humano |
+| **AUTÓNOMO** + trabajo PENDIENTE (aun con contexto agotado) | Ejecuta el handoff solo + **dispara la continuación con un scheduler DURABLE** (skill `schedule` cloud / cron externo si la sesión puede morir; `ScheduleWakeup`/`CronCreate` solo si sigue viva — son session-only); NO pares a esperar humano |
 | Bloque cerrado + objetivo cumplido | Parar de verdad |
 | Bloqueado en input humano (auth, decisión cara/irreversible) | Parar y esperar — aquí SÍ, haya o no humano |
 
