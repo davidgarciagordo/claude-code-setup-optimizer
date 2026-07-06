@@ -21,6 +21,42 @@ larga con bloque cerrado que NO propone relevo está quemando la ventana en luga
 
 > Nota: proponer ≠ ejecutar. Propones; el owner decide. Si dice sí → el checklist de abajo.
 
+## Modo AUTÓNOMO — arma la continuación, no esperes a que despierten (mecanismo, no nota)
+
+Detecta si NO hay humano mirando: la sesión la arrancó cron/`/loop`, corre en background
+(`$CLAUDE_JOB_DIR` seteado), o es trabajo nocturno desatendido. En ese modo el handoff MD es un
+**checkpoint, NO un stop.** Escribir el MD y parar deja la cadena rota: un documento pasivo necesita
+que un humano lo lea y lance la sesión nueva — y si duermes, no pasa. El último acto OBLIGATORIO del
+turno es armar un **trigger activo** (esto es lo que un command/skill NO hace solo):
+
+- **Queda contexto** → `ScheduleWakeup` con el prompt de resume (abajo): re-entra en ESTA sesión y
+  sigue la MISMA tarea tras el delay.
+- **Contexto agotado / la sesión puede morir** → `CronCreate` de una rutina one-shot cuyo prompt sea
+  el resume: lanza una **sesión NUEVA** aunque esta se acabe. Es el único mecanismo que "empieza uno
+  nuevo solo" de verdad (sobrevive a muerte de sesión y a agotamiento de contexto).
+
+**Regla dura — 3 finales, no los confundas (el bug clásico es tratar (a) como (b)):**
+
+| Situación | Acción correcta |
+|---|---|
+| (a) Autónomo + trabajo PENDIENTE + contexto agotado | **NO parar a esperar humano** → dispara sesión nueva (cron) con el resume |
+| (b) Bloque cerrado + objetivo cumplido | Parar de verdad |
+| (c) Bloqueado en input humano (auth, decisión cara/irreversible) | Parar y esperar — aquí SÍ |
+
+### Prompt de resume — DETERMINISTA, ejecutable, idempotente (no "continúa" a secas)
+Imperativo y autosuficiente; la sesión nueva NO re-planifica, retoma contra git:
+> *Lee `docs/.../handoffs/<último>.md`. Corre PRIMERO `git log origin/<base>..HEAD` y `gh pr list`
+> para ver qué YA está mergeado (no lo rehagas). Retoma los trabajos EN VUELO con agentes "CONTINÚA
+> desde `<fase>`". Modo autónomo: worktrees aislados, merge en verde (verifica TÚ los tests), commit
+> por fase. Al cerrar cada hito vuelve a `/handoff`.*
+
+### Guardrails (para que el auto-arranque nocturno no se descontrole)
+- **Tope de ciclos:** máx N auto-continuaciones (p.ej. 6) → sin loop infinito ni factura sorpresa.
+- **Budget guard:** parar si se agota el presupuesto de tokens del turno.
+- **Kill-switch:** env-flag para desactivar el re-arranque sin tocar el command.
+- **Night-log:** una línea por ciclo (qué hizo) → por la mañana ves el rastro sin releer todo.
+- **Commit por fase** (ya en el checklist): el trabajo sobrevive aunque un ciclo muera a mitad.
+
 ## Checklist (créalo como todos)
 1. **El trabajo en background sobrevive al cierre:** workflows/agentes commitean **por fases** en su worktree/rama. Al cerrar, lo parcial queda en git → la sesión nueva retoma con `git log origin/main..HEAD` + agentes "CONTINÚA" (nunca rehacer desde cero).
 2. **Escribe el handoff MD** versionado en el repo (`docs/.../handoffs/YYYY-MM-DD-next-session.md`):
