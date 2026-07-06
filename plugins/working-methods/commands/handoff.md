@@ -5,6 +5,23 @@ argument-hint: [siguiente objetivo acordado]
 
 # Handoff de sesión
 
+## PRIMERO: ¿conversación VIVA o modo AUTÓNOMO? (esto decide si preguntas o ejecutas solo)
+
+El handoff es autónomo en las DOS caras — en **pedirlo** y en **ejecutarlo** — pero el disparo cambia
+según haya o no un humano delante. Detéctalo antes de nada:
+
+- **VIVA (el usuario está presente / respondiendo):** el handoff **NUNCA se ejecuta sin su OK**.
+  Auto-propón el relevo cuando sea óptimo (trigger binario, abajo) y **PREGUNTA**. Si dice que sí,
+  **ejecútalo tú, autónomo, en ESTA misma conversación** — corre el checklist entero, no dejes el MD a
+  medias ni pares tras escribirlo. Preguntar es obligatorio; una vez aprobado, la ejecución es tuya.
+- **AUTÓNOMA (sin humano mirando: cron/`/loop`/background/`$CLAUDE_JOB_DIR`/trabajo nocturno):** no hay
+  a quién preguntar → **ejecuta el handoff solo** cuando el bloque se cierra (checklist + arma el trigger
+  activo de continuación). Aquí escribir el MD es un checkpoint, NO un stop.
+
+**Regla de oro: usuario presente → preguntar (y ejecutar en-sesión si dice sí); sin usuario → ejecutar
+solo.** Nunca al revés: no auto-ejecutes el relevo con el owner delante sin su OK, ni te quedes esperando
+un input que no va a llegar si estás solo.
+
 ## Auto-propón el relevo — no esperes a que lo pidan (trigger binario, cada vez que cierras un hito)
 
 El owner pidiéndolo es un ATAJO, no el disparador. Tras cada hito mergeado, evalúa DOS señales
@@ -35,13 +52,14 @@ turno es armar un **trigger activo** (esto es lo que un command/skill NO hace so
   el resume: lanza una **sesión NUEVA** aunque esta se acabe. Es el único mecanismo que "empieza uno
   nuevo solo" de verdad (sobrevive a muerte de sesión y a agotamiento de contexto).
 
-**Regla dura — 3 finales, no los confundas (el bug clásico es tratar (a) como (b)):**
+**Regla dura — finales, no los confundas (el bug clásico es tratar autónomo+pendiente como stop):**
 
 | Situación | Acción correcta |
 |---|---|
-| (a) Autónomo + trabajo PENDIENTE + contexto agotado | **NO parar a esperar humano** → dispara sesión nueva (cron) con el resume |
-| (b) Bloque cerrado + objetivo cumplido | Parar de verdad |
-| (c) Bloqueado en input humano (auth, decisión cara/irreversible) | Parar y esperar — aquí SÍ |
+| **VIVO** + momento óptimo de relevo | **PREGUNTA** al owner; si dice sí, ejecuta el handoff autónomo en-sesión (NO auto-ejecutes sin su OK) |
+| **AUTÓNOMO** + trabajo PENDIENTE (aun con contexto agotado) | Ejecuta el handoff solo + **dispara la continuación** (`ScheduleWakeup`/`CronCreate`); NO pares a esperar humano |
+| Bloque cerrado + objetivo cumplido | Parar de verdad |
+| Bloqueado en input humano (auth, decisión cara/irreversible) | Parar y esperar — aquí SÍ, haya o no humano |
 
 ### Prompt de resume — DETERMINISTA, ejecutable, idempotente (no "continúa" a secas)
 Imperativo y autosuficiente; la sesión nueva NO re-planifica, retoma contra git:
