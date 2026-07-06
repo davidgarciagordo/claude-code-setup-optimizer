@@ -84,6 +84,12 @@ Imperativo y autosuficiente; la sesión nueva NO re-planifica, retoma contra git
    - Mapa de referencias: doc de estado, backlog, specs, memoria.
 3. **Estado/memoria al día ANTES de cerrar:** doc de estado del proyecto, backlog y memoria persistente (decisiones, lecciones con nº de PR, principios del usuario). El handoff apunta, no duplica.
 4. **Mergea el handoff** (el relevo no depende de la máquina ni de la sesión).
+5. **IMPRIME el prompt de lanzamiento EN-SESIÓN** (SIEMPRE, último paso): tras escribir/mergear el MD,
+   echa al chat el prompt copy-paste que el owner debe lanzar en la sesión nueva, en un bloque cercado
+   (```), listo para copiar SIN abrir el fichero. Enterrarlo solo en el MD NO basta — el owner lo quiere
+   a la vista en la conversación. En modo autónomo el prompt es el que alimenta el `ScheduleWakeup`/
+   `CronCreate` (mismo texto); en modo vivo se imprime para que el owner lo pegue. El prompt es el mismo
+   que va dentro del MD (§ "Prompt copy-paste"): DETERMINISTA e idempotente contra git, no "continúa" a secas.
 
 ## Modo que el relevo hereda
 - **Merge en verde:** review siempre antes de merge; limpieza de rama/worktree/claim al mergear.
