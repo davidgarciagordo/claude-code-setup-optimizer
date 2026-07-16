@@ -47,8 +47,10 @@ que un humano lo lea y lance la sesión nueva — y si duermes, no pasa. El últ
 turno es armar un **trigger activo** (esto es lo que un command/skill NO hace solo):
 
 - **Queda contexto + la sesión sigue viva** → `ScheduleWakeup` / `CronCreate` con el prompt de resume
-  (abajo): re-entran en ESTA sesión tras el delay y siguen la MISMA tarea. **AVISO (verifícalo, no lo
-  asumas):** en muchos harnesses estos son **session-only** — in-memory, mueren al cerrar la sesión
+  (abajo): re-entran en ESTA sesión tras el delay y siguen la MISMA tarea. **AVISO doble (verifícalo,
+  no lo asumas):** (1) estas tools son **propias de algunos harnesses, NO estándar de Claude Code** —
+  comprueba que existen en tu tool-list antes de contar con ellas; (2) donde existen, en muchos
+  harnesses son **session-only** — in-memory, mueren al cerrar la sesión
   (`CronCreate`: "gone when Claude exits", `durable` sin efecto). Sirven para continuar MIENTRAS la
   sesión vive, **NO** para sobrevivir a su muerte.
 - **La sesión puede morir / contexto agotado** → hace falta un scheduler **DURABLE fuera de la sesión**:

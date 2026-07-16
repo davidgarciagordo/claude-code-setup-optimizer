@@ -45,8 +45,8 @@ hallazgos) pasándoles `.forge/grill-context.md`. Cada agente devuelve TERSE (`O
 
 ### 4ª lente — Completitud (cuando hay Acceptance Matrix)
 Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade el agente
-**`working-methods:completeness-critic`** (nombre registrado — OJO: existe otro `completeness-critic`
-en `forge-methodology`, cualifica siempre; read-only + terse, recibe el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
+**`forge-methodology:completeness-critic`** (viene del plugin `forge-methodology`, dependencia
+declarada de este plugin — este plugin NO trae copia propia; pásale el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
 del owner**? Cada fila sin cobertura o contradicción = hallazgo. Detecta el gap ANTES de ejecutar.
 
 ## Reglas (mecanismo, no consejo)
