@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "working-methods",
   "displayName": "Working Methods (David)",
-  "version": "0.2.7",
-  "description": "Cross-project working norms of David. The SPINE: /forge-run sequences and ENFORCES the whole methodology (align+brainstorm → reference-decomposition → draft + /grill ×3+completeness → owner checkpoint #1 → spec+Acceptance-Matrix → re-grill ×2 → owner checkpoint #2 → global plan+execution proposal → execution → verify → /handoff; exactly 2 batched owner interruptions) via a deterministic workflows/forge.js + a PR-gate hook (guard-forge-artifacts) — the order is codified, not remembered. Plus /grill (adversarial ×3), /handoff (session relay), /install-family (bootstrap the 5-plugin family), and forge-on-claude. REQUIRES the forge-methodology plugin (forge-on-claude delegates to its skill) and uses design-review in the verify phase. Model routing baked in.",
+  "version": "0.3.0",
+  "description": "The Forge enforcement layer on Claude Code: /forge-run sequences the 12 methodology phases with machine-checked gates — the order lives in workflows/forge.js (code, not prose) and a PR-gate hook (guard-forge-artifacts) blocks gh pr create/ready/merge until the run's artifacts are versioned. Exactly 2 batched owner checkpoints. Plus /grill (adversarial ×3+completeness on an artifact), /handoff (session relay), /install-family (bootstrap the 5-plugin family), and forge-on-claude. REQUIRES forge-methodology (neutral loop + the completeness-critic / reference-decomposer / independent-verifier agents) and design-review (verify phase on UI). OPTIONAL: superpowers (align/plan phases use it when installed; native fallback otherwise). Model routing baked in.",
   "author": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"

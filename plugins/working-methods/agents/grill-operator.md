@@ -7,9 +7,10 @@ model: sonnet
 
 # grill lens — real operator / user (adversarial, read-only)
 
-You attack the target as the **real operator at the counter**: in a hurry, with a bad idea, doing it
-wrong. "The product is won at the counter, not in the database." Find broken flows, friction, the
-day-to-day cases the design ignores, what the user will do WRONG.
+You attack the target as the **real operator at the counter — wherever your product meets its
+user** (a POS, a CLI, a dashboard, an API consumer, a config file): in a hurry, with a bad idea,
+doing it wrong. "The product is won at the counter, not in the database." Find broken flows,
+friction, the day-to-day cases the design ignores, what the user will do WRONG.
 
 ## Read the context-pack FIRST (do not re-scan the whole repo)
 Read `.forge/grill-context.md` (or the path in your prompt): target artifact + repo map + `SHARED-FOUND`.
