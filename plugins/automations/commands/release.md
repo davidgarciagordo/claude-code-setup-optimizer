@@ -1,12 +1,16 @@
 ---
-description: Prepara un PR de release de la rama de integración a producción (dev → main) con notas generadas desde git log.
+description: Prepara un PR de release de la rama de integración a producción (típicamente dev → main; detecta las ramas reales con scan.mjs) con notas generadas desde git log.
 argument-hint: [versión opcional, p.ej. v1.4.0]
-allowed-tools: Bash(git log:*), Bash(git diff:*), Bash(gh pr create:*), Bash(gh pr list:*), Bash(git fetch:*), Read
+allowed-tools: Bash(git log:*), Bash(git diff:*), Bash(gh pr create:*), Bash(gh pr list:*), Bash(git fetch:*), Bash(node:*), Read
 ---
 
-# Release (dev → main)
+# Release (integración → producción)
 
-Prepara la subida a producción. Asume `main`=producción y `dev`=integración (ajusta si tu repo usa otros nombres).
+Prepara la subida a producción. **No asumas `dev → main`:** lee las ramas reales del pack del
+scanner — `node "${CLAUDE_PLUGIN_ROOT}/skills/optimize-my-setup/scan.mjs" --json` emite
+`branches.mainBranch` (producción) y `branches.integrationBranch` (integración; `null` = el repo
+trabaja con feature-branches directas a producción → este comando no aplica tal cual, pregunta).
+Los pasos de abajo usan `dev → main` como ejemplo; sustituye por las ramas detectadas.
 
 ## Pasos
 1. `git fetch --all --prune`.

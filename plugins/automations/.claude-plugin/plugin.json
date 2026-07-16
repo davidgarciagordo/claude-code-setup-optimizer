@@ -2,12 +2,13 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "automations",
   "displayName": "Setup Automations",
-  "version": "0.2.4",
-  "description": "Optimiza la config de Claude Code de cualquier repo a su medida: la skill optimize-my-setup genera/ajusta CLAUDE.md, settings.json (permisos/hooks/env), skills, agents, workflows, .mcp.json y output-styles, reutilizando los plugins del usuario donde encajan. Incluye el hook genérico guard-append-only, el comando /release, y templates (permisos, rules para CLAUDE.md, reviewers de dominio). No shippea agents fijos: los GENERA por proyecto. Language-agnostic.",
+  "version": "0.2.5",
+  "description": "Tailors a repo's entire Claude Code config (.claude: CLAUDE.md, settings.json permissions/hooks/env, skills, agents, workflows, .mcp.json, output-styles) via a deterministic scanner plus a mandatory multi-check gate — nothing is written until the user ticks it. Ships a fail-closed guard-append-only hook, /release, and templates (hooks, domain reviewer agents generated per repo, permissions allowlist). Language-agnostic.",
   "author": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
   },
+  "homepage": "https://github.com/davidgarciagordo/claude-code-setup-optimizer/tree/main/plugins/automations",
   "license": "MIT",
   "keywords": [
     "setup",

@@ -10,15 +10,15 @@ Repo setup, run **once** (and again when stack/conventions change). NOT a step o
 a feature — `/forge-run` assumes the `.claude` config already exists.
 
 **Invoke the `optimize-my-setup` skill and follow it end to end.** The skill is the single
-source for the 5 phases (family check → `scan.mjs` context pack → surface fan-out →
+source for the 5 phases (detect installed plugins → `scan.mjs` context pack → surface fan-out →
 multi-check → apply only what's checked). Do not re-derive the phases here.
 
 `$ARGUMENTS` (optional focus): prioritize those surfaces in the fan-out and put their items
 first in the multi-check. Still cover ALL surfaces — focus reorders, it does not cut scope.
 
 Hard gates (identical to the skill's; restated because they are non-negotiable):
-- **Family check FIRST** (`claude plugin list`); any of the five plugins missing →
-  `/install-family` is item #1 of the multi-check.
+- **Works standalone** — no other plugin is a prerequisite. `claude plugin list` first only to
+  know what the user already has, so recommendations reuse it instead of duplicating it.
 - **Nothing is written/installed before the multi-check returns**; unchecked = untouched.
 - Reuse before generating: a need that fits an existing plugin/skill → recommend installing
   the original, never copy its content.
