@@ -106,13 +106,19 @@ function scanEcosystem(root) {
   return { language: 'unknown', manager: 'unknown', monorepo: false, scripts: [], manifestFile: null };
 }
 
+const CONVENTIONAL_RE = /^[0-9a-f]+ (?:feat|fix|chore|refactor|docs|test|perf|ci|build|style|revert)(?:\(([^)]+)\))?!?:/;
+
 function scanCommits(root) {
   const log = runGit(root, ['log', '--oneline', '-50']);
   if (!log) return { conventional: false, scopes: [], hasCoAuthoredBy: false, hasGitmoji: false, sample: [] };
 
   const lines = log.split('\n').filter(Boolean);
-  const conventional = lines.filter((l) => /^[0-9a-f]+ (feat|fix|chore|refactor|docs|test|perf|ci|build|style|revert)(\(.+\))?!?:/.test(l));
-  const scopeMatches = lines.flatMap((l) => (l.match(/\(([^)]+)\)/) || []).slice(1));
+  const conventional = lines.filter((l) => CONVENTIONAL_RE.test(l));
+  // Scopes come ONLY from the conventional prefix `type(scope):` — a bare
+  // /\(([^)]+)\)/ would capture ANY parenthesis in the subject ("(#2)", "(5 plugins)").
+  const scopeMatches = lines
+    .map((l) => (l.match(CONVENTIONAL_RE) || [])[1])
+    .filter(Boolean);
   const uniqueScopes = [...new Set(scopeMatches)].sort();
 
   // Check for Co-Authored-By / trailers via full log
@@ -135,11 +141,13 @@ function scanBranches(root) {
   const branches = raw.split('\n').map((b) => b.replace(/^\*?\s+/, '').trim()).filter(Boolean);
   const remoteOnly = branches.filter((b) => b.startsWith('remotes/'));
   const local = branches.filter((b) => !b.startsWith('remotes/'));
-  const all = [...new Set([...local, ...remoteOnly.map((b) => b.replace(/^remotes\/origin\//, ''))])];
+  // Strip ANY remote name (remotes/<name>/…), not just origin — repos whose only
+  // remote is called upstream/fork/etc. must still detect main/dev.
+  const all = [...new Set([...local, ...remoteOnly.map((b) => b.replace(/^remotes\/[^/]+\//, ''))])];
 
-  const hasMain = all.some((b) => b === 'main' || b === 'remotes/origin/main');
-  const hasDev  = all.some((b) => b === 'dev'  || b === 'remotes/origin/dev');
-  const hasMaster = all.some((b) => b === 'master' || b === 'remotes/origin/master');
+  const hasMain = all.includes('main');
+  const hasDev  = all.includes('dev');
+  const hasMaster = all.includes('master');
 
   // Detect feature branch naming pattern
   const featureBranches = local.filter((b) => b !== 'main' && b !== 'dev' && b !== 'master');
@@ -198,14 +206,35 @@ function scanCI(root) {
 
 function scanDomainInvariants(root) {
   const claudeMd = readText(path.join(root, 'CLAUDE.md')) || '';
+
+  // Code signals — fallback so a repo WITHOUT a CLAUDE.md still surfaces its
+  // invariants (otherwise every flag is false and the surface fan-out runs blind).
+  const hasMigrationsDir = [
+    'migrations', 'drizzle', 'db/migrations', 'database/migrations',
+    'prisma/migrations', 'supabase/migrations',
+  ].some((d) => exists(path.join(root, ...d.split('/'))));
+  const hasLocalesDir = [
+    'locales', 'i18n', 'lang', 'translations',
+    'src/locales', 'src/i18n', 'public/locales',
+  ].some((d) => exists(path.join(root, ...d.split('/'))));
+  const schemaText = [
+    'prisma/schema.prisma', 'schema.sql', 'db/schema.sql',
+    'drizzle/schema.ts', 'src/db/schema.ts', 'supabase/schema.sql',
+  ].map((f) => readText(path.join(root, ...f.split('/'))) || '').join('\n');
+
   const flags = {
-    multiTenant: /tenant_id|multi.tenant|RLS/i.test(claudeMd),
-    i18n: /i18n|locale|translation|l10n/i.test(claudeMd),
-    eventBus: /event.bus|outbox|MessageBus/i.test(claudeMd),
-    appendOnly: /append.only|audit.log|ledger/i.test(claudeMd),
+    multiTenant: /tenant_id|multi.tenant|\bRLS\b/i.test(claudeMd)
+      || /tenant_id|row level security/i.test(schemaText),
+    i18n: /\bi18n\b|locale|translation|l10n/i.test(claudeMd) || hasLocalesDir,
+    eventBus: /event.bus|outbox|MessageBus/i.test(claudeMd)
+      || /\boutbox\b/i.test(schemaText),
+    appendOnly: /append.only|audit.log|ledger/i.test(claudeMd) || hasMigrationsDir,
     portsAdapters: /ports?.adapters|hexagonal|port.*adapter/i.test(claudeMd),
-    auth: /auth|authentication|authorization|JWT|session/i.test(claudeMd),
-    payments: /payment|stripe|billing|subscription/i.test(claudeMd),
+    // \bauth\b (not bare /auth/): "author" / "Co-Authored-By" must not match.
+    auth: /\bauth\b|authentication|authorization|\bJWT\b|\bsession\b/i.test(claudeMd)
+      || /password|\bjwt\b|\bsessions?\b/i.test(schemaText),
+    payments: /payment|stripe|billing|subscription/i.test(claudeMd)
+      || /stripe|invoice|subscription/i.test(schemaText),
   };
   return flags;
 }
@@ -274,7 +303,7 @@ ${commits.sample.map((s) => `  ${s}`).join('\n')}
 - Present: ${ci.present}
 - Systems: ${ci.systems.join(', ') || 'none'}
 
-## Domain Invariants (from CLAUDE.md)
+## Domain Invariants (CLAUDE.md + code signals)
 - Multi-tenant: ${invariants.multiTenant}
 - i18n: ${invariants.i18n}
 - Event bus / outbox: ${invariants.eventBus}

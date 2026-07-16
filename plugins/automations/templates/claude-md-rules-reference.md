@@ -12,7 +12,11 @@ Pega el bloque de abajo en tu CLAUDE.md y ajusta las rutas. Single-source: apunt
 
 Este repo sigue las normas de trabajo cross-project. Fuente única, no duplicar:
 
-- **Estilo, testing, seguridad, performance:** `~/.claude/rules/common/*` (instaladas por cuenta) — inmutabilidad, ficheros pequeños, 80% cobertura, nada de secretos en git, validación en boundaries.
+- **Estilo, testing, seguridad, performance:** `<RUTA-A-TUS-RULES>` — sustituye por donde vivan
+  TUS rules (p. ej. `~/.claude/rules/` si las instalas por cuenta, o `.claude/rules/` del repo).
+  Si no tienes un set de rules, borra esta línea o enlaza la guía del propio repo
+  (CONTRIBUTING, docs de estilo). Ejemplos de normas que suelen vivir ahí: inmutabilidad,
+  ficheros pequeños, cobertura mínima, nada de secretos en git, validación en boundaries.
 - **Orquestación y modelos:** Opus dirige/decide/revisa lo crítico · Sonnet ejecuta planes cerrados · Haiku lo trivial. Áreas disjuntas entre agentes paralelos; context-pack con `fichero:línea` entre fases.
 - **Metodología y comandos:** instala el marketplace `claude-code-setup-optimizer`
   (`/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer`) → Forja, `/grill`, `/handoff`, caveman.

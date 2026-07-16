@@ -2,7 +2,7 @@
 
 # 🛠️ claude-code-setup-optimizer
 
-[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
+[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e)
 
 > Two plugins that optimise how you work with Claude Code in any repo: `working-methods`
 > (the `/forge-run` spine — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify) and `automations`
@@ -105,7 +105,7 @@ Copy-paste usage for every plugin, command, hook and subagent → [examples/](ex
 | Plugin | Source | Contents |
 |--------|--------|----------|
 | 🧠 `working-methods` | local | **`/forge-run` — THE spine**: sequences & enforces the whole loop (`workflows/forge.js` — phase-order gate, parse-once, rejects orphan run; `guard-forge-artifacts` delegates to `forge.js check-pr`, no per-phase `git push` block). · `/install-family` (bootstrap the full suite from `davidgarciagordo/claude-plugins`) · `/grill` — adversarial ×3 with **read-only terse griller agents** (`agents/grill-{architect,operator,engineer}.md`, no Edit/Write) + deterministic **`workflows/grill-context.mjs`** (discover-once pack) + bundled **`completeness-critic`** 4th lens. · `/handoff` — session relay, **autonomous on both sides**: *proposes* the relay when it's optimal (binary trigger: long session **+** closed block) and, once the owner approves, *executes it in-session*; with **no human** (cron/`/loop`/background/`$CLAUDE_JOB_DIR`) it *runs itself and arms the continuation* (`ScheduleWakeup` same thread / `CronCreate` a fresh session) so the next session starts on its own — writing the handoff MD is a checkpoint, not a stop. Golden rule: **user present → ask; no user → run solo.** · `forge-on-claude` (maps Forge to Claude Code tools; **requires `forge-methodology`**). Model routing baked in. *(low-cost comms → pair with the original [caveman](https://github.com/JuliusBrussee/caveman))* |
-| ⚡ `automations` | local | **`/optimize-my-setup`** (skill + command) — deterministic **`scan.mjs`** builds a repo→context-pack, then runs **real parallel read-only per-surface fan-out**, and presents a **multi-select apply** (you pick what to adopt). Tailors the whole `.claude` setup: `CLAUDE.md`, `settings.json` (permissions/hooks/env), skills, **agents generated per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles`. Active **fail-closed** hook `guard-append-only`. `/release`. **Templates**: parametrizable **hooks** (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`), reviewer templates (incl. generic `completeness-critic`), permissions allow-list, CLAUDE.md rules block. |
+| ⚡ [`automations`](plugins/automations/README.md) | local | **`/optimize-my-setup`** (skill + command) — deterministic **`scan.mjs`** builds a repo→context-pack, then runs **real parallel read-only per-surface fan-out**, and presents a **multi-select apply** (you pick what to adopt). Tailors the whole `.claude` setup: `CLAUDE.md`, `settings.json` (permissions/hooks/env), skills, **agents generated per detected invariant**, `workflows/*.js`, `.mcp.json`, `output-styles`. Active **fail-closed** hook `guard-append-only`. `/release`. **Templates**: parametrizable **hooks** (`guard-main`, `commit-msg-lint`, `secrets-guard`, `ui-diff-design-review`), reviewer templates (incl. generic `completeness-critic`), permissions allow-list, CLAUDE.md rules block. |
 
 `forge-methodology`, `design-review` and `token-economy` are no longer bundled in this
 repo's marketplace — see [The wider suite](#-the-wider-suite) above for what each does and
@@ -136,13 +136,13 @@ plugins/working-methods/
   agents/completeness-critic.md   # 4th lens bundled with /grill
   hooks/guard-forge-artifacts.py   # PR gate: delegates to forge.js check-pr (fail-closed)
   skills/forge-on-claude/      # requires forge-methodology
-plugins/automations/
+plugins/automations/           # → full docs: plugins/automations/README.md
   commands/optimize-my-setup.md · release.md
   skills/optimize-my-setup/
     scan.mjs                   # deterministic repo→context-pack
   hooks/guard-append-only.py   # fail-closed
   templates/hooks/             # guard-main · commit-msg-lint · secrets-guard · ui-diff-design-review
-  templates/reviewers/         # event-bus · i18n · completeness-critic
+  templates/reviewers/         # completeness-critic · ds-adoption · defense-and-coverage · event-bus · i18n
 ```
 Validate: `claude plugin validate . --strict`.
 
