@@ -80,18 +80,43 @@ function extractKeywords(artifactPath, content) {
   return all.slice(0, 8);
 }
 
-/** Canonical anchor patterns that are always included in the repo map. */
-const ANCHOR_GLOBS = [
+/** Generic anchor patterns, valid in ANY repo (no project-specific paths here). */
+const DEFAULT_ANCHOR_GLOBS = [
   /^CLAUDE\.md$/i,
+  /^README\.md$/i,
   /^docs\/adr\//,
-  /^docs\/ESTADO\.md$/i,
-  /^docs\/ROADMAP\.md$/i,
   /^docs\/design\.md$/i,
   /^\.claude\/settings\.json$/,
-  /^packages\/contracts\//,
 ];
 
-function isAnchor(rel) { return ANCHOR_GLOBS.some((re) => re.test(rel)); }
+/**
+ * Project-specific extra anchors, merged with the defaults:
+ *   - env FORGE_ANCHOR_GLOBS: comma-separated regex sources
+ *     (e.g. FORGE_ANCHOR_GLOBS='^docs/ESTADO\.md$,^packages/contracts/')
+ *   - <root>/.forge/anchors.json: JSON array of regex-source strings
+ * Invalid patterns are skipped with a warning — never fatal.
+ */
+function loadExtraAnchorGlobs(rootDir) {
+  const sources = [];
+  const env = process.env.FORGE_ANCHOR_GLOBS;
+  if (env) sources.push(...env.split(',').map((s) => s.trim()).filter(Boolean));
+  const raw = readSafe(path.join(rootDir, '.forge', 'anchors.json'));
+  if (raw !== null) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) sources.push(...parsed.map((s) => String(s)));
+      else process.stderr.write('grill-context: .forge/anchors.json is not a JSON array — ignored\n');
+    } catch (_) {
+      process.stderr.write('grill-context: .forge/anchors.json is not valid JSON — ignored\n');
+    }
+  }
+  const patterns = [];
+  for (const src of sources) {
+    try { patterns.push(new RegExp(src)); }
+    catch (_) { process.stderr.write(`grill-context: invalid anchor pattern skipped: ${src}\n`); }
+  }
+  return patterns;
+}
 
 function formatRepoMap(anchorMatches) {
   if (!anchorMatches.length) return '_No relevant anchors found via git ls-files._\n';
@@ -139,6 +164,10 @@ const artifactRel = path.relative(root, artifactAbs);
 
 // Scan the repo file list once
 const allFiles = gitLsFiles(root);
+
+// Anchors = generic defaults + project extras (env FORGE_ANCHOR_GLOBS / .forge/anchors.json)
+const anchorGlobs = [...DEFAULT_ANCHOR_GLOBS, ...loadExtraAnchorGlobs(root)];
+const isAnchor = (rel) => anchorGlobs.some((re) => re.test(rel));
 
 // Split files into anchors (always include) and others (keyword-search only)
 const anchorFiles = allFiles.filter(isAnchor);
@@ -194,7 +223,8 @@ ${artifactContent}
 ---
 
 ## Repo map  (file:line of rules / precedents / invariants)
-Anchors always included: ADRs, CLAUDE.md, contracts, design docs.
+Anchors always included: CLAUDE.md, README, ADRs, design docs, .claude/settings.json
+(+ project extras from FORGE_ANCHOR_GLOBS / .forge/anchors.json).
 Domain keywords extracted from artifact: ${keywords.join(', ') || '(none)'}
 
 ${formatRepoMap(allHits)}

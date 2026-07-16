@@ -1,6 +1,6 @@
 ---
 name: forge-on-claude
-description: Mapea la metodología Forge (vendor-neutral) a las herramientas concretas de Claude Code — ultrathink para grill/plan, ultracode/Workflow para orquestar, git worktrees para aislamiento, subagents Task para unidades disjuntas, context pack encadenado para memoria compartida, /handoff como resume capsule. Úsala cuando ejecutes Forge en Claude Code y quieras saber qué herramienta usar en cada paso.
+description: Mapea la metodología Forge (vendor-neutral) a las herramientas concretas de Claude Code — ultrathink para grill/plan, varios subagents Task en un mismo mensaje para orquestar en paralelo, git worktrees para aislamiento, context pack encadenado para memoria compartida, /handoff como resume capsule. Úsala cuando ejecutes Forge en Claude Code y quieras saber qué herramienta usar en cada paso.
 ---
 
 # Forge en Claude Code — mapa de herramientas
@@ -13,7 +13,7 @@ Forge es vendor-neutral; esta tabla da el equivalente concreto en **Claude Code*
 |---|---|
 | **Deep-reasoning tier** (grill ×3, plan global, arbitraje, review crítico) | **`ultrathink`** en el prompt (razonamiento profundo) + modelo **Opus**. |
 | **Gate de entrada + gate al usuario** (dudas del grill → owner decide: acepta/cambia/añade/discrepa) | **`AskUserQuestion`** con `multiSelect: true` (≤4 preguntas/llamada, 2–4 opciones; recomendada con "(recomendada)"; "Other" = añade-la-tuya / discrepa). **Lo corre el orquestador, NUNCA un subagente** (los subagentes no preguntan al owner). |
-| **Orquestar unidades disjuntas en paralelo** | **`ultracode`** / la tool **Workflow** (fan-out determinista) o varios **subagents `Task`** en un mismo mensaje (corren en paralelo). |
+| **Orquestar unidades disjuntas en paralelo** | Varios **subagents `Task` en un mismo mensaje** (corren en paralelo). Es lo estándar y portable en Claude Code; si tu harness trae un orquestador propio de fan-out, puedes usarlo, pero no lo asumas. |
 | **Isolated workspace** (1 unidad = 1 workspace) | **git worktree + rama por unidad** (`git worktree add`). Si el repo trae un flujo propio (p.ej. `/new-session`), úsalo. **1 sesión = 1 worktree = 1 rama.** |
 | **Ownership claim** (declarar qué tocas antes) | Fichero de claim trackeado / asignación visible; subagents de una sesión = **áreas DISJUNTAS** (un fichero = un solo agente). |
 | **Context pack compartido** (memoria unificada, no re-descubrir) | Fase 1 = subagents lectores que devuelven un **mapa con `file:line`** (salida estructurada); encadena esos resultados como **input** de la fase siguiente. No hagas que cada agente re-lea lo que otro ya mapeó. |

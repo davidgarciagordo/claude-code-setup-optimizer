@@ -31,9 +31,16 @@ family as a unit; `/forge-run` requires every phase's tool present.
    > it maps that skill's neutral loop onto Claude Code tools. Installing working-methods
    > without forge-methodology leaves the spec/loop reference dangling. Likewise the verify
    > phase of `/forge-run` calls `design-review`, so it must be present too.
-4. **Validate:**
+4. **Optional but recommended — `superpowers`** (external, [obra/superpowers](https://github.com/obra/superpowers),
+   NOT part of this family nor a declared dependency): `/forge-run`'s `align` phase invokes
+   `superpowers:brainstorming` and its `plan` phase invokes `superpowers:writing-plans` **when
+   present**. Without it those phases fall back to a native guided brainstorm / plain versioned
+   `plan.md` — the run still works. Check with `claude plugin list`; install it from its own
+   marketplace if you want the richer phases.
+5. **Validate (ONLY if your cwd is a clone of the source repo** `davidgarciagordo/claude-code-setup-optimizer`
+   **— skip this step entirely otherwise; it fails on any other cwd):**
    ```bash
-   claude plugin validate . --strict   # when run from a clone of this repo (working-methods + automations only)
+   claude plugin validate . --strict
    ```
-5. Report which were already present, which got installed, and any that failed. Then the
+6. Report which were already present, which got installed, and any that failed. Then the
    user can run `/forge-run <task>`.

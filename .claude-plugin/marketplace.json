@@ -11,7 +11,7 @@
     {
       "name": "working-methods",
       "displayName": "Working Methods (David)",
-      "description": "Cross-project working norms: /grill (adversarial ×3) + /handoff (session relay) + forge-on-claude. Model routing and orchestration baked in. (For low-cost comms, pair with the original caveman plugin — JuliusBrussee/caveman.)",
+      "description": "/forge-run — the Forge methodology with ENFORCEMENT: 12 phases whose order lives in code (forge.js), machine-checked gates, and a hook that blocks the PR until the run's artifacts exist. Plus /grill (adversarial ×3 on any artifact) and /handoff (session relay), both usable standalone.",
       "source": "./plugins/working-methods"
     },
     {

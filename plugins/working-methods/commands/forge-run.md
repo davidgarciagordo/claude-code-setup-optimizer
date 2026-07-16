@@ -1,5 +1,5 @@
 ---
-description: THE entrypoint. Runs a task through the whole Forge methodology in CODIFIED order with machine-checked gates — align+brainstorm → reference-decomposition → DRAFT + grill ×3 (attack while changing is cheap) → owner checkpoint #1 → versioned spec (+ Acceptance Matrix) → re-grill ×2 → owner checkpoint #2 (spec locked) → global plan + execution proposal → execution (worktrees + context pack) → verify (reviewers + completeness-critic + design-review on UI) → handoff. Exactly 2 owner interruptions, both batched. Not a prose checklist you have to remember.
+description: THE entrypoint — runs a task through the 12 Forge phases in codified order with machine-checked gates (forge.js) and exactly 2 batched owner checkpoints.
 argument-hint: <task — what to build / change>
 allowed-tools: Bash(node:*), Bash(git worktree:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(mkdir:*), Read, Write, Edit, Glob, Grep, Task, AskUserQuestion, Skill
 ---
@@ -10,7 +10,12 @@ allowed-tools: Bash(node:*), Bash(git worktree:*), Bash(git status:*), Bash(git 
 order lives in `workflows/forge.js` (single source of truth) and is gated by the
 `guard-forge-artifacts` hook. Each phase **invokes** the real command / skill / agent
 (it APPLIES `forge-methodology` and `design-review`, it does not merely recommend
-installing them).
+installing them). The full loop: align+brainstorm → reference-decomposition → DRAFT +
+grill ×3 (attack while changing is cheap) → owner checkpoint #1 → versioned spec
+(+ Acceptance Matrix) → re-grill ×2 → owner checkpoint #2 (spec locked) → global plan +
+execution proposal → execution (worktrees + context pack) → verify (reviewers +
+completeness-critic + design-review on UI) → handoff. Exactly 2 owner interruptions,
+both batched. Not a prose checklist you have to remember.
 
 **Trigger (binary — never by vibe).** The discriminator is **design vs execution**, NOT file
 count. Run `/forge-run` when the task needs a **design decision that is expensive to get wrong**:
@@ -64,9 +69,10 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
   **Sonnet** executes closed plans / refactors / migrations · **Haiku** the trivial.
   Tool map per phase: `forge-on-claude` skill.
 - Phase `draft` + `grill`: the grill attacks the **DRAFT**, not a finished spec — that is the
-  point (attack while changing is cheap). Dispatch the 3 lenses + the bundled
-  `working-methods:completeness-critic` agent as the 4th lens (a reference requirement not
-  covered by the draft is a blocking finding). Verdicts → `grill-verdicts.md`.
+  point (attack while changing is cheap). Dispatch the 3 lenses + the
+  `forge-methodology:completeness-critic` agent as the 4th lens (a reference requirement not
+  covered by the draft is a blocking finding; the agent ships with the required
+  `forge-methodology` dependency, not with this plugin). Verdicts → `grill-verdicts.md`.
 - Phase `checkpoint-1` (owner checkpoint #1): **ONE `AskUserQuestion` (`multiSelect: true`)** —
   each item = a real decision the grill exposed, in plain language, with **your recommendation
   pre-marked** + the live alternatives; the owner may accept / pick another / add their own /
