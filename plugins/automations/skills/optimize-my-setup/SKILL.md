@@ -10,10 +10,13 @@ a la medida del proyecto. **El usuario SIEMPRE decide** (multi-check) — nada s
 
 > **SETUP del repo, no un paso de feature** (eso es `/forge-run`). Córrela una vez y al cambiar stack/convenciones.
 
-## Fase 0 — Bootstrap de la familia (verifica, no asumas)
-Antes de recomendar nada, comprueba que la **familia de 5 plugins** está instalada —
-`working-methods`, `automations`, `forge-methodology`, `design-review`, `token-economy` — con `claude plugin list`.
-Si falta alguno, recomienda correr **`/install-family`** como primer ítem del multi-check.
+## Fase 0 — Detecta qué hay instalado (verifica, no asumas)
+Con `claude plugin list`, mira qué plugins tiene el usuario. **Este plugin funciona standalone
+completo** — ninguna fase depende de otro plugin. Si la familia del autor está instalada
+(`working-methods`, `forge-methodology`, `design-review`, `token-economy`), aprovéchala en las
+recomendaciones de Fase 3 (son plugins que ya tiene → regla de reuso). Si no está, NO la exijas:
+sigue con el pipeline completo y, como mucho, inclúyela como recomendación opcional más del
+multi-check (nunca como prerequisito ni como ítem #1).
 
 ## Fase 1 — Context pack (run the scanner, do NOT re-scan by hand)
 
@@ -45,9 +48,15 @@ el context-pack como entrada y devuelve `superficie · fichero · recomendación
 **Regla: si una necesidad encaja con un plugin/skill del usuario, recomienda INSTALARLO** (referencia
 el original); genera a medida solo lo que no tenga equivalente. Cada recomendación cita un fichero
 del repo. **Todo lo que GENERES a medida (una regla de CLAUDE.md, un hook, un agente, un skill) es
-una instrucción que un LLM ejecutará → pásale el executor-eye check
-(`working-methods/references/executor-eye-check.md`) antes de proponerlo: trigger binario, sin eco,
-sin contradecir la config que ya tiene, sin supuesto tácito.** Cubre:
+una instrucción que un LLM ejecutará → pásale el executor-eye check antes de proponerlo** —
+reléelo con los ojos del ejecutor, sin el contexto de tu sesión:
+1. **Trigger binario** — cada "haz X cuando Y" tiene un Y verificable, no una vibra.
+2. **Sin eco** — ninguna regla dicha dos veces (dos copias derivan en el siguiente edit).
+3. **Sin contradicción** — no choca con la config que el repo ya tiene ni con su fichero hermano.
+4. **Sin supuesto tácito** — ningún paso asume un path/decisión/fichero que solo tu sesión conoce.
+
+(Fuente canónica ampliada: `references/executor-eye-check.md` del plugin `working-methods`,
+si está instalado.) Cubre:
 
 - **`CLAUDE.md`** — si falta, generalo; si existe, mejoras puntuales + bloque de referencia al
   marketplace (`${CLAUDE_PLUGIN_ROOT}/templates/claude-md-rules-reference.md`).
