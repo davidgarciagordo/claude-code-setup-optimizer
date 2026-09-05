@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""TEMPLATE — PreToolUse(Bash): valida que el mensaje de un `git commit -m "..."`
-sigue Conventional Commits (`type(scope)?: description`). Mata los commits que
-rompen tu convención antes de que entren.
+"""TEMPLATE — PreToolUse(Bash): validates that a `git commit -m "..."` message
+follows Conventional Commits (`type(scope)?: description`). Kills commits that
+break your convention before they land.
 
 Config (env):
-  COMMIT_TYPES   lista separada por comas (default: el set Conventional estándar)
-  COMMIT_MIN_DESC  longitud mínima de la descripción (default: 1)
+  COMMIT_TYPES   comma-separated list (default: the standard Conventional set)
+  COMMIT_MIN_DESC  minimum description length (default: 1)
 
-Wiring — copia a `.claude/hooks/commit-msg-lint.py` y añade a settings.json bajo
-PreToolUse matcher "Bash" (igual que guard-main).
+Wiring — copy to `.claude/hooks/commit-msg-lint.py` and add to settings.json under
+PreToolUse matcher "Bash" (same as guard-main).
 
-Nota: solo valida commits con `-m`/`--message` inline (los que un agente suele
-hacer). Un commit interactivo (editor) lo valida tu hook git `commit-msg` clásico.
-Ante un comando que no podamos parsear como commit con mensaje, NO bloquea (exit 0).
+Note: only validates commits with an inline `-m`/`--message` (what an agent
+usually does). An interactive commit (editor) is validated by your classic git
+`commit-msg` hook instead. On a command we can't parse as a commit with a
+message, it does NOT block (exit 0).
 """
 import sys, os, json, re
 
@@ -49,7 +50,7 @@ def main():
 
     msg = extract_message(cmd)
     if msg is None:
-        sys.exit(0)  # sin -m inline → no es nuestro caso
+        sys.exit(0)  # no inline -m → not our case
 
     subject = msg.strip().splitlines()[0] if msg.strip() else ""
     min_desc = int(os.environ.get("COMMIT_MIN_DESC", "1") or "1")
@@ -59,12 +60,12 @@ def main():
     if re.match(pattern, subject):
         sys.exit(0)
 
-    print("BLOQUEADO: el mensaje de commit no sigue Conventional Commits.\n"
-          f"  recibido: {subject!r}\n"
-          f"  esperado: <type>(<scope>)?: <description>\n"
-          f"  types válidos: {', '.join(types())}\n"
-          "  ej.: feat(api): add idempotency key to /charge\n"
-          "  (ajusta con COMMIT_TYPES / COMMIT_MIN_DESC.)", file=sys.stderr)
+    print("BLOCKED: the commit message doesn't follow Conventional Commits.\n"
+          f"  got: {subject!r}\n"
+          f"  expected: <type>(<scope>)?: <description>\n"
+          f"  valid types: {', '.join(types())}\n"
+          "  e.g.: feat(api): add idempotency key to /charge\n"
+          "  (adjust with COMMIT_TYPES / COMMIT_MIN_DESC.)", file=sys.stderr)
     sys.exit(2)
 
 
