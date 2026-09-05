@@ -1,6 +1,6 @@
 **English** | [Español](README.es.md)
 
-# 🛠️ claude-code-setup-optimizer
+# claude-code-setup-optimizer
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e)
 
@@ -9,7 +9,7 @@
 > (`/optimize-my-setup`, hooks, `/release`). Part of a 6-plugin suite by the same author —
 > see [The wider suite](#-the-wider-suite) below.
 
-## 📦 Install
+## Install
 
 Just this repo's two plugins:
 
@@ -43,7 +43,7 @@ Then:
 ```
 Verify with `/plugin` (or `claude plugin list`): installed plugins show `✔ enabled`, no `Error`.
 
-## 🧩 The wider suite
+## The wider suite
 
 `/forge-run` (below) invokes `forge-methodology` and `design-review` at the right phases, and
 the family's agents inherit token economy from `token-economy`. Those three plugins — plus
@@ -59,7 +59,7 @@ install from this repo (above) if you only want `working-methods` + `automations
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
 | 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | A separate 39-agent development swarm, not a phase of `/forge-run` — one objective in, discovery → analysis → design (its own grill ×3) → TDD → delivery out, with unified memory across phases. |
 
-## 🚀 How to use
+## How to use
 
 **1. Install** (above), then:
 
@@ -103,11 +103,11 @@ Matrix, grill + re-grill verdicts, both decision records and the plan are versio
 > `/optimize-my-setup` is one-time **repo setup**, not a step of building a feature.
 > Language-agnostic — JS/TS, Python, PHP, Go, Rust, Ruby.
 
-## 📚 Examples
+## Examples
 
 Copy-paste usage for every plugin, command, hook and subagent → [examples/](examples/README.md).
 
-## 🧩 Plugins
+## Plugins
 
 | Plugin | Source | Contents |
 |--------|--------|----------|
@@ -118,7 +118,7 @@ Copy-paste usage for every plugin, command, hook and subagent → [examples/](ex
 repo's marketplace — see [The wider suite](#-the-wider-suite) above for what each does and
 where to install them from.
 
-## 🙏 Credits — referenced, not copied
+## Credits — referenced, not copied
 
 This repo **references** great work; it does not vendor copies, so everything stays current at its source and the original authors keep the credit.
 
@@ -126,11 +126,11 @@ This repo **references** great work; it does not vendor copies, so everything st
 - **caveman** (low-cost comms) — by [JuliusBrussee](https://github.com/JuliusBrussee/caveman). Install the original: `/plugin marketplace add JuliusBrussee/caveman`.
 - The **design-review pipeline** orchestrates skills by their original authors — `impeccable`, `taste-skill`, `emil-design-eng`, `ui-ux-pro-max`, `huashu-design`, `web-accessibility`, `seo` — installed from source via its preflight (see design-review's *Attribution*). Nothing bundled; each updates at its origin.
 
-## 📌 Always-on norms
+## Always-on norms
 
 Style/testing/security/orchestration are **permanent** guidance, not on-demand skills → a plugin doesn't inject them into the system prompt. Reference them from each repo's `CLAUDE.md` using `plugins/automations/templates/claude-md-rules-reference.md`.
 
-## 🗂️ Structure
+## Structure
 ```
 .claude-plugin/marketplace.json                  # 2 plugins (working-methods, automations)
 plugins/working-methods/
@@ -153,7 +153,7 @@ plugins/automations/           # → full docs: plugins/automations/README.md
 ```
 Validate: `claude plugin validate . --strict`.
 
-## ✅ Manifest rules (keep `/plugin install` working)
+## Manifest rules (keep `/plugin install` working)
 
 `claude plugin validate` checks the schema but **not** that the plugin actually loads — always do one real install before publishing:
 
@@ -170,5 +170,6 @@ Two mistakes that pass validation but break install (both bit this repo — fixe
 
 Verified: both plugins install clean from scratch via GitHub → `enabled`.
 
----
-<sub>Made by [David García Gordo](https://github.com/davidgarciagordo) · MIT</sub>
+## License
+
+MIT © David García Gordo

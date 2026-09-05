@@ -1,6 +1,6 @@
 [English](README.md) | **Español**
 
-# 🛠️ claude-code-setup-optimizer
+# claude-code-setup-optimizer
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e)
 
@@ -9,7 +9,7 @@
 > `automations` (`/optimize-my-setup`, hooks, `/release`). Parte de una suite de 6 plugins del
 > mismo autor — ver [La suite completa](#-la-suite-completa) más abajo.
 
-## 📦 Instalación
+## Instalación
 
 Solo los dos plugins de este repo:
 
@@ -43,7 +43,7 @@ Luego:
 ```
 Verifica con `/plugin` (o `claude plugin list`): los plugins instalados en `✔ enabled`, sin `Error`.
 
-## 🧩 La suite completa
+## La suite completa
 
 `/forge-run` (más abajo) invoca `forge-methodology` y `design-review` en las fases correspondientes,
 y los agentes de la familia heredan la economía de tokens de `token-economy`. Esos tres plugins —
@@ -59,7 +59,7 @@ instala desde este repo (arriba) si solo quieres `working-methods` + `automation
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Gasta *menos en hacerlo* — context-pack (descubrir una vez) · agentes read-only terse · output-style frugal · memoria pluggable. Complementa a [caveman](https://github.com/JuliusBrussee/caveman) (salida) en el eje entrada/orquestación. |
 | 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | Un enjambre de 39 agentes separado, no una fase de `/forge-run` — un objetivo entra, y discovery → análisis → diseño (su propio grill ×3) → TDD → entrega salen, con memoria unificada entre fases. |
 
-## 🚀 Cómo se usa
+## Cómo se usa
 
 **1. Instala** (arriba), luego:
 
@@ -93,11 +93,11 @@ El orden vive en `plugins/working-methods/workflows/forge.js` (fuente única), n
 
 > `/optimize-my-setup` es **setup del repo** (una vez), no un paso de construir una feature. Agnóstico de lenguaje — JS/TS, Python, PHP, Go, Rust, Ruby.
 
-## 📚 Ejemplos
+## Ejemplos
 
 Uso copy-paste de cada plugin, comando, hook y subagent → [examples/](examples/README.es.md).
 
-## 🧩 Plugins
+## Plugins
 
 | Plugin | Origen | Contenido |
 |--------|--------|-----------|
@@ -108,7 +108,7 @@ Uso copy-paste de cada plugin, comando, hook y subagent → [examples/](examples
 marketplace de este repo — ver [La suite completa](#-la-suite-completa) más arriba para qué
 hace cada uno y desde dónde instalarlos.
 
-## 🙏 Créditos — referencia, no copia
+## Créditos — referencia, no copia
 
 Este repo **referencia** buen trabajo; no vendoriza copias, así todo se mantiene al día en su origen y el crédito queda en sus autores.
 
@@ -116,11 +116,11 @@ Este repo **referencia** buen trabajo; no vendoriza copias, así todo se mantien
 - **caveman** (comms low-cost) — de [JuliusBrussee](https://github.com/JuliusBrussee/caveman). Instala el original: `/plugin marketplace add JuliusBrussee/caveman`.
 - El **pipeline de design-review** orquesta skills de sus autores originales — `impeccable`, `taste-skill`, `emil-design-eng`, `ui-ux-pro-max`, `huashu-design`, `web-accessibility`, `seo` — instaladas desde su fuente vía el preflight (ver *Attribution* de design-review). Nada bundleado; cada una se actualiza en su origen.
 
-## 📌 Normas always-on
+## Normas always-on
 
 Estilo/testing/seguridad/orquestación son guía **permanente**, no skills on-demand → un plugin no las inyecta en el system prompt. Referéncialas desde el `CLAUDE.md` de cada repo con `plugins/automations/templates/claude-md-rules-reference.md`.
 
-## 🗂️ Estructura
+## Estructura
 ```
 .claude-plugin/marketplace.json                  # 2 plugins (working-methods, automations)
 plugins/working-methods/
@@ -141,7 +141,7 @@ plugins/automations/
 ```
 Valida: `claude plugin validate . --strict`.
 
-## ✅ Reglas de manifest (que `/plugin install` no se rompa)
+## Reglas de manifest (que `/plugin install` no se rompa)
 
 `claude plugin validate` revisa el esquema, **no** que el plugin cargue de verdad — haz siempre un install real antes de publicar:
 
@@ -158,5 +158,6 @@ Dos errores que pasan validación pero rompen install (mordieron a este repo —
 
 Verificado: ambos plugins instalan limpio desde cero vía GitHub → `enabled`.
 
----
-<sub>Hecho por [David García Gordo](https://github.com/davidgarciagordo) · MIT</sub>
+## Licencia
+
+MIT © David García Gordo
