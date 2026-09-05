@@ -57,7 +57,7 @@ instala desde este repo (arriba) si solo quieres `working-methods` + `automation
 | 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Estructura *qué construir* — alinear → borrador + grill ×3 → spec → re-grill ×2 → plan → verificar (2 checkpoints del dueño, en lote) |
 | 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Pule *cómo se ve* — investigación de referencias → 4 lentes de diseño en paralelo → veredicto en navegador real (`alive`/`templated`/`flat`), impuesto por hook |
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Gasta *menos en hacerlo* — context-pack (descubrir una vez) · agentes read-only terse · output-style frugal · memoria pluggable. Complementa a [caveman](https://github.com/JuliusBrussee/caveman) (salida) en el eje entrada/orquestación. |
-| 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | Un enjambre de 36 agentes separado, no una fase de `/forge-run` — un objetivo entra, y discovery → análisis → diseño (su propio grill ×3) → TDD → entrega salen, con memoria unificada entre fases. |
+| 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | Un enjambre de 39 agentes separado, no una fase de `/forge-run` — un objetivo entra, y discovery → análisis → diseño (su propio grill ×3) → TDD → entrega salen, con memoria unificada entre fases. |
 
 ## 🚀 Cómo se usa
 
