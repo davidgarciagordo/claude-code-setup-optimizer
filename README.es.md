@@ -2,11 +2,11 @@
 
 # 🛠️ claude-code-setup-optimizer
 
-[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e) ![Version](https://img.shields.io/badge/version-0.2.1-blue)
+[![Claude Code plugin](https://img.shields.io/badge/Claude_Code-marketplace-D97757)](https://github.com/davidgarciagordo/claude-code-setup-optimizer) [![skills.sh](https://img.shields.io/badge/skills.sh-skill-111111)](https://skills.sh) ![License MIT](https://img.shields.io/badge/license-MIT-2da44e)
 
 > Dos plugins que optimizan tu forma de trabajar con Claude Code en cualquier repo:
 > `working-methods` (la columna `/forge-run` — alinear → borrador + grill ×3 → spec → re-grill ×2 → plan → verificar) y
-> `automations` (`/optimize-my-setup`, hooks, `/release`). Parte de una suite de 5 plugins del
+> `automations` (`/optimize-my-setup`, hooks, `/release`). Parte de una suite de 6 plugins del
 > mismo autor — ver [La suite completa](#-la-suite-completa) más abajo.
 
 ## 📦 Instalación
@@ -19,7 +19,12 @@ Solo los dos plugins de este repo:
 /plugin install automations@claude-code-setup-optimizer          # /optimize-my-setup · hooks · /release
 ```
 
-La suite completa (los 5 plugins de David García Gordo) desde un catálogo dedicado:
+> ⚠️ `working-methods` declara `forge-methodology` y `design-review` como dependencias, ancladas
+> al marketplace `davidgarciagordo-plugins` — instalando desde el marketplace de ESTE repo no las
+> trae. Si quieres que esas dependencias se resuelvan, añade también
+> `davidgarciagordo/claude-plugins` (o instala todo desde ahí directamente, abajo).
+
+La suite completa (los 6 plugins de David García Gordo) desde un catálogo dedicado:
 
 ```bash
 /plugin marketplace add davidgarciagordo/claude-plugins
@@ -28,6 +33,7 @@ La suite completa (los 5 plugins de David García Gordo) desde un catálogo dedi
 /plugin install forge-methodology@davidgarciagordo-plugins
 /plugin install design-review@davidgarciagordo-plugins
 /plugin install token-economy@davidgarciagordo-plugins
+/plugin install swarm@davidgarciagordo-plugins
 ```
 
 Luego:
@@ -41,16 +47,17 @@ Verifica con `/plugin` (o `claude plugin list`): los plugins instalados en `✔ 
 
 `/forge-run` (más abajo) invoca `forge-methodology` y `design-review` en las fases correspondientes,
 y los agentes de la familia heredan la economía de tokens de `token-economy`. Esos tres plugins —
-más `working-methods` y `automations` de este repo — están catalogados juntos en
+más `working-methods` y `automations` de este repo, y `swarm` — están catalogados juntos en
 [**davidgarciagordo/claude-plugins**](https://github.com/davidgarciagordo/claude-plugins), el
-marketplace único y dedicado de toda la familia. Instala desde ahí (arriba) para tener los 5;
+marketplace único y dedicado de toda la familia. Instala desde ahí (arriba) para tener los 6;
 instala desde este repo (arriba) si solo quieres `working-methods` + `automations`.
 
 | | Repo | Rol |
 |---|---|---|
 | 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Estructura *qué construir* — alinear → borrador + grill ×3 → spec → re-grill ×2 → plan → verificar (2 checkpoints del dueño, en lote) |
-| 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Pule *cómo se ve* — estructura → auditoría → anti-slop → a11y → check en vivo |
+| 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Pule *cómo se ve* — investigación de referencias → 4 lentes de diseño en paralelo → veredicto en navegador real (`alive`/`templated`/`flat`), impuesto por hook |
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Gasta *menos en hacerlo* — context-pack (descubrir una vez) · agentes read-only terse · output-style frugal · memoria pluggable. Complementa a [caveman](https://github.com/JuliusBrussee/caveman) (salida) en el eje entrada/orquestación. |
+| 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | Un enjambre de 36 agentes separado, no una fase de `/forge-run` — un objetivo entra, y discovery → análisis → diseño (su propio grill ×3) → TDD → entrega salen, con memoria unificada entre fases. |
 
 ## 🚀 Cómo se usa
 

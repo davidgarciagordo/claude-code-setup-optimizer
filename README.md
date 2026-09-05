@@ -6,7 +6,7 @@
 
 > Two plugins that optimise how you work with Claude Code in any repo: `working-methods`
 > (the `/forge-run` spine — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify) and `automations`
-> (`/optimize-my-setup`, hooks, `/release`). Part of a 5-plugin suite by the same author —
+> (`/optimize-my-setup`, hooks, `/release`). Part of a 6-plugin suite by the same author —
 > see [The wider suite](#-the-wider-suite) below.
 
 ## 📦 Install
@@ -19,7 +19,12 @@ Just this repo's two plugins:
 /plugin install automations@claude-code-setup-optimizer          # /optimize-my-setup · hooks · /release
 ```
 
-The whole suite (all 5 plugins by David García Gordo) from one dedicated catalog:
+> ⚠️ `working-methods` declares `forge-methodology` and `design-review` as dependencies, pinned
+> to the `davidgarciagordo-plugins` marketplace — installing from *this* repo's own marketplace
+> does not pull them in. If you want those dependencies to resolve, add
+> `davidgarciagordo/claude-plugins` too (or just install everything from there, below).
+
+The whole suite (all 6 plugins by David García Gordo) from one dedicated catalog:
 
 ```bash
 /plugin marketplace add davidgarciagordo/claude-plugins
@@ -28,6 +33,7 @@ The whole suite (all 5 plugins by David García Gordo) from one dedicated catalo
 /plugin install forge-methodology@davidgarciagordo-plugins
 /plugin install design-review@davidgarciagordo-plugins
 /plugin install token-economy@davidgarciagordo-plugins
+/plugin install swarm@davidgarciagordo-plugins
 ```
 
 Then:
@@ -41,16 +47,17 @@ Verify with `/plugin` (or `claude plugin list`): installed plugins show `✔ ena
 
 `/forge-run` (below) invokes `forge-methodology` and `design-review` at the right phases, and
 the family's agents inherit token economy from `token-economy`. Those three plugins — plus
-this repo's `working-methods` and `automations` — are catalogued together in
+this repo's `working-methods` and `automations`, and `swarm` — are catalogued together in
 [**davidgarciagordo/claude-plugins**](https://github.com/davidgarciagordo/claude-plugins), the
-single dedicated marketplace for the whole family. Install from there (above) to get all 5;
+single dedicated marketplace for the whole family. Install from there (above) to get all 6;
 install from this repo (above) if you only want `working-methods` + `automations`.
 
 | | Repo | Role |
 |---|---|---|
 | 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify (2 batched owner checkpoints) |
-| 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — structure → audit → anti-slop → a11y → live check |
+| 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — reference research → 4 parallel design lenses → live-render verdict (`alive`/`templated`/`flat`), enforced by hook |
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
+| 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | A separate 36-agent development swarm, not a phase of `/forge-run` — one objective in, discovery → analysis → design (its own grill ×3) → TDD → delivery out, with unified memory across phases. |
 
 ## 🚀 How to use
 
