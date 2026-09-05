@@ -57,7 +57,7 @@ install from this repo (above) if you only want `working-methods` + `automations
 | 🔨 | [**forge-methodology**](https://github.com/davidgarciagordo/forge-methodology) | Structure *what to build* — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify (2 batched owner checkpoints) |
 | 🎨 | [**design-review**](https://github.com/davidgarciagordo/design-review) | Polish *how it looks* — reference research → 4 parallel design lenses → live-render verdict (`alive`/`templated`/`flat`), enforced by hook |
 | 💸 | [**token-economy**](https://github.com/davidgarciagordo/token-economy) | Spend *less to do it* — context-pack (discover-once) · read-only terse agents · frugal output-style · pluggable memory. Complements [caveman](https://github.com/JuliusBrussee/caveman) (output) on the input/orchestration axis. |
-| 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | A separate 36-agent development swarm, not a phase of `/forge-run` — one objective in, discovery → analysis → design (its own grill ×3) → TDD → delivery out, with unified memory across phases. |
+| 🐝 | [**swarm**](https://github.com/davidgarciagordo/swarm) | A separate 39-agent development swarm, not a phase of `/forge-run` — one objective in, discovery → analysis → design (its own grill ×3) → TDD → delivery out, with unified memory across phases. |
 
 ## 🚀 How to use
 
