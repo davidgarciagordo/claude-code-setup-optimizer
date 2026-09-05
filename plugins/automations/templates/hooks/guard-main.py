@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""TEMPLATE — PreToolUse(Bash): impide commitear/pushear DIRECTO a una rama
-protegida (main/master/production). El trabajo va en rama de feature → PR.
+"""TEMPLATE — PreToolUse(Bash): prevents committing/pushing DIRECTLY to a
+protected branch (main/master/production). Work goes on a feature branch → PR.
 
-`/release` y el README lo daban por hecho ("debería bloquearlo un hook tipo
-guard-main") pero el hook no se shippeaba. Aquí está, parametrizable.
+`/release` and the README assumed this ("a guard-main-style hook should block
+this") but the hook wasn't shipped. Here it is, parametrizable.
 
 Config (env):
-  PROTECTED_BRANCHES   lista separada por comas (default: "main,master,production")
+  PROTECTED_BRANCHES   comma-separated list (default: "main,master,production")
 
-Wiring — copia este fichero a `.claude/hooks/guard-main.py` y añade a settings.json:
+Wiring — copy this file to `.claude/hooks/guard-main.py` and add to settings.json:
   { "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [
       { "type": "command",
         "command": "python3 \\"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-main.py\\"" } ] } ] } }
 
-FAIL-CLOSED en lo esencial: si detectamos un `git commit`/`git push` y NO podemos
-determinar la rama destino con seguridad, avisamos por stderr pero no bloqueamos
-(exit 0) salvo que el comando nombre explícitamente una rama protegida — para no
-romper flujos legítimos. La detección de rama actual sí bloquea el commit directo.
+Fail-closed on the essentials: if we detect a `git commit`/`git push` and CANNOT
+safely determine the target branch, we warn via stderr but don't block
+(exit 0) unless the command explicitly names a protected branch — so we don't
+break legitimate flows. Detecting the CURRENT branch does block a direct commit.
 """
 import sys, os, json, re, subprocess
 
@@ -52,20 +52,20 @@ def main():
     if not (is_commit or is_push):
         sys.exit(0)
 
-    # 1) push que nombra explícitamente una rama protegida (origin main, HEAD:main, --branch main)
+    # 1) a push that explicitly names a protected branch (origin main, HEAD:main, --branch main)
     if is_push:
         for b in prot:
             if re.search(rf"(^|[\s:/]){re.escape(b)}(\s|$)", cmd):
-                print(f"BLOQUEADO: push a la rama protegida '{b}'. Abre un PR desde tu rama "
-                      f"de feature. (PROTECTED_BRANCHES para ajustar.)", file=sys.stderr)
+                print(f"BLOCKED: push to protected branch '{b}'. Open a PR from your "
+                      f"feature branch. (Adjust with PROTECTED_BRANCHES.)", file=sys.stderr)
                 sys.exit(2)
 
-    # 2) commit/push estando EN una rama protegida
+    # 2) committing/pushing while ON a protected branch
     cur = current_branch()
     if cur and cur in prot:
-        action = "commitees" if is_commit else "pushees"
-        print(f"BLOQUEADO: estás en '{cur}' (protegida) — no {action} directo. Crea una "
-              f"rama de feature y abre un PR. (PROTECTED_BRANCHES para ajustar.)",
+        action = "commit" if is_commit else "push"
+        print(f"BLOCKED: you're on '{cur}' (protected) — no direct {action}. Create a "
+              f"feature branch and open a PR. (Adjust with PROTECTED_BRANCHES.)",
               file=sys.stderr)
         sys.exit(2)
 

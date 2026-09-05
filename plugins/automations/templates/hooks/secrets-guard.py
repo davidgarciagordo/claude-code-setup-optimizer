@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""TEMPLATE — PreToolUse(Edit|Write|MultiEdit): bloquea escribir secretos en el
-repo (API keys, tokens, claves privadas, connection strings con password). Regla
-no-negociable: nada de secretos en git → solo .env.example con placeholders.
+"""TEMPLATE — PreToolUse(Edit|Write|MultiEdit): blocks writing secrets into the
+repo (API keys, tokens, private keys, connection strings with a password). Non-
+negotiable rule: no secrets in git → only .env.example with placeholders.
 
-No es un escáner exhaustivo; cubre los patrones de alto valor que un agente puede
-pegar por accidente. Para auditoría completa usa gitleaks/trufflehog en CI.
+Not an exhaustive scanner; covers the high-value patterns an agent might paste
+by accident. For full auditing use gitleaks/trufflehog in CI.
 
 Config (env):
-  SECRETS_ALLOW_GLOBS   globs donde NO escanear (default: *.example, *.sample,
-                        *.md fixtures…). Separados por comas.
+  SECRETS_ALLOW_GLOBS   globs to NOT scan (default: *.example, *.sample,
+                        *.md fixtures…). Comma-separated.
   SECRETS_GUARD_MODE    block (default) | warn
 
-Wiring — copia a `.claude/hooks/secrets-guard.py` y añade a settings.json bajo
+Wiring — copy to `.claude/hooks/secrets-guard.py` and add to settings.json under
 PreToolUse matcher "Edit|Write|MultiEdit".
 """
 import sys, os, json, re, fnmatch
 
 DEFAULT_ALLOW = ["*.example", "*.sample", "*.example.*", "**/*.snap"]
 
-# (nombre legible, regex). Diseñados para bajos falsos positivos.
+# (readable name, regex). Designed for low false positives.
 PATTERNS = [
     ("AWS access key id", r"\bAKIA[0-9A-Z]{16}\b"),
     ("AWS secret access key", r"(?i)aws_secret_access_key\s*[=:]\s*['\"]?[A-Za-z0-9/+=]{40}"),
@@ -41,7 +41,7 @@ def allow_globs():
 
 
 def content_of(ti):
-    # Cubre Write (content), Edit (new_string), MultiEdit (edits[].new_string).
+    # Covers Write (content), Edit (new_string), MultiEdit (edits[].new_string).
     parts = []
     if ti.get("content"):
         parts.append(str(ti["content"]))
@@ -74,10 +74,10 @@ def main():
         sys.exit(0)
 
     mode = os.environ.get("SECRETS_GUARD_MODE", "block").lower()
-    print(f"{'BLOQUEADO' if mode == 'block' else 'AVISO'}: parece un SECRETO en "
-          f"'{base or fp}' ({', '.join(sorted(set(hits)))}). Nada de secretos en git: "
-          f"usa variables de entorno / un secret manager y commitea solo placeholders "
-          f"(.env.example). Falso positivo / fixture → renombra a *.example o ajusta "
+    print(f"{'BLOCKED' if mode == 'block' else 'WARNING'}: this looks like a SECRET in "
+          f"'{base or fp}' ({', '.join(sorted(set(hits)))}). No secrets in git: "
+          f"use environment variables / a secret manager and commit only placeholders "
+          f"(.env.example). False positive / fixture → rename to *.example or adjust "
           f"SECRETS_ALLOW_GLOBS.", file=sys.stderr)
     sys.exit(2 if mode == "block" else 0)
 
