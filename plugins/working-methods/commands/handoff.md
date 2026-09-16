@@ -1,105 +1,112 @@
 ---
-description: Cierra la sesión y deja un relevo limpio para la siguiente (trabajo que sobrevive a la sesión).
-argument-hint: [siguiente objetivo acordado]
+description: Closes the session and leaves a clean relay for the next one (work that survives the session).
+argument-hint: [agreed next objective]
 ---
 
-# Handoff de sesión
+# Session Handoff
 
-## PRIMERO: ¿conversación VIVA o modo AUTÓNOMO? (esto decide si preguntas o ejecutas solo)
+## FIRST: LIVE conversation or AUTONOMOUS mode? (this decides whether you ask or execute alone)
 
-El handoff es autónomo en las DOS caras — en **pedirlo** y en **ejecutarlo** — pero el disparo cambia
-según haya o no un humano delante. Detéctalo antes de nada:
+The handoff is autonomous on BOTH sides — in **requesting** it and in **executing** it — but the
+trigger changes depending on whether there's a human present. Detect this before anything else:
 
-- **VIVA (el usuario está presente / respondiendo):** el handoff **NUNCA se ejecuta sin su OK**.
-  Auto-propón el relevo cuando sea óptimo (trigger binario, abajo) y **PREGUNTA**. Si dice que sí,
-  **ejecútalo tú, autónomo, en ESTA misma conversación** — corre el checklist entero, no dejes el MD a
-  medias ni pares tras escribirlo. Preguntar es obligatorio; una vez aprobado, la ejecución es tuya.
-- **AUTÓNOMA (sin humano mirando: cron/`/loop`/background/`$CLAUDE_JOB_DIR`/trabajo nocturno):** no hay
-  a quién preguntar → **ejecuta el handoff solo** cuando el bloque se cierra (checklist + arma el trigger
-  activo de continuación). Aquí escribir el MD es un checkpoint, NO un stop.
+- **LIVE (the user is present / responding):** the handoff **NEVER executes without their OK**.
+  Auto-propose the relay when it's optimal (binary trigger, below) and **ASK**. If they say yes,
+  **execute it yourself, autonomously, in THIS same conversation** — run the whole checklist, don't
+  leave the MD half-done or stop after writing it. Asking is mandatory; once approved, execution is yours.
+- **AUTONOMOUS (no human watching: cron/`/loop`/background/`$CLAUDE_JOB_DIR`/overnight work):**
+  there's no one to ask → **execute the handoff alone** when the block closes (checklist + arm the
+  active continuation trigger). Here, writing the MD is a checkpoint, NOT a stop.
 
-**Regla de oro: usuario presente → preguntar (y ejecutar en-sesión si dice sí); sin usuario → ejecutar
-solo.** Nunca al revés: no auto-ejecutes el relevo con el owner delante sin su OK, ni te quedes esperando
-un input que no va a llegar si estás solo.
+**Golden rule: user present → ask (and execute in-session if they say yes); no user → execute alone.**
+Never the other way around: don't auto-execute the relay with the owner present without their OK,
+and don't sit waiting for input that isn't coming if you're alone.
 
-## Auto-propón el relevo — no esperes a que lo pidan (trigger binario, cada vez que cierras un hito)
+## Auto-propose the relay — don't wait to be asked (binary trigger, every time you close a milestone)
 
-El owner pidiéndolo es un ATAJO, no el disparador. Tras cada hito mergeado, evalúa DOS señales
-verificables — si **AMBAS** valen, propón el relevo tú, en una frase:
+The owner asking for it is a SHORTCUT, not the trigger. After every merged milestone, evaluate TWO
+verifiable signals — if **BOTH** hold, propose the relay yourself, in one sentence:
 
-1. **Sesión larga** (mides, no intuyes): el `ctx:%` del statusline está en zona alta (≳60%), **o**
-   arrastras >1 día / ≥10 PRs de historial.
-2. **Bloque cerrado**: el trabajo actual está mergeado · `git status` limpio · 0 PRs/worktrees en
-   vuelo · el siguiente objetivo es independiente del contexto acumulado.
+1. **Long session** (you measure, don't guess): the statusline's `ctx:%` is in the high zone (≳60%),
+   **or** you're carrying >1 day / ≥10 PRs of history.
+2. **Closed block**: the current work is merged · `git status` clean · 0 PRs/worktrees in flight ·
+   the next objective is independent of the accumulated context.
 
-AMBAS → una frase: *"Momento óptimo de relevo — `<hito>` mergeado, contexto al ~X%. ¿Nueva sesión
-con handoff? Rinde más que seguir compactando (tu norma)."* Solo una → sigue trabajando. Una sesión
-larga con bloque cerrado que NO propone relevo está quemando la ventana en lugar de arrancar fresca.
+BOTH → one sentence: *"Good moment for a relay — `<milestone>` merged, context at ~X%. New session
+with a handoff? Works better than continuing to compact (your own rule)."* Only one → keep working.
+A long session with a closed block that does NOT propose a relay is burning the window instead of
+starting fresh.
 
-> Nota: proponer ≠ ejecutar. Propones; el owner decide. Si dice sí → el checklist de abajo.
+> Note: proposing ≠ executing. You propose; the owner decides. If they say yes → the checklist below.
 
-## Modo AUTÓNOMO — arma la continuación, no esperes a que despierten (mecanismo, no nota)
+## AUTONOMOUS mode — arm the continuation, don't wait for them to wake up (mechanism, not a note)
 
-Detecta si NO hay humano mirando: la sesión la arrancó cron/`/loop`, corre en background
-(`$CLAUDE_JOB_DIR` seteado), o es trabajo nocturno desatendido. En ese modo el handoff MD es un
-**checkpoint, NO un stop.** Escribir el MD y parar deja la cadena rota: un documento pasivo necesita
-que un humano lo lea y lance la sesión nueva — y si duermes, no pasa. El último acto OBLIGATORIO del
-turno es armar un **trigger activo** (esto es lo que un command/skill NO hace solo):
+Detect whether there's NO human watching: the session was started by cron/`/loop`, runs in the
+background (`$CLAUDE_JOB_DIR` set), or is unattended overnight work. In that mode the handoff MD is a
+**checkpoint, NOT a stop.** Writing the MD and stopping leaves the chain broken: a passive document
+needs a human to read it and launch the new session — and if you're asleep, that doesn't happen. The
+turn's MANDATORY last act is to arm an **active trigger** (this is what a command/skill does NOT do
+on its own):
 
-- **Queda contexto + la sesión sigue viva** → `ScheduleWakeup` / `CronCreate` con el prompt de resume
-  (abajo): re-entran en ESTA sesión tras el delay y siguen la MISMA tarea. **AVISO doble (verifícalo,
-  no lo asumas):** (1) estas tools son **propias de algunos harnesses, NO estándar de Claude Code** —
-  comprueba que existen en tu tool-list antes de contar con ellas; (2) donde existen, en muchos
-  harnesses son **session-only** — in-memory, mueren al cerrar la sesión
-  (`CronCreate`: "gone when Claude exits", `durable` sin efecto). Sirven para continuar MIENTRAS la
-  sesión vive, **NO** para sobrevivir a su muerte.
-- **La sesión puede morir / contexto agotado** → hace falta un scheduler **DURABLE fuera de la sesión**:
-  el skill **`schedule`** (routines cloud que corren server-side) o un **cron del SO / externo** cuyo
-  prompt sea el resume. Es lo ÚNICO que arranca una sesión NUEVA sobreviviendo a que esta se acabe. Un
-  `CronCreate`/`ScheduleWakeup` en memoria **NO** cuenta aquí (se van con la sesión). Comprueba la
-  durabilidad del scheduler ANTES de confiarle el relevo; si no es durable, el relevo se pierde al dormir.
+- **Context remains + the session is still alive** → `ScheduleWakeup` / `CronCreate` with the resume
+  prompt (below): they re-enter THIS same session after the delay and continue the SAME task.
+  **DOUBLE WARNING (verify it, don't assume it):** (1) these tools are **specific to some harnesses,
+  NOT a Claude Code standard** — check they exist in your tool list before relying on them; (2) where
+  they exist, in many harnesses they are **session-only** — in-memory, they die when the session
+  closes (`CronCreate`: "gone when Claude exits", `durable` has no effect). They work to continue
+  WHILE the session is alive, **NOT** to survive its death.
+- **The session might die / context exhausted** → you need a scheduler that's **DURABLE outside the
+  session**: the **`schedule`** skill (cloud routines that run server-side) or an **OS-level / external
+  cron** whose prompt is the resume. This is the ONLY thing that starts a NEW session surviving this
+  one ending. An in-memory `CronCreate`/`ScheduleWakeup` does **NOT** count here (it dies with the
+  session). Check the scheduler's durability BEFORE trusting it with the relay; if it's not durable,
+  the relay is lost when it sleeps.
 
-**Regla dura — finales, no los confundas (el bug clásico es tratar autónomo+pendiente como stop):**
+**Hard rule — endings, don't mix them up (the classic bug is treating autonomous+pending as a stop):**
 
-| Situación | Acción correcta |
+| Situation | Correct action |
 |---|---|
-| **VIVO** + momento óptimo de relevo | **PREGUNTA** al owner; si dice sí, ejecuta el handoff autónomo en-sesión (NO auto-ejecutes sin su OK) |
-| **AUTÓNOMO** + trabajo PENDIENTE (aun con contexto agotado) | Ejecuta el handoff solo + **dispara la continuación con un scheduler DURABLE** (skill `schedule` cloud / cron externo si la sesión puede morir; `ScheduleWakeup`/`CronCreate` solo si sigue viva — son session-only); NO pares a esperar humano |
-| Bloque cerrado + objetivo cumplido | Parar de verdad |
-| Bloqueado en input humano (auth, decisión cara/irreversible) | Parar y esperar — aquí SÍ, haya o no humano |
+| **LIVE** + good moment for a relay | **ASK** the owner; if they say yes, execute the autonomous handoff in-session (do NOT auto-execute without their OK) |
+| **AUTONOMOUS** + PENDING work (even with context exhausted) | Execute the handoff alone + **trigger the continuation with a DURABLE scheduler** (cloud `schedule` skill / external cron if the session might die; `ScheduleWakeup`/`CronCreate` only if it's still alive — they're session-only); do NOT stop to wait for a human |
+| Closed block + objective met | Actually stop |
+| Blocked on human input (auth, an expensive/irreversible decision) | Stop and wait — here, YES, human or not |
 
-### Prompt de resume — DETERMINISTA, ejecutable, idempotente (no "continúa" a secas)
-Imperativo y autosuficiente; la sesión nueva NO re-planifica, retoma contra git:
-> *Lee `docs/.../handoffs/<último>.md`. Corre PRIMERO `git log origin/<base>..HEAD` y `gh pr list`
-> para ver qué YA está mergeado (no lo rehagas). Retoma los trabajos EN VUELO con agentes "CONTINÚA
-> desde `<fase>`". Modo autónomo: worktrees aislados, merge en verde (verifica TÚ los tests), commit
-> por fase. Al cerrar cada hito vuelve a `/handoff`.*
+### Resume prompt — DETERMINISTIC, executable, idempotent (not a bare "continue")
+Imperative and self-sufficient; the new session does NOT re-plan, it resumes against git:
+> *Read `docs/.../handoffs/<latest>.md`. Run `git log origin/<base>..HEAD` and `gh pr list` FIRST to
+> see what's ALREADY merged (don't redo it). Resume work IN FLIGHT with agents "CONTINUE from
+> `<phase>`". Autonomous mode: isolated worktrees, merge in green (YOU verify the tests), commit per
+> phase. Return to `/handoff` when each milestone closes.*
 
-### Guardrails (para que el auto-arranque nocturno no se descontrole)
-- **Tope de ciclos:** máx N auto-continuaciones (p.ej. 6) → sin loop infinito ni factura sorpresa.
-- **Budget guard:** parar si se agota el presupuesto de tokens del turno.
-- **Kill-switch:** env-flag para desactivar el re-arranque sin tocar el command.
-- **Night-log:** una línea por ciclo (qué hizo) → por la mañana ves el rastro sin releer todo.
-- **Commit por fase** (ya en el checklist): el trabajo sobrevive aunque un ciclo muera a mitad.
+### Guardrails (so the overnight auto-start doesn't run out of control)
+- **Cycle cap:** max N auto-continuations (e.g. 6) → no infinite loop, no surprise bill.
+- **Budget guard:** stop if the turn's token budget runs out.
+- **Kill switch:** env flag to disable the re-start without touching the command.
+- **Night log:** one line per cycle (what it did) → in the morning you see the trail without rereading everything.
+- **Commit per phase** (already in the checklist): the work survives even if a cycle dies mid-way.
 
-## Checklist (créalo como todos)
-1. **El trabajo en background sobrevive al cierre:** workflows/agentes commitean **por fases** en su worktree/rama. Al cerrar, lo parcial queda en git → la sesión nueva retoma con `git log origin/main..HEAD` + agentes "CONTINÚA" (nunca rehacer desde cero).
-2. **Escribe el handoff MD** versionado en el repo (`docs/.../handoffs/YYYY-MM-DD-next-session.md`):
-   - **Prompt copy-paste** para la sesión nueva (1-2 líneas: "lee este fichero y continúa" + modo de trabajo).
-   - Trabajos EN VUELO: dónde (worktree/rama), qué fase iba, cómo retomarlos.
-   - Siguiente objetivo ($ARGUMENTS) y qué NO tocar.
-   - Mapa de referencias: doc de estado, backlog, specs, memoria.
-3. **Estado/memoria al día ANTES de cerrar:** doc de estado del proyecto, backlog y memoria persistente (decisiones, lecciones con nº de PR, principios del usuario). El handoff apunta, no duplica.
-4. **Mergea el handoff** (el relevo no depende de la máquina ni de la sesión).
-5. **IMPRIME el prompt de lanzamiento EN-SESIÓN** (SIEMPRE, último paso): tras escribir/mergear el MD,
-   echa al chat el prompt copy-paste que el owner debe lanzar en la sesión nueva, en un bloque cercado
-   (```), listo para copiar SIN abrir el fichero. Enterrarlo solo en el MD NO basta — el owner lo quiere
-   a la vista en la conversación. En modo autónomo el prompt es el que alimenta el `ScheduleWakeup`/
-   `CronCreate` (mismo texto); en modo vivo se imprime para que el owner lo pegue. El prompt es el mismo
-   que va dentro del MD (§ "Prompt copy-paste"): DETERMINISTA e idempotente contra git, no "continúa" a secas.
+## Checklist (create it like all the others)
+1. **Background work survives the close:** workflows/agents commit **per phase** in their
+   worktree/branch. When it closes, the partial work stays in git → the new session resumes with
+   `git log origin/main..HEAD` + "CONTINUE" agents (never redo from scratch).
+2. **Write the handoff MD** versioned in the repo (`docs/.../handoffs/YYYY-MM-DD-next-session.md`):
+   - **Copy-paste prompt** for the new session (1-2 lines: "read this file and continue" + the working mode).
+   - Work IN FLIGHT: where (worktree/branch), what phase it was at, how to resume it.
+   - Next objective ($ARGUMENTS) and what NOT to touch.
+   - Reference map: status doc, backlog, specs, memory.
+3. **State/memory up to date BEFORE closing:** project status doc, backlog, and persistent memory
+   (decisions, lessons with PR number, the user's principles). The handoff points, it doesn't duplicate.
+4. **Merge the handoff** (the relay doesn't depend on the machine or the session).
+5. **PRINT the launch prompt IN-SESSION** (ALWAYS, last step): after writing/merging the MD, drop
+   the copy-paste prompt the owner should launch in the new session into the chat, in a fenced block
+   (```), ready to copy WITHOUT opening the file. Burying it only in the MD is NOT enough — the owner
+   wants it visible in the conversation. In autonomous mode the prompt is what feeds
+   `ScheduleWakeup`/`CronCreate` (same text); in live mode it's printed so the owner can paste it. The
+   prompt is the same one that goes inside the MD (§ "Copy-paste prompt"): DETERMINISTIC and
+   idempotent against git, not a bare "continue".
 
-## Modo que el relevo hereda
-- **Merge en verde:** review siempre antes de merge; limpieza de rama/worktree/claim al mergear.
-- **Modelos por tarea:** Opus dirige/decide/revisa lo crítico · Sonnet ejecuta planes cerrados · Haiku lo trivial.
-- **Workflows con memoria unificada:** fase 1 = context pack con `fichero:línea`; resultados encadenados entre fases; áreas disjuntas entre agentes paralelos.
-- **Spec → plan → ejecución;** no adelantar trabajo que dependa de un estado que aún cambia.
+## Mode the relay inherits
+- **Merge in green:** always review before merging; clean up branch/worktree/claim on merge.
+- **Models per task:** Opus directs/decides/reviews the critical work · Sonnet executes closed plans · Haiku the trivial.
+- **Workflows with unified memory:** phase 1 = context pack with `file:line`; results chained between phases; disjoint areas across parallel agents.
+- **Spec → plan → execution;** don't get ahead of work that depends on a state that's still changing.

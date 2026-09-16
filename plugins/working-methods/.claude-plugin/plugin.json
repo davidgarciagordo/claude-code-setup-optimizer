@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "working-methods",
   "displayName": "Working Methods (David)",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The Forge enforcement layer on Claude Code: /forge-run sequences the 12 methodology phases with machine-checked gates — the order lives in workflows/forge.js (code, not prose) and a PR-gate hook (guard-forge-artifacts) blocks gh pr create/ready/merge until the run's artifacts are versioned. Exactly 2 batched owner checkpoints. Plus /grill (adversarial ×3+completeness on an artifact), /handoff (session relay), /install-family (bootstrap the 5-plugin family), and forge-on-claude. REQUIRES forge-methodology (neutral loop + the completeness-critic / reference-decomposer / independent-verifier agents) and design-review (verify phase on UI). OPTIONAL: superpowers (align/plan phases use it when installed; native fallback otherwise). Model routing baked in.",
   "author": {
     "name": "David García Gordo",

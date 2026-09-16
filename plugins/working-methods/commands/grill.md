@@ -1,27 +1,27 @@
 ---
-description: Grilla adversarial ×3 de un spec/diseño/plan, con 3 lentes fijas. Un supuesto no verificado contra el repo es un hallazgo.
-argument-hint: [ruta al spec/plan, o describe qué grillar]
+description: Adversarial ×3 grill of a spec/design/plan, with 3 fixed lenses. An assumption not verified against the repo is a finding.
+argument-hint: [path to the spec/plan, or describe what to grill]
 allowed-tools: Bash(node:*), Task, AskUserQuestion, Read, Grep, Glob
 ---
 
 # Grill ×3 (adversarial)
 
-Ataca el artefacto ($ARGUMENTS) con **tres lentes SIEMPRE**, en paralelo (un agente por lente, áreas disjuntas). Cada lente devuelve un acta de hallazgos. El orquestador (Opus) arbitra los conflictos y produce la versión siguiente del spec.
+Attack the artifact ($ARGUMENTS) with **three lenses ALWAYS**, in parallel (one agent per lens, disjoint areas). Each lens returns a findings report. The orchestrator (Opus) arbitrates conflicts and produces the next version of the spec.
 
-El grill corre **automático**; dos gates capturan el juicio del owner sin frenar la máquina:
+The grill runs **automatically**; two gates capture the owner's judgment without slowing the machine down:
 
 ```
-A. Gate de entrada   → dudas de alto impacto, ancladas en código + brief, en UNA tanda multi-select.
-B. Grill ×3          → las tres lentes corren automáticas. Sin interrumpir al owner.
-C. Gate al usuario   → las dudas que surgen, cada una con tu recomendada + alternativas,
-                       para que el owner acepte / cambie / añada / discrepe — en UNA tanda multi-select.
-D. Re-grill informado → una pasada automática más con las decisiones del owner. Luego, conclusiones.
+A. Entry gate        → high-impact doubts, anchored in code + brief, in ONE multi-select batch.
+B. Grill ×3          → the three lenses run automatically. No owner interruption.
+C. Owner gate        → the doubts that came up, each with your recommendation + alternatives,
+                       for the owner to accept / change / add / disagree — in ONE multi-select batch.
+D. Informed re-grill → one more automatic pass with the owner's decisions. Then, conclusions.
 ```
 
-### A. Gate de entrada (antes de las lentes)
-Lee el artefacto y el repo primero. Una duda entra en el gate SOLO si cumple AMBAS: (a) su respuesta cambia la dirección del grill, y (b) NO es verificable leyendo el código — **lo verificable NO se pregunta**. UNA tanda `AskUserQuestion`, ≤4 preguntas: cada una con 2–4 respuestas candidatas, la tuya recomendada primero y marcada "(recomendada)", y "Other" para que añada la suya.
+### A. Entry gate (before the lenses)
+Read the artifact and the repo first. A doubt enters the gate ONLY if it meets BOTH: (a) its answer changes the direction of the grill, and (b) it is NOT verifiable by reading the code — **what's verifiable is NOT asked**. ONE `AskUserQuestion` batch, ≤4 questions: each with 2–4 candidate answers, yours recommended first and marked "(recommended)", and "Other" so they can add their own.
 
-### B0. Context-pack — run the script, then hand it to the lenses (mecanismo de coste, no opcional)
+### B0. Context-pack — run the script, then hand it to the lenses (cost mechanism, not optional)
 Before dispatching the lenses, the orchestrator runs:
 
 ```bash
@@ -35,43 +35,44 @@ section. **The 3–4 lenses read this pack; they do NOT re-scan the repo or re-d
 (e.g. resolving ambiguous terms in the artifact against repo intent); it does NOT redo the
 mechanical file scan.
 
-## Las 3 lentes (no negociables) — agentes READ-ONLY, salida TERSE
-Despáchalas **en paralelo como sub-agentes con tool-list read-only** (no pueden editar — solo devuelven
-hallazgos) pasándoles `.forge/grill-context.md`. Cada agente devuelve TERSE (`OK`/`KO` + hallazgos 1-línea
-`Pn · fichero:línea · problema → fix`):
-1. **`working-methods:grill-architect`** — reglas, bounded contexts, precedentes; verifica cada supuesto contra el código real, cita `fichero:línea`.
-2. **`working-methods:grill-operator`** — el día a día en el mostrador con mala idea y prisa; flujos rotos, fricción, lo que el usuario hará MAL.
-3. **`working-methods:grill-engineer`** — concurrencia, idempotencia, edge cases, fallos parciales, lo que rompe en producción.
+## The 3 lenses (non-negotiable) — READ-ONLY agents, TERSE output
+Dispatch them **in parallel as sub-agents with a read-only tool list** (they cannot edit — they only
+return findings), passing them `.forge/grill-context.md`. Each agent returns TERSE (`OK`/`KO` +
+1-line findings `Pn · file:line · problem → fix`):
+1. **`working-methods:grill-architect`** — rules, bounded contexts, precedents; verifies every assumption against the real code, cites `file:line`.
+2. **`working-methods:grill-operator`** — the day-to-day counter with bad intent and a rush; broken flows, friction, what the user will do WRONG.
+3. **`working-methods:grill-engineer`** — concurrency, idempotency, edge cases, partial failures, what breaks in production.
 
-### 4ª lente — Completitud (cuando hay Acceptance Matrix)
-Si grillas un spec con **Acceptance Matrix** (p.ej. dentro de `/forge-run`), añade el agente
-**`forge-methodology:completeness-critic`** (viene del plugin `forge-methodology`, dependencia
-declarada de este plugin — este plugin NO trae copia propia; pásale el mismo pack): ¿cubre **cada fila** de la matriz? ¿Hay **contradicciones/huecos en la intención
-del owner**? Cada fila sin cobertura o contradicción = hallazgo. Detecta el gap ANTES de ejecutar.
+### 4th lens — Completeness (when there's an Acceptance Matrix)
+If you're grilling a spec with an **Acceptance Matrix** (e.g. inside `/forge-run`), add the agent
+**`forge-methodology:completeness-critic`** (comes from the `forge-methodology` plugin, a declared
+dependency of this plugin — this plugin does NOT ship its own copy; pass it the same pack): does it
+cover **every row** of the matrix? Are there **contradictions/gaps in the owner's intent**? Any
+uncovered row or contradiction = a finding. Catch the gap BEFORE execution.
 
-## Reglas (mecanismo, no consejo)
-- **Criterio binario de hallazgo** — se reporta SOLO si cumple ≥1 de:
-  (a) contradice código/ADR/regla del repo, citado `fichero:línea`;
-  (b) supuesto del artefacto no verificado contra el repo (verificar era posible y no se hizo);
-  (c) escenario concreto con flujo + input + resultado erróneo nombrados;
-  (d) fila de Acceptance Matrix sin cubrir, o contradicción en la intención del owner.
-  Opinión de estilo / preferencia sin evidencia / "yo lo haría distinto" = NO es hallazgo → no se reporta.
-- **Lentes READ-ONLY** (tool-list sin Edit/Write): son diagnóstico, no aplican nada. El owner decide
-  (gate C) y solo entonces se aplica — fuera del grill. Una lente que edita se salta el gate.
-- **Salida terse** (forzada en cada agent def): hallazgos 1-línea, sin ensayos. El último mensaje del
-  sub-agente es DATO para el orquestador, no un informe humano.
-- Modelo: lentes en Sonnet (barrido); el orquestador (arbitraje + gate al usuario) en Opus.
+## Rules (mechanism, not advice)
+- **Binary finding criterion** — only reported if it meets ≥1 of:
+  (a) contradicts code/ADR/repo rule, cited `file:line`;
+  (b) an artifact assumption unverified against the repo (verifying was possible and wasn't done);
+  (c) a concrete scenario naming flow + input + wrong outcome;
+  (d) an uncovered Acceptance Matrix row, or a contradiction in the owner's intent.
+  Style opinion / preference without evidence / "I'd do it differently" = NOT a finding → don't report it.
+- **READ-ONLY lenses** (tool list without Edit/Write): they diagnose, they don't apply anything. The owner
+  decides (gate C) and only then is anything applied — outside the grill. A lens that edits skips the gate.
+- **Terse output** (enforced in every agent def): 1-line findings, no essays. The sub-agent's last
+  message is DATA for the orchestrator, not a human report.
+- Model: lenses on Sonnet (sweep); the orchestrator (arbitration + owner gate) on Opus.
 
-## C. Gate al usuario (tras las 3 actas, ANTES de las conclusiones)
-No resuelvas en silencio las dudas que surgen. Para cada duda / contradicción / supuesto sin verificar, calcula tu **respuesta recomendada + las alternativas vivas**, y preséntalas como UNA tanda multi-select:
-- Cada ítem: la duda en cristiano + tu recomendada (premarcada) + las alternativas + la(s) lente(s) que la levantó.
-- El owner puede **aceptar**, **elegir otra**, **añadir la suya**, o **discrepar** (rechazar + nota).
-- Agrupa por severidad (blocking → significant → minor) para que sea escaneable; premarca las recomendadas.
-- `AskUserQuestion` con `multiSelect: true` (≤4 preguntas/llamada, 2–4 opciones; su "Other" = añade-la-tuya / discrepa). Si quedan más dudas, varias tandas, las más críticas primero, y di cuántas quedan.
-- **Lo corre el orquestador, NUNCA un subagente griller** — los subagentes no pueden preguntar al owner. Las lentes producen hallazgos + recomendadas; el orquestador las presenta y recoge las decisiones.
+## C. Owner gate (after the 3 reports, BEFORE the conclusions)
+Don't silently resolve the doubts that come up. For each doubt / contradiction / unverified assumption, work out your **recommended answer + the live alternatives**, and present them as ONE multi-select batch:
+- Each item: the doubt in plain language + your recommendation (pre-marked) + the alternatives + the lens(es) that raised it.
+- The owner can **accept**, **pick another**, **add their own**, or **disagree** (reject + note).
+- Group by severity (blocking → significant → minor) so it's scannable; pre-mark the recommendations.
+- `AskUserQuestion` with `multiSelect: true` (≤4 questions/call, 2–4 options; its "Other" = add-your-own / disagree). If more doubts remain, several batches, most critical first, and say how many remain.
+- **Run by the orchestrator, NEVER a griller subagent** — subagents can't ask the owner. The lenses produce findings + recommendations; the orchestrator presents them and collects the decisions.
 
-## D. Re-grill informado
-Mete las decisiones del owner y corre **una pasada automática más**, enfocada en: las costuras que abren las respuestas elegidas + lo que el owner discrepó o añadió y las lentes no consideraron. Repite el gate solo si el re-grill levanta dudas blocking genuinamente nuevas — no marees al owner con lo ya cerrado.
+## D. Informed re-grill
+Feed in the owner's decisions and run **one more automatic pass**, focused on: the seams the chosen answers open + what the owner disagreed with or added that the lenses didn't consider. Repeat the gate only if the re-grill raises genuinely new blocking doubts — don't drag the owner through what's already closed.
 
-## Salida
-Tres actas + síntesis arbitrada + el **gate al usuario resuelto** (decisiones del owner registradas) + la versión siguiente del spec.
+## Output
+Three reports + arbitrated synthesis + the **resolved owner gate** (owner decisions on record) + the next version of the spec.

@@ -21,7 +21,7 @@ both batched. Not a prose checklist you have to remember.
 count. Run `/forge-run` when the task needs a **design decision that is expensive to get wrong**:
 - a **new feature, product, or integration**; an **architecture or security decision**;
 - a change that **defines a behavior contract others depend on** (new API/event/schema shape a spec should pin down);
-- the owner invokes `/forge-run` / says "forge this" / "pásalo por la Forja".
+- the owner invokes `/forge-run` / says "forge this" / "run it through the Forge".
 
 **Skip** — work directly, even across many files — when the task is **executing something already
 decided**: fixing an identified bug, a mechanical sweep/migration with a known transform, applying

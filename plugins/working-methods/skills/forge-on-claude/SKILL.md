@@ -1,27 +1,27 @@
 ---
 name: forge-on-claude
-description: Mapea la metodología Forge (vendor-neutral) a las herramientas concretas de Claude Code — ultrathink para grill/plan, varios subagents Task en un mismo mensaje para orquestar en paralelo, git worktrees para aislamiento, context pack encadenado para memoria compartida, /handoff como resume capsule. Úsala cuando ejecutes Forge en Claude Code y quieras saber qué herramienta usar en cada paso.
+description: Maps the (vendor-neutral) Forge methodology to concrete Claude Code tools — ultrathink for grill/plan, several Task subagents in one message to orchestrate in parallel, git worktrees for isolation, a chained context pack for shared memory, /handoff as the resume capsule. Use it when running Forge on Claude Code and you need to know which tool to use at each step.
 ---
 
-# Forge en Claude Code — mapa de herramientas
+# Forge on Claude Code — tool map
 
-> **Dependencia declarada:** este skill **requiere el plugin `forge-methodology`** — no redefine la metodología, mapea su loop neutral (align+brainstorm → reference-decomposition → draft + grill ×3 → checkpoint #1 → spec → re-grill ×2 → checkpoint #2 → plan global + propuesta de ejecución → execute → verify → sign-off; 2 interrupciones al owner, en lote) a las herramientas de Claude Code. Instálalo con `/install-family` (o `claude plugin install forge-methodology@davidgarciagordo-plugins`, catálogo `davidgarciagordo/claude-plugins`). El command que EJECUTA este mapa en orden es **`/forge-run`**.
+> **Declared dependency:** this skill **requires the `forge-methodology` plugin** — it doesn't redefine the methodology, it maps its neutral loop (align+brainstorm → reference-decomposition → draft + grill ×3 → checkpoint #1 → spec → re-grill ×2 → checkpoint #2 → global plan + execution proposal → execute → verify → sign-off; 2 batched owner interruptions) to Claude Code tools. Install it with `/install-family` (or `claude plugin install forge-methodology@davidgarciagordo-plugins`, catalog `davidgarciagordo/claude-plugins`). The command that EXECUTES this map in order is **`/forge-run`**.
 
-Forge es vendor-neutral; esta tabla da el equivalente concreto en **Claude Code**. No cambia la metodología.
+Forge is vendor-neutral; this table gives the concrete equivalent in **Claude Code**. It doesn't change the methodology.
 
-| Concepto Forge (neutral) | En Claude Code |
+| Forge concept (neutral) | In Claude Code |
 |---|---|
-| **Deep-reasoning tier** (grill ×3, plan global, arbitraje, review crítico) | **`ultrathink`** en el prompt (razonamiento profundo) + modelo **Opus**. |
-| **Gate de entrada + gate al usuario** (dudas del grill → owner decide: acepta/cambia/añade/discrepa) | **`AskUserQuestion`** con `multiSelect: true` (≤4 preguntas/llamada, 2–4 opciones; recomendada con "(recomendada)"; "Other" = añade-la-tuya / discrepa). **Lo corre el orquestador, NUNCA un subagente** (los subagentes no preguntan al owner). |
-| **Orquestar unidades disjuntas en paralelo** | Varios **subagents `Task` en un mismo mensaje** (corren en paralelo). Es lo estándar y portable en Claude Code; si tu harness trae un orquestador propio de fan-out, puedes usarlo, pero no lo asumas. |
-| **Isolated workspace** (1 unidad = 1 workspace) | **git worktree + rama por unidad** (`git worktree add`). Si el repo trae un flujo propio (p.ej. `/new-session`), úsalo. **1 sesión = 1 worktree = 1 rama.** |
-| **Ownership claim** (declarar qué tocas antes) | Fichero de claim trackeado / asignación visible; subagents de una sesión = **áreas DISJUNTAS** (un fichero = un solo agente). |
-| **Context pack compartido** (memoria unificada, no re-descubrir) | Fase 1 = subagents lectores que devuelven un **mapa con `file:line`** (salida estructurada); encadena esos resultados como **input** de la fase siguiente. No hagas que cada agente re-lea lo que otro ya mapeó. |
-| **Resume capsule** (sobrevive a la sesión) | **`/handoff`** + un `state.md` commiteado por fase; retomar = leerlo, no re-derivar. |
-| **Right capability per unit** (model routing) | **Opus** dirige/decide/grilla/revisa · **Sonnet** ejecuta planes cerrados / refactors / migraciones · **Haiku** lo trivial. |
-| **Automate before spending capability** | Scripts/CLI (`rg`, `sed`, `jq`) para buscar/transformar/contar antes de gastar tokens. |
-| **Verify independiente** | Subagents **adversariales** que intentan refutar el hallazgo (no el mismo agente que lo produjo). |
-| **Checkpoint preventivo (~80% cuota)** | Commit por fase en el worktree; al saltar el límite, la sesión nueva retoma del último checkpoint. |
+| **Deep-reasoning tier** (grill ×3, global plan, arbitration, critical review) | **`ultrathink`** in the prompt (deep reasoning) + **Opus** model. |
+| **Entry gate + owner gate** (grill doubts → owner decides: accept/change/add/disagree) | **`AskUserQuestion`** with `multiSelect: true` (≤4 questions/call, 2–4 options; recommendation marked "(recommended)"; "Other" = add-your-own / disagree). **Run by the orchestrator, NEVER a subagent** (subagents don't ask the owner). |
+| **Orchestrate disjoint units in parallel** | Several **`Task` subagents in one message** (they run in parallel). This is the standard, portable way in Claude Code; if your harness ships its own fan-out orchestrator, you can use it, but don't assume it. |
+| **Isolated workspace** (1 unit = 1 workspace) | **git worktree + branch per unit** (`git worktree add`). If the repo has its own flow (e.g. `/new-session`), use it. **1 session = 1 worktree = 1 branch.** |
+| **Ownership claim** (declare what you're touching beforehand) | Tracked claim file / visible assignment; subagents in a session = **DISJOINT areas** (one file = one agent only). |
+| **Shared context pack** (unified memory, no rediscovery) | Phase 1 = reader subagents that return a **`file:line` map** (structured output); chain those results as **input** to the next phase. Don't make each agent re-read what another already mapped. |
+| **Resume capsule** (survives the session) | **`/handoff`** + a `state.md` committed per phase; resuming = reading it, not re-deriving it. |
+| **Right capability per unit** (model routing) | **Opus** directs/decides/grills/reviews · **Sonnet** executes closed plans / refactors / migrations · **Haiku** the trivial. |
+| **Automate before spending capability** | Scripts/CLI (`rg`, `sed`, `jq`) to search/transform/count before spending tokens. |
+| **Independent verify** | **Adversarial** subagents that try to disprove the finding (not the same agent that produced it). |
+| **Preventive checkpoint (~80% quota)** | Commit per phase in the worktree; when the limit is hit, the new session resumes from the last checkpoint. |
 
-## Regla de oro
-El **usuario siempre decide**: el plan global se aprueba antes de ejecutar, y los hallazgos/cambios se presentan para que elija (multi-check), nunca se aplican a ciegas. Ver el loop neutral completo en el skill `forge-methodology`.
+## Golden rule
+**The user always decides**: the global plan is approved before execution, and findings/changes are presented for them to choose (multi-check), never applied blindly. See the full neutral loop in the `forge-methodology` skill.

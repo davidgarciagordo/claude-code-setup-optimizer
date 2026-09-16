@@ -1,30 +1,34 @@
 ---
-description: Prepara un PR de release de la rama de integración a producción (típicamente dev → main; detecta las ramas reales con scan.mjs) con notas generadas desde git log.
-argument-hint: [versión opcional, p.ej. v1.4.0]
+description: Prepares a release PR from the integration branch to production (typically dev → main; detects the real branches with scan.mjs) with notes generated from git log.
+argument-hint: [optional version, e.g. v1.4.0]
 allowed-tools: Bash(git log:*), Bash(git diff:*), Bash(gh pr create:*), Bash(gh pr list:*), Bash(git fetch:*), Bash(node:*), Read
 ---
 
-# Release (integración → producción)
+# Release (integration → production)
 
-Prepara la subida a producción. **No asumas `dev → main`:** lee las ramas reales del pack del
-scanner — `node "${CLAUDE_PLUGIN_ROOT}/skills/optimize-my-setup/scan.mjs" --json` emite
-`branches.mainBranch` (producción) y `branches.integrationBranch` (integración; `null` = el repo
-trabaja con feature-branches directas a producción → este comando no aplica tal cual, pregunta).
-Los pasos de abajo usan `dev → main` como ejemplo; sustituye por las ramas detectadas.
+Prepares the push to production. **Don't assume `dev → main`:** read the real branches from the
+scanner pack — `node "${CLAUDE_PLUGIN_ROOT}/skills/optimize-my-setup/scan.mjs" --json` emits
+`branches.mainBranch` (production) and `branches.integrationBranch` (integration; `null` = the repo
+works with feature branches straight to production → this command doesn't apply as-is, ask).
+The steps below use `dev → main` as the example; substitute the detected branches.
 
-## Pasos
+## Steps
 1. `git fetch --all --prune`.
-2. Reúne el rango de cambios desde el último release:
+2. Gather the range of changes since the last release:
    ```bash
    git log --oneline origin/main..origin/dev
    git diff --stat origin/main..origin/dev
    ```
-3. Agrupa por tipo de commit (feat/fix/perf/refactor/…) y redacta **notas de release** legibles (qué cambia para el usuario, no el changelog crudo). Marca breaking changes.
-4. Si pasas `$ARGUMENTS` como versión, encabeza las notas con ella.
-5. Crea el PR `dev → main`:
+3. Group by commit type (feat/fix/perf/refactor/…) and write readable **release notes** (what
+   changes for the user, not the raw changelog). Flag breaking changes.
+4. If `$ARGUMENTS` is passed as a version, head the notes with it.
+5. Create the `dev → main` PR:
    ```bash
-   gh pr create --base main --head dev --title "release: $ARGUMENTS" --body "<notas>"
+   gh pr create --base main --head dev --title "release: $ARGUMENTS" --body "<notes>"
    ```
-6. **No mergees aún.** Release = gate humano: deja el PR para revisión/aprobación. Verde en CI antes de mergear.
+6. **Don't merge yet.** Release = human gate: leave the PR for review/approval. CI green before merging.
 
-Nunca commitees directo a `main`. Para que sea imposible (no solo una norma), instala el hook `guard-main.py` que se shippea en `${CLAUDE_PLUGIN_ROOT}/templates/hooks/guard-main.py` (parametrizable por `PROTECTED_BRANCHES`; wiring en `${CLAUDE_PLUGIN_ROOT}/templates/hooks/README.md`) — o deja que `/optimize-my-setup` lo cablee.
+Never commit directly to `main`. To make it impossible (not just a rule), install the
+`guard-main.py` hook shipped at `${CLAUDE_PLUGIN_ROOT}/templates/hooks/guard-main.py`
+(parameterizable via `PROTECTED_BRANCHES`; wiring in
+`${CLAUDE_PLUGIN_ROOT}/templates/hooks/README.md`) — or let `/optimize-my-setup` wire it for you.
