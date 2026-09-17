@@ -33,6 +33,18 @@ multi-select. Nada toca disco hasta que lo marcas.
 | Allowlist de permisos | `templates/permissions-allowlist.json` | Base de comandos read-only + dev seguros para matar prompts repetidos; adáptala a tu ecosistema |
 | Bloque de rules para CLAUDE.md | `templates/claude-md-rules-reference.md` | Plantilla para referenciar tus normas always-on desde el `CLAUDE.md` del repo (apuntar, no copiar) |
 
+## El pipeline de 5 fases
+
+```mermaid
+flowchart TD
+    A["/optimize-my-setup"] --> B["1. Detecta plugins instalados"]
+    B --> C["2. scan.mjs → context pack<br/>(ecosistema, ramas, invariantes)"]
+    C --> D["3. Abre 1 agente read-only<br/>por superficie .claude (8 superficies)"]
+    D --> E{"4. Multi-check obligatorio<br/>(cada item un checkbox)"}
+    E -- "sin marcar" --> F["No se toca"]
+    E -- "marcado" --> G["5. Aplica SOLO lo marcado"]
+```
+
 ## Demo de 60 segundos
 
 ```

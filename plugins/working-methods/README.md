@@ -46,6 +46,24 @@ applying a written plan) → work directly.
 
 ## The spine — 12 phases, each gated by artifacts
 
+```mermaid
+flowchart TD
+    A["1. align"] --> B["2. reference-decomposition"]
+    B --> C["3. draft"]
+    C --> D["4. grill ×3 + completeness lens"]
+    D --> E{"5. checkpoint-1<br/>(owner batch)"}
+    E --> F["6. spec + Acceptance Matrix"]
+    F --> G["7. regrill ×2"]
+    G --> H{"8. checkpoint-2<br/>(spec locked)"}
+    H --> I["9. plan + execution proposal"]
+    I --> J["10. execute<br/>(worktrees + shared context pack)"]
+    J --> K["11. verify<br/>(audit the matrix, not the diff)"]
+    K --> L["12. handoff<br/>(owner sign-off)"]
+    L --> M{"gh pr create / ready / merge"}
+    M -- "artifacts missing" --> N["hook BLOCKS (fail-closed)"]
+    M -- "all 7 gate artifacts present" --> O["PR proceeds"]
+```
+
 Generated from `node workflows/forge.js phases` (that command is the single source of truth;
 if this table and the script ever disagree, the script wins):
 

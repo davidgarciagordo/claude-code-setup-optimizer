@@ -46,6 +46,24 @@ barrido mecánico, aplicar un plan escrito) → trabaja directo.
 
 ## La columna — 12 fases, cada una con gate por artefactos
 
+```mermaid
+flowchart TD
+    A["1. align"] --> B["2. reference-decomposition"]
+    B --> C["3. draft"]
+    C --> D["4. grill ×3 + lente de completitud"]
+    D --> E{"5. checkpoint-1<br/>(lote del responsable)"}
+    E --> F["6. spec + Matriz de Aceptación"]
+    F --> G["7. regrill ×2"]
+    G --> H{"8. checkpoint-2<br/>(spec cerrado)"}
+    H --> I["9. plan + propuesta de ejecución"]
+    I --> J["10. execute<br/>(worktrees + context pack compartido)"]
+    J --> K["11. verify<br/>(audita la matriz, no el diff)"]
+    K --> L["12. handoff<br/>(aprobación del responsable)"]
+    L --> M{"gh pr create / ready / merge"}
+    M -- "faltan artefactos" --> N["hook BLOQUEA (fail-closed)"]
+    M -- "los 7 artefactos del gate presentes" --> O["el PR avanza"]
+```
+
 Generado desde `node workflows/forge.js phases` (ese comando es la fuente única de verdad; si
 esta tabla y el script discrepan, gana el script):
 

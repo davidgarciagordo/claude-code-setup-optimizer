@@ -33,6 +33,18 @@ Nothing touches disk until you tick it.
 | Permissions allowlist | `templates/permissions-allowlist.json` | Read-only + safe-dev commands base to kill repeated permission prompts; adapt to your ecosystem |
 | CLAUDE.md rules block | `templates/claude-md-rules-reference.md` | Template for referencing your always-on norms from a repo's `CLAUDE.md` (point, don't copy) |
 
+## The 5-phase pipeline
+
+```mermaid
+flowchart TD
+    A["/optimize-my-setup"] --> B["1. Detect installed plugins"]
+    B --> C["2. scan.mjs → context pack<br/>(ecosystem, branches, invariants)"]
+    C --> D["3. Fan out 1 read-only agent<br/>per .claude surface (8 surfaces)"]
+    D --> E{"4. Mandatory multi-check<br/>(every item a checkbox)"}
+    E -- "unchecked" --> F["Not touched"]
+    E -- "checked" --> G["5. Apply ONLY ticked items"]
+```
+
 ## 60-second demo
 
 ```
