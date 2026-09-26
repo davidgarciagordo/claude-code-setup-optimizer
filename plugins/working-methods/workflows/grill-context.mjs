@@ -34,14 +34,14 @@ function arg(flag) {
 function gitRoot(from) {
   try {
     return execFileSync('git', ['-C', from, 'rev-parse', '--show-toplevel'],
-      { encoding: 'utf8', timeout: 8000 }).trim();
+      { encoding: 'utf8', timeout: 8000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch (_) { return from; }
 }
 
 function gitLsFiles(root) {
   try {
     return execFileSync('git', ['-C', root, 'ls-files'],
-      { encoding: 'utf8', timeout: 15000 }).trim().split('\n').filter(Boolean);
+      { encoding: 'utf8', timeout: 15000, stdio: ['ignore', 'pipe', 'ignore'] }).trim().split('\n').filter(Boolean);
   } catch (_) { return []; }
 }
 
@@ -67,17 +67,33 @@ function readSafe(abs) {
   try { return fs.readFileSync(abs, 'utf8'); } catch (_) { return null; }
 }
 
-/** Extract 3-8 keyword tokens from the artifact path and first ~80 lines of content. */
+const STOPWORDS = new Set([
+  'this', 'that', 'with', 'from', 'your', 'will', 'must', 'have', 'each', 'when', 'then',
+  'they', 'their', 'there', 'these', 'those', 'about', 'which', 'should', 'would', 'could',
+  'into', 'over', 'what', 'where', 'while', 'being', 'been', 'were', 'also', 'only', 'more',
+  'most', 'some', 'such', 'than', 'them', 'other', 'after', 'before', 'under', 'every',
+]);
+
+/**
+ * Extract up to 8 keyword tokens from the artifact path and first ~80 lines of content.
+ * Sources, in priority order: file name, words in `#`-headings, `code` spans,
+ * Capitalised words, then lowercase words longer than 4 letters.
+ */
 function extractKeywords(artifactPath, content) {
+  const keep = (w) => w.length > 3 && !STOPWORDS.has(w);
   const fromPath = path.basename(artifactPath, path.extname(artifactPath))
-    .split(/[-_./\s]+/).filter((w) => w.length > 3);
-  const firstLines = content.split('\n').slice(0, 80).join(' ');
-  // grab capitalized words and words after ## headings as domain terms
-  const fromContent = (firstLines.match(/##\s+(\S+)|`([^`]{4,})`|\b([A-Z][a-z]{3,})\b/g) || [])
-    .map((m) => m.replace(/^##\s+|`/g, '').trim().toLowerCase())
-    .filter((w) => w.length > 3 && !['this', 'that', 'with', 'from', 'your', 'will', 'must', 'have', 'each', 'when', 'then', 'they', 'their'].includes(w));
-  const all = [...new Set([...fromPath.map((w) => w.toLowerCase()), ...fromContent])];
-  return all.slice(0, 8);
+    .split(/[-_./\s]+/).map((w) => w.toLowerCase()).filter(keep);
+  const head = content.split('\n').slice(0, 80);
+  const fromHeadings = head
+    .filter((l) => /^#{1,6}\s+/.test(l))
+    .flatMap((l) => l.replace(/^#{1,6}\s+/, '').toLowerCase().match(/[a-z0-9][a-z0-9-]*/g) || [])
+    .filter(keep);
+  const text = head.join(' ');
+  const fromCode = (text.match(/`([^`]{4,})`/g) || []).map((m) => m.replace(/`/g, '').trim().toLowerCase());
+  const fromCaps = (text.match(/\b[A-Z][a-z]{3,}\b/g) || []).map((w) => w.toLowerCase());
+  const fromLower = (text.match(/\b[a-z]{5,}\b/g) || []);
+  const all = [...fromPath, ...fromHeadings, ...fromCode, ...fromCaps, ...fromLower].filter(keep);
+  return [...new Set(all)].slice(0, 8);
 }
 
 /** Generic anchor patterns, valid in ANY repo (no project-specific paths here). */

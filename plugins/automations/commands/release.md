@@ -2,6 +2,7 @@
 description: Prepares a release PR from the integration branch to production (typically dev → main; detects the real branches with scan.mjs) with notes generated from git log.
 argument-hint: [optional version, e.g. v1.4.0]
 allowed-tools: Bash(git log:*), Bash(git diff:*), Bash(gh pr create:*), Bash(gh pr list:*), Bash(git fetch:*), Bash(node:*), Read
+disable-model-invocation: true
 ---
 
 # Release (integration → production)

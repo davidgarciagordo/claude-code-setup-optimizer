@@ -14,7 +14,7 @@
  *   node forge.js status                 # active run: current phase + gate state
  *   node forge.js gate <phaseId>         # can we ENTER this phase? exit 0 ok / 2 blocked
  *   node forge.js advance <phaseId>      # record that we entered <phaseId> (gates must pass)
- *   node forge.js check-pr               # pre-PR/pre-merge artifacts present? exit 0 / 2
+ *   node forge.js check-pr               # pre-PR/pre-merge artifacts tracked by git? exit 0 / 2
  *   node forge.js complete               # mark active run complete (hook stops enforcing it)
  */
 'use strict';
@@ -72,8 +72,9 @@ const PHASES = [
     gateIn: ['verify.md'], produces: ['handoff.md'] },
 ];
 
-// Artifacts that must be versioned BEFORE a PR / merge is allowed. The
-// enforcement hook reads this list off the manifest (written at init).
+// Artifacts that must be versioned (tracked by git, non-empty) BEFORE a PR /
+// merge is allowed. check-pr always uses THIS list — never the copy in run.json,
+// which anyone can edit.
 const PRE_MERGE_ARTIFACTS = [
   'spec.md', 'acceptance-matrix.md',
   'grill-verdicts.md', 'decisions-1.md',
@@ -84,7 +85,8 @@ const PRE_MERGE_ARTIFACTS = [
 /* ── helpers ───────────────────────────────────────────────────────────────── */
 function gitRoot() {
   try {
-    return cp.execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
+    return cp.execSync('git rev-parse --show-toplevel',
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch (_) {
     return process.cwd();
   }
@@ -104,19 +106,34 @@ function arg(flag) {
   return hit ? hit.slice(flag.length + 1) : null;
 }
 
+function listManifests(root) {
+  const base = path.join(root, 'docs', 'forge');
+  if (!fs.existsSync(base)) return [];
+  const found = [];
+  for (const d of fs.readdirSync(base)) {
+    const m = path.join(base, d, 'run.json');
+    if (fs.existsSync(m)) found.push(m);
+  }
+  return found;
+}
+
+// Manifests that exist but cannot be parsed. check-pr treats any of them as
+// blocking: a corrupt run.json must never read as "no active run".
+function corruptManifests(root) {
+  const env = process.env.FORGE_RUN_MANIFEST;
+  const candidates = env
+    ? [path.isAbsolute(env) ? env : path.join(root, env)].filter((p) => fs.existsSync(p))
+    : listManifests(root);
+  return candidates.filter((m) => readJson(m) === null);
+}
+
 function findManifest(root) {
   const env = process.env.FORGE_RUN_MANIFEST;
   if (env) {
     const p = path.isAbsolute(env) ? env : path.join(root, env);
     return fs.existsSync(p) ? p : null;
   }
-  const base = path.join(root, 'docs', 'forge');
-  if (!fs.existsSync(base)) return null;
-  const found = [];
-  for (const d of fs.readdirSync(base)) {
-    const m = path.join(base, d, 'run.json');
-    if (fs.existsSync(m)) found.push(m);
-  }
+  const found = listManifests(root);
   // newest active run wins
   const active = found
     .map((m) => ({ m, j: readJson(m) }))
@@ -131,6 +148,17 @@ function readJson(p) {
 
 function nonEmpty(p) {
   try { return fs.statSync(p).size > 0; } catch (_) { return false; }
+}
+
+// Paths (relative to root) that git tracks — staged or committed.
+function trackedFiles(root, relPaths) {
+  try {
+    const out = cp.execFileSync('git', ['-C', root, 'ls-files', '--', ...relPaths],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    return new Set(out.split('\n').map((l) => l.trim()).filter(Boolean));
+  } catch (_) {
+    return new Set();
+  }
 }
 
 function phase(id) { return PHASES.find((p) => p.id === id); }
@@ -148,7 +176,7 @@ function cmdPhases() {
     if (p.gateIn.length) console.log(`       gate-in : needs ${p.gateIn.join(', ')}`);
     if (p.produces.length) console.log(`       produces: ${p.produces.join(', ')}`);
   });
-  console.log(`\n  Pre-PR / pre-merge gate: ${PRE_MERGE_ARTIFACTS.join(', ')} must exist & be non-empty.`);
+  console.log(`\n  Pre-PR / pre-merge gate: ${PRE_MERGE_ARTIFACTS.join(', ')} must be tracked by git & non-empty.`);
   return 0;
 }
 
@@ -165,9 +193,9 @@ function cmdInit(task) {
       'Complete it first ("node forge.js complete") or set FORGE_RUN_MANIFEST to override.');
     return 2;
   }
-  const slug = arg('--slug') || slugify(task);
+  const slug = slugify(arg('--slug') || task);
   // The run dir is ALWAYS docs/forge/<slug>/ — findManifest() only scans there,
-  // so a configurable dir would silently disarm status/check-pr (the old --dir bug).
+  // so a configurable dir would silently disarm status/check-pr.
   const relDir = path.join('docs', 'forge', slug);
   const dir = path.join(root, relDir);
   fs.mkdirSync(dir, { recursive: true });
@@ -186,7 +214,7 @@ function cmdInit(task) {
   fs.writeFileSync(path.join(dir, 'run.json'), JSON.stringify(manifest, null, 2) + '\n');
   console.log(`Forge run initialised: ${relDir}/`);
   console.log(`  manifest: ${relDir}/run.json (status=active, phase=${manifest.phase})`);
-  console.log(`  the guard-forge-artifacts hook will now block a PR until ${PRE_MERGE_ARTIFACTS.join(', ')} exist.`);
+  console.log(`  the guard-forge-artifacts hook will now block a PR until ${PRE_MERGE_ARTIFACTS.join(', ')} are tracked by git.`);
   console.log(`  next: produce ${PHASES[0].produces.join(', ')}, then \`node forge.js advance ${PHASES[1].id}\``);
   return 0;
 }
@@ -274,21 +302,28 @@ function cmdAdvance(id) {
 }
 
 function cmdCheckPr() {
-  // Mirrors the hook, for manual / CI use. Exit 2 if the active run is missing
-  // any pre-merge artifact; exit 0 if there is no active run (nothing to govern).
+  // Mirrors the hook, for manual / CI use. Exit 2 if any run.json is unreadable
+  // or the active run is missing a tracked pre-merge artifact; exit 0 if there
+  // is no active run (nothing to govern).
   const root = gitRoot();
+  const corrupt = corruptManifests(root);
+  if (corrupt.length) {
+    console.error(`check-pr: BLOCKED — unreadable manifest(s): ${corrupt.map((m) => path.relative(root, m)).join(', ')} (fail-closed). Fix or remove them.`);
+    return 2;
+  }
   const m = findManifest(root);
   if (!m) { console.log('check-pr: no active Forge run — nothing to enforce.'); return 0; }
   const j = readJson(m);
-  if (!j) { console.error('check-pr: manifest unreadable — refusing to vouch (fail-closed).'); return 2; }
+  if (!j || typeof j.dir !== 'string') { console.error('check-pr: manifest unreadable — refusing to vouch (fail-closed).'); return 2; }
   const dir = path.join(root, j.dir);
-  const required = j.preMergeArtifacts || PRE_MERGE_ARTIFACTS;
-  const missing = required.filter((a) => !nonEmpty(path.join(dir, a)));
+  const rel = PRE_MERGE_ARTIFACTS.map((a) => path.join(j.dir, a).split(path.sep).join('/'));
+  const tracked = trackedFiles(root, rel);
+  const missing = PRE_MERGE_ARTIFACTS.filter((a, i) => !nonEmpty(path.join(dir, a)) || !tracked.has(rel[i]));
   if (missing.length) {
-    console.error(`check-pr: BLOCKED — versioned artifacts missing for run "${j.slug}": ${missing.map((a) => path.join(j.dir, a)).join(', ')}`);
+    console.error(`check-pr: BLOCKED — artifacts missing, empty or not tracked by git for run "${j.slug}": ${missing.map((a) => path.join(j.dir, a)).join(', ')}`);
     return 2;
   }
-  console.log(`check-pr: OK — ${required.join(', ')} present for run "${j.slug}".`);
+  console.log(`check-pr: OK — ${PRE_MERGE_ARTIFACTS.join(', ')} tracked for run "${j.slug}".`);
   return 0;
 }
 

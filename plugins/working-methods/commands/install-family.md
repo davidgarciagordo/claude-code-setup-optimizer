@@ -2,6 +2,7 @@
 description: Bootstrap — install/verify the whole five-plugin family (working-methods, automations, forge-methodology, design-review, token-economy) so /forge-run has every phase's tool present. Reports what's missing and installs it.
 argument-hint: (none)
 allowed-tools: Bash(claude plugin:*), Bash(claude plugin list:*), Bash(claude plugin validate:*), Read
+disable-model-invocation: true
 ---
 
 # /install-family — make sure the whole spine is present
