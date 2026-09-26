@@ -1,0 +1,253 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "/forge-run — 12 fases con gate",
+    "output": "forge-run.es.html",
+    "animation": "none",
+    "visual_preset": "classic",
+    "quality_profile": "standard"
+  },
+  "lanes": [
+    {
+      "id": "r1",
+      "label": "Diseñar y grill (1-4)"
+    },
+    {
+      "id": "r2",
+      "label": "Decidir y cerrar (5-8)"
+    },
+    {
+      "id": "r3",
+      "label": "Planificar y verificar"
+    },
+    {
+      "id": "r4",
+      "label": "Gate de la PR (hook)"
+    },
+    {
+      "id": "exception",
+      "label": "Gate bloquea → reintenta",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "A",
+      "lane": "r1",
+      "col": 0,
+      "type": "backend",
+      "label": "1. align",
+      "sublabel": "intención + brainstorm",
+      "width": 220
+    },
+    {
+      "id": "B",
+      "lane": "r1",
+      "col": 1,
+      "type": "backend",
+      "label": "2. reference-decomposition",
+      "sublabel": "referencia → req-ids",
+      "width": 250
+    },
+    {
+      "id": "C",
+      "lane": "r1",
+      "col": 2,
+      "type": "backend",
+      "label": "3. draft",
+      "sublabel": "boceto concreto, barato de cambiar",
+      "width": 260
+    },
+    {
+      "id": "D",
+      "lane": "r1",
+      "col": 3,
+      "type": "backend",
+      "label": "4. grill ×3 + completitud",
+      "sublabel": "lentes read-only sobre el borrador",
+      "width": 270
+    },
+    {
+      "id": "E",
+      "lane": "r2",
+      "col": 3,
+      "type": "security",
+      "label": "5. checkpoint-1",
+      "sublabel": "UN multi-select del owner",
+      "width": 240
+    },
+    {
+      "id": "F",
+      "lane": "r2",
+      "col": 2,
+      "type": "backend",
+      "label": "6. spec + matriz de aceptación",
+      "sublabel": "la matriz es el DoD",
+      "width": 260
+    },
+    {
+      "id": "G",
+      "lane": "r2",
+      "col": 1,
+      "type": "backend",
+      "label": "7. re-grill ×2",
+      "sublabel": "¿aguantan los fixes? ¿costuras nuevas?",
+      "width": 270
+    },
+    {
+      "id": "H",
+      "lane": "r2",
+      "col": 0,
+      "type": "security",
+      "label": "8. checkpoint-2",
+      "sublabel": "el owner cierra el spec",
+      "width": 230
+    },
+    {
+      "id": "I",
+      "lane": "r3",
+      "col": 0,
+      "type": "backend",
+      "label": "9. plan + propuesta",
+      "sublabel": "todas las unidades, modelo por unidad",
+      "width": 270
+    },
+    {
+      "id": "J",
+      "lane": "r3",
+      "col": 1,
+      "type": "backend",
+      "label": "10. ejecutar",
+      "sublabel": "worktrees + context pack compartido",
+      "width": 260
+    },
+    {
+      "id": "K",
+      "lane": "r3",
+      "col": 2,
+      "type": "backend",
+      "label": "11. verificar",
+      "sublabel": "audita la matriz, no el diff",
+      "width": 240
+    },
+    {
+      "id": "L",
+      "lane": "r3",
+      "col": 3,
+      "type": "backend",
+      "label": "12. handoff",
+      "sublabel": "sign-off del owner registrado",
+      "width": 250
+    },
+    {
+      "id": "M",
+      "lane": "r4",
+      "col": 3,
+      "type": "security",
+      "label": "gh pr create / ready / merge",
+      "sublabel": "el hook corre forge.js check-pr",
+      "width": 260
+    },
+    {
+      "id": "O",
+      "lane": "r4",
+      "col": 2,
+      "type": "external",
+      "label": "La PR continúa",
+      "sublabel": "7 artefactos trackeados por git",
+      "width": 250
+    },
+    {
+      "id": "X",
+      "lane": "exception",
+      "col": 3,
+      "type": "security",
+      "label": "El hook bloquea (exit 2)",
+      "sublabel": "run.json ausente, sin trackear o corrupto",
+      "width": 280
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "role": "main"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "role": "main"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "role": "main"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "role": "main"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "role": "main"
+    },
+    {
+      "from": "F",
+      "to": "G",
+      "role": "main"
+    },
+    {
+      "from": "G",
+      "to": "H",
+      "role": "main"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "role": "main"
+    },
+    {
+      "from": "I",
+      "to": "J",
+      "role": "main"
+    },
+    {
+      "from": "J",
+      "to": "K",
+      "role": "main"
+    },
+    {
+      "from": "K",
+      "to": "L",
+      "role": "main"
+    },
+    {
+      "from": "L",
+      "to": "M",
+      "role": "main"
+    },
+    {
+      "from": "M",
+      "to": "O",
+      "role": "main",
+      "label": "el gate pasa"
+    },
+    {
+      "from": "M",
+      "to": "X",
+      "role": "branch",
+      "label": "el gate falla",
+      "variant": "security"
+    },
+    {
+      "from": "X",
+      "to": "J",
+      "role": "return",
+      "label": "git add de los artefactos, reintenta",
+      "variant": "dashed"
+    }
+  ]
+}

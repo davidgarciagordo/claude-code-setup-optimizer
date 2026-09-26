@@ -46,9 +46,9 @@ barrido mecánico, aplicar un plan escrito) → trabaja directo.
 
 ## La columna — 12 fases, cada una con gate por artefactos
 
-[![/forge-run — 12 fases con gate](docs/diagrams/forge-run.png)](docs/diagrams/forge-run.html)
+[![/forge-run — 12 fases con gate](docs/diagrams/forge-run.es.png)](docs/diagrams/forge-run.es.html)
 
-*Versión interactiva: [docs/diagrams/forge-run.html](docs/diagrams/forge-run.html) (ábrela en local).*
+*Versión interactiva: [docs/diagrams/forge-run.es.html](docs/diagrams/forge-run.es.html) (ábrela en local).*
 
 Generado desde `node workflows/forge.js phases` (ese comando es la fuente única de verdad; si
 esta tabla y el script discrepan, gana el script):

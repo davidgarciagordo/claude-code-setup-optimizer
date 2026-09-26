@@ -34,9 +34,9 @@ multi-select. Nada toca disco hasta que lo marcas.
 
 ## El pipeline de 5 fases
 
-[![/optimize-my-setup — tú marcas qué se aplica](docs/diagrams/optimize-my-setup.png)](docs/diagrams/optimize-my-setup.html)
+[![/optimize-my-setup — tú marcas qué se aplica](docs/diagrams/optimize-my-setup.es.png)](docs/diagrams/optimize-my-setup.es.html)
 
-*Versión interactiva: [docs/diagrams/optimize-my-setup.html](docs/diagrams/optimize-my-setup.html) (ábrela en local).*
+*Versión interactiva: [docs/diagrams/optimize-my-setup.es.html](docs/diagrams/optimize-my-setup.es.html) (ábrela en local).*
 
 ## Demo de 60 segundos
 

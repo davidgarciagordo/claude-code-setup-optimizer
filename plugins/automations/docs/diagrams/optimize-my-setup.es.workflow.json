@@ -1,0 +1,172 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "/optimize-my-setup — tú marcas qué se aplica",
+    "output": "optimize-my-setup.es.html",
+    "animation": "none",
+    "visual_preset": "classic",
+    "quality_profile": "standard"
+  },
+  "lanes": [
+    {
+      "id": "r1",
+      "label": "Escanear (determinista)"
+    },
+    {
+      "id": "r2",
+      "label": "Analizar (read-only)"
+    },
+    {
+      "id": "r3",
+      "label": "El owner decide, aplica"
+    },
+    {
+      "id": "exception",
+      "label": "No marcado",
+      "variant": "exception"
+    },
+    {
+      "id": "r4",
+      "label": "Hook siempre activo"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "A",
+      "lane": "r1",
+      "col": 0,
+      "type": "frontend",
+      "label": "/optimize-my-setup",
+      "sublabel": "una vez por repo",
+      "width": 220
+    },
+    {
+      "id": "B",
+      "lane": "r1",
+      "col": 1,
+      "type": "backend",
+      "label": "1. Detecta plugins instalados",
+      "sublabel": "reusar antes de generar",
+      "width": 250
+    },
+    {
+      "id": "C",
+      "lane": "r1",
+      "col": 2,
+      "type": "backend",
+      "label": "2. Context pack de scan.mjs",
+      "sublabel": "ecosistema, ramas, invariantes",
+      "width": 250
+    },
+    {
+      "id": "D",
+      "lane": "r2",
+      "col": 2,
+      "type": "backend",
+      "label": "3. Fan-out por superficie",
+      "sublabel": "1 agente read-only por superficie",
+      "width": 260
+    },
+    {
+      "id": "E",
+      "lane": "r2",
+      "col": 3,
+      "type": "backend",
+      "label": "Propuestas citan ficheros del repo",
+      "sublabel": "CLAUDE.md, settings, agents…",
+      "width": 270
+    },
+    {
+      "id": "F",
+      "lane": "r3",
+      "col": 3,
+      "type": "security",
+      "label": "4. Multi-check obligatorio",
+      "sublabel": "cada ítem es un checkbox",
+      "width": 250
+    },
+    {
+      "id": "G",
+      "lane": "r3",
+      "col": 2,
+      "type": "external",
+      "label": "5. Aplica solo lo marcado",
+      "sublabel": "scope + nota de revert cada uno",
+      "width": 260
+    },
+    {
+      "id": "X",
+      "lane": "exception",
+      "col": 3,
+      "type": "database",
+      "label": "No se escribe nada",
+      "sublabel": "los ítems sin marcar quedan intactos",
+      "width": 260
+    },
+    {
+      "id": "H",
+      "lane": "r4",
+      "col": 0,
+      "type": "security",
+      "label": "guard-append-only",
+      "sublabel": "cada Edit / Write, tras instalarlo",
+      "width": 250
+    },
+    {
+      "id": "I",
+      "lane": "r4",
+      "col": 1,
+      "type": "security",
+      "label": "Bloquea una migración commiteada",
+      "sublabel": "exit 2, fail-closed",
+      "width": 270
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "role": "main"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "role": "main"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "role": "main"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "role": "main"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "role": "main"
+    },
+    {
+      "from": "F",
+      "to": "G",
+      "role": "main",
+      "label": "marcado"
+    },
+    {
+      "from": "F",
+      "to": "X",
+      "role": "branch",
+      "label": "no marcado",
+      "variant": "security"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "role": "main",
+      "label": "el fichero coincide con un glob"
+    }
+  ]
+}
