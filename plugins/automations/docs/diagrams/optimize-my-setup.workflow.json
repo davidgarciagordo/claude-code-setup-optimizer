@@ -1,0 +1,172 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "/optimize-my-setup — you tick what applies",
+    "output": "optimize-my-setup.html",
+    "animation": "none",
+    "visual_preset": "classic",
+    "quality_profile": "standard"
+  },
+  "lanes": [
+    {
+      "id": "r1",
+      "label": "Scan (deterministic)"
+    },
+    {
+      "id": "r2",
+      "label": "Analyse (read-only)"
+    },
+    {
+      "id": "r3",
+      "label": "Owner decides, apply"
+    },
+    {
+      "id": "exception",
+      "label": "Not ticked",
+      "variant": "exception"
+    },
+    {
+      "id": "r4",
+      "label": "Always-on hook"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "A",
+      "lane": "r1",
+      "col": 0,
+      "type": "frontend",
+      "label": "/optimize-my-setup",
+      "sublabel": "run once per repo",
+      "width": 210
+    },
+    {
+      "id": "B",
+      "lane": "r1",
+      "col": 1,
+      "type": "backend",
+      "label": "1. Detect installed plugins",
+      "sublabel": "reuse before generating",
+      "width": 210
+    },
+    {
+      "id": "C",
+      "lane": "r1",
+      "col": 2,
+      "type": "backend",
+      "label": "2. scan.mjs context pack",
+      "sublabel": "ecosystem, branches, invariants",
+      "width": 210
+    },
+    {
+      "id": "D",
+      "lane": "r2",
+      "col": 2,
+      "type": "backend",
+      "label": "3. Per-surface fan-out",
+      "sublabel": "1 read-only agent per surface",
+      "width": 210
+    },
+    {
+      "id": "E",
+      "lane": "r2",
+      "col": 3,
+      "type": "backend",
+      "label": "Proposals cite repo files",
+      "sublabel": "CLAUDE.md, settings, agents…",
+      "width": 210
+    },
+    {
+      "id": "F",
+      "lane": "r3",
+      "col": 3,
+      "type": "security",
+      "label": "4. Mandatory multi-check",
+      "sublabel": "every item is a checkbox",
+      "width": 210
+    },
+    {
+      "id": "G",
+      "lane": "r3",
+      "col": 2,
+      "type": "external",
+      "label": "5. Apply ticked items only",
+      "sublabel": "scope + revert note each",
+      "width": 210
+    },
+    {
+      "id": "X",
+      "lane": "exception",
+      "col": 3,
+      "type": "database",
+      "label": "Nothing written",
+      "sublabel": "unticked items untouched",
+      "width": 210
+    },
+    {
+      "id": "H",
+      "lane": "r4",
+      "col": 0,
+      "type": "security",
+      "label": "guard-append-only",
+      "sublabel": "every Edit / Write, once installed",
+      "width": 210
+    },
+    {
+      "id": "I",
+      "lane": "r4",
+      "col": 1,
+      "type": "security",
+      "label": "Blocks a committed migration",
+      "sublabel": "exit 2, fail-closed",
+      "width": 210
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "role": "main"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "role": "main"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "role": "main"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "role": "main"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "role": "main"
+    },
+    {
+      "from": "F",
+      "to": "G",
+      "role": "main",
+      "label": "ticked"
+    },
+    {
+      "from": "F",
+      "to": "X",
+      "role": "branch",
+      "label": "not ticked",
+      "variant": "security"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "role": "main",
+      "label": "file matches a glob"
+    }
+  ]
+}

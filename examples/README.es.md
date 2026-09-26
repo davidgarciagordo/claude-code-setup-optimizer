@@ -120,13 +120,25 @@ Marca qué aplicar (las que quieras, o ninguna) — cada una con [superficie · 
 
 ---
 
-## Hook (pasivo — se dispara solo)
+## Hooks (pasivos — se disparan solos)
 
-| Hook | Disparador | Qué hace |
+**Activos en los plugins:**
+
+| Hook | Disparador | Qué pasa |
 |------|-----------|----------|
-| `guard-append-only` | intentas editar una migración / log de auditoría ya commiteado | bloquea con mensaje: crea un fichero NUEVO (compensatorio) en su lugar — disciplina append-only |
+| `guard-append-only` (automations) | intentas editar una migración / log de auditoría ya commiteado | bloquea: crea un fichero NUEVO (compensatorio) en su lugar. **fail-closed** — si no puede verificar el estado de git bloquea ("could not verify"), nunca deja pasar en silencio. |
+| `guard-forge-artifacts` (working-methods) | `gh pr create` / `gh pr ready` / `gh pr merge` con un run de Forja activo | bloquea hasta que `spec.md` + `acceptance-matrix.md` + `grill-verdicts.md` + `decisions-1.md` + `regrill-verdicts.md` + `decisions-2.md` + `plan.md` estén trackeados por git y no vacíos. Un `docs/forge/*/run.json` ilegible también bloquea. Sin run activo → no-op. `FORGE_ENFORCE=warn\|off` para suavizarlo. |
 
 Override de los globs append-only: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migrations/**"`.
+
+**Incluidos como plantillas** (`plugins/automations/templates/hooks/` — `optimize-my-setup` cablea los que elijas; o cópialos a mano, ver el README de esa carpeta):
+
+| Hook plantilla | Evento | Qué exige | ¿Bloquea? | Env |
+|----------------|--------|-----------|-----------|-----|
+| `guard-main` | PreToolUse · Bash | nada de commit/push directo a una rama protegida | sí | `PROTECTED_BRANCHES` |
+| `commit-msg-lint` | PreToolUse · Bash | `git commit -m` sigue Conventional Commits | sí (un comando que no puede leer como `commit -m` pasa) | `COMMIT_TYPES` |
+| `secrets-guard` | PreToolUse · Edit/Write | bloquea escribir secretos en el repo | sí (`SECRETS_GUARD_MODE=warn` solo avisa) | `SECRETS_ALLOW_GLOBS` |
+| `ui-diff-design-review` | PostToolUse · Edit/Write | **dispara** `design-review` en un diff de UI (no solo lo recomienda) | no — solo añade contexto | `UI_GLOBS` |
 
 ---
 
@@ -149,7 +161,7 @@ Ejemplos de invariante → reviewer generado: event bus → `event-bus-reviewer`
 
 ## 🎯 Toda la metodología de una vez → eso es `/forge-run`
 
-Antes esto era un prompt copy-paste que tenías que recordar y correr a mano — y por eso el orden se saltaba. **Ese prompt ahora es un command: `/forge-run` (arriba del todo).** Encadena las mismas piezas — `optimize-my-setup`/`install-family` para el setup → borrador + `/grill` ×3 + completitud → checkpoint #1 del dueño → spec + Acceptance Matrix → re-grill ×2 → checkpoint #2 del dueño → plan global + propuesta de ejecución → `forge-on-claude` (worktrees + context pack compartido) → reviewers + `completeness-critic` + `design-review` en UI → `/handoff` — pero el **orden está codificado** en `workflows/forge.js` y **gateado** por el hook `guard-forge-artifacts`, no a merced de la memoria.
+**El loop entero es un comando: `/forge-run` (arriba del todo)** — sin prompt que recordar y correr a mano, así que no se salta ningún paso. Encadena las mismas piezas — `optimize-my-setup`/`install-family` para el setup → borrador + `/grill` ×3 + completitud → checkpoint #1 del dueño → spec + Acceptance Matrix → re-grill ×2 → checkpoint #2 del dueño → plan global + propuesta de ejecución → `forge-on-claude` (worktrees + context pack compartido) → reviewers + `completeness-critic` + `design-review` en UI → `/handoff` — pero el **orden está codificado** en `workflows/forge.js` y **gateado** por el hook `guard-forge-artifacts`, no a merced de la memoria.
 
 ```
 /forge-run <tu tarea>

@@ -134,18 +134,18 @@ Pick what to apply (any, or none) — each shows [surface · scope]:
 | Hook | Trigger | What happens |
 |------|---------|--------------|
 | `guard-append-only` (automations) | you try to Edit a committed migration / audit file | blocks: create a new (compensating) file instead. **fail-closed** — if it can't verify git state it blocks ("could not verify"), never silently allows. |
-| `guard-forge-artifacts` (working-methods) | `gh pr create` / `gh pr ready` / `gh pr merge` while a Forge run is active | blocks until `spec.md` + `acceptance-matrix.md` + `grill-verdicts.md` + `decisions-1.md` + `regrill-verdicts.md` + `decisions-2.md` + `plan.md` are versioned. No active run → no-op. `FORGE_ENFORCE=warn\|off` to soften. |
+| `guard-forge-artifacts` (working-methods) | `gh pr create` / `gh pr ready` / `gh pr merge` while a Forge run is active | blocks until `spec.md` + `acceptance-matrix.md` + `grill-verdicts.md` + `decisions-1.md` + `regrill-verdicts.md` + `decisions-2.md` + `plan.md` are tracked by git and non-empty. An unreadable `docs/forge/*/run.json` also blocks. No active run → no-op. `FORGE_ENFORCE=warn\|off` to soften. |
 
 Override the append-only globs: `APPEND_ONLY_GLOBS="**/drizzle/*.sql,prisma/migrations/**"`.
 
 **Shipped as templates** (`plugins/automations/templates/hooks/` — `optimize-my-setup` wires the ones you pick; or copy by hand, see that folder's README):
 
-| Template hook | Event | Enforces | Env |
-|---------------|-------|----------|-----|
-| `guard-main` | PreToolUse · Bash | no commit/push direct to a protected branch | `PROTECTED_BRANCHES` |
-| `commit-msg-lint` | PreToolUse · Bash | `git commit -m` follows Conventional Commits | `COMMIT_TYPES` |
-| `secrets-guard` | PreToolUse · Edit/Write | blocks writing secrets into the repo | `SECRETS_ALLOW_GLOBS` |
-| `ui-diff-design-review` | PostToolUse · Edit/Write | **fires** `design-review` on a UI diff (not just recommends) | `UI_GLOBS` |
+| Template hook | Event | Enforces | Blocks? | Env |
+|---------------|-------|----------|---------|-----|
+| `guard-main` | PreToolUse · Bash | no commit/push direct to a protected branch | yes | `PROTECTED_BRANCHES` |
+| `commit-msg-lint` | PreToolUse · Bash | `git commit -m` follows Conventional Commits | yes (a command it can't parse as `commit -m` passes) | `COMMIT_TYPES` |
+| `secrets-guard` | PreToolUse · Edit/Write | blocks writing secrets into the repo | yes (`SECRETS_GUARD_MODE=warn` only warns) | `SECRETS_ALLOW_GLOBS` |
+| `ui-diff-design-review` | PostToolUse · Edit/Write | **fires** `design-review` on a UI diff (not just recommends) | no — adds context only | `UI_GLOBS` |
 
 ---
 
@@ -168,8 +168,8 @@ Examples of invariant → generated reviewer: event bus → `event-bus-reviewer`
 
 ## 🎯 The whole methodology in one go → that's `/forge-run`
 
-It used to be a copy-paste prompt here that you had to remember and run by hand — which meant
-the order got skipped. **That prompt is now a command: `/forge-run` (top of this page).** It
+**The whole loop is one command: `/forge-run` (top of this page)** — no prompt to remember and
+run by hand, so no step gets skipped. It
 chains the same pieces — `optimize-my-setup`/`install-family` for setup → draft + `/grill` ×3 +
 completeness → owner checkpoint #1 → spec + Acceptance Matrix → re-grill ×2 → owner checkpoint #2 →
 global plan + execution proposal → `forge-on-claude` (worktrees + shared context pack) → reviewers +

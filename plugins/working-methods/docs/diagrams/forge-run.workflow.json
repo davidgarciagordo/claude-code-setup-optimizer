@@ -1,0 +1,253 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "/forge-run — 12 gated phases",
+    "output": "forge-run.html",
+    "animation": "none",
+    "visual_preset": "classic",
+    "quality_profile": "standard"
+  },
+  "lanes": [
+    {
+      "id": "r1",
+      "label": "Design & grill (1-4)"
+    },
+    {
+      "id": "r2",
+      "label": "Decide & lock spec (5-8)"
+    },
+    {
+      "id": "r3",
+      "label": "Plan, build, verify"
+    },
+    {
+      "id": "r4",
+      "label": "PR gate (hook)"
+    },
+    {
+      "id": "exception",
+      "label": "Gate blocks → retry",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "A",
+      "lane": "r1",
+      "col": 0,
+      "type": "backend",
+      "label": "1. align",
+      "sublabel": "intent + brainstorm",
+      "width": 210
+    },
+    {
+      "id": "B",
+      "lane": "r1",
+      "col": 1,
+      "type": "backend",
+      "label": "2. reference-decomposition",
+      "sublabel": "reference → req-ids",
+      "width": 210
+    },
+    {
+      "id": "C",
+      "lane": "r1",
+      "col": 2,
+      "type": "backend",
+      "label": "3. draft",
+      "sublabel": "concrete sketch, cheap to change",
+      "width": 210
+    },
+    {
+      "id": "D",
+      "lane": "r1",
+      "col": 3,
+      "type": "backend",
+      "label": "4. grill ×3 + completeness",
+      "sublabel": "read-only lenses on the draft",
+      "width": 210
+    },
+    {
+      "id": "E",
+      "lane": "r2",
+      "col": 3,
+      "type": "security",
+      "label": "5. checkpoint-1",
+      "sublabel": "ONE owner multi-select",
+      "width": 210
+    },
+    {
+      "id": "F",
+      "lane": "r2",
+      "col": 2,
+      "type": "backend",
+      "label": "6. spec + Acceptance Matrix",
+      "sublabel": "the matrix is the DoD",
+      "width": 210
+    },
+    {
+      "id": "G",
+      "lane": "r2",
+      "col": 1,
+      "type": "backend",
+      "label": "7. regrill ×2",
+      "sublabel": "fixes hold? new seams?",
+      "width": 210
+    },
+    {
+      "id": "H",
+      "lane": "r2",
+      "col": 0,
+      "type": "security",
+      "label": "8. checkpoint-2",
+      "sublabel": "owner locks the spec",
+      "width": 210
+    },
+    {
+      "id": "I",
+      "lane": "r3",
+      "col": 0,
+      "type": "backend",
+      "label": "9. plan + proposal",
+      "sublabel": "all units, model per unit",
+      "width": 210
+    },
+    {
+      "id": "J",
+      "lane": "r3",
+      "col": 1,
+      "type": "backend",
+      "label": "10. execute",
+      "sublabel": "worktrees + shared context pack",
+      "width": 210
+    },
+    {
+      "id": "K",
+      "lane": "r3",
+      "col": 2,
+      "type": "backend",
+      "label": "11. verify",
+      "sublabel": "audit the matrix, not the diff",
+      "width": 210
+    },
+    {
+      "id": "L",
+      "lane": "r3",
+      "col": 3,
+      "type": "backend",
+      "label": "12. handoff",
+      "sublabel": "owner sign-off recorded",
+      "width": 210
+    },
+    {
+      "id": "M",
+      "lane": "r4",
+      "col": 3,
+      "type": "security",
+      "label": "gh pr create / ready / merge",
+      "sublabel": "hook runs forge.js check-pr",
+      "width": 210
+    },
+    {
+      "id": "O",
+      "lane": "r4",
+      "col": 2,
+      "type": "external",
+      "label": "PR proceeds",
+      "sublabel": "7 artifacts tracked by git",
+      "width": 210
+    },
+    {
+      "id": "X",
+      "lane": "exception",
+      "col": 3,
+      "type": "security",
+      "label": "Hook blocks (exit 2)",
+      "sublabel": "missing, untracked or corrupt run.json",
+      "width": 210
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "role": "main"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "role": "main"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "role": "main"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "role": "main"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "role": "main"
+    },
+    {
+      "from": "F",
+      "to": "G",
+      "role": "main"
+    },
+    {
+      "from": "G",
+      "to": "H",
+      "role": "main"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "role": "main"
+    },
+    {
+      "from": "I",
+      "to": "J",
+      "role": "main"
+    },
+    {
+      "from": "J",
+      "to": "K",
+      "role": "main"
+    },
+    {
+      "from": "K",
+      "to": "L",
+      "role": "main"
+    },
+    {
+      "from": "L",
+      "to": "M",
+      "role": "main"
+    },
+    {
+      "from": "M",
+      "to": "O",
+      "role": "main",
+      "label": "gate passes"
+    },
+    {
+      "from": "M",
+      "to": "X",
+      "role": "branch",
+      "label": "gate fails",
+      "variant": "security"
+    },
+    {
+      "from": "X",
+      "to": "J",
+      "role": "return",
+      "label": "git add artifacts, retry",
+      "variant": "dashed"
+    }
+  ]
+}

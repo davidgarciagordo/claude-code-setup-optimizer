@@ -25,7 +25,6 @@ multi-select. Nada toca disco hasta que lo marcas.
 |---|---|---|
 | Skill `optimize-my-setup` | `skills/optimize-my-setup/SKILL.md` | El pipeline de 5 fases: detectar plugins instalados → context pack → fan-out por superficie → **multi-check obligatorio** → aplicar solo lo marcado |
 | Scanner determinista | `skills/optimize-my-setup/scan.mjs` | Repo → context pack (ecosistema, convención de commits, ramas, superficies `.claude`, CI, invariantes de dominio desde `CLAUDE.md` **+ señales de código**). Sin deps, sin aleatoriedad — mismo repo, mismo output |
-| Comando `/optimize-my-setup` | `commands/optimize-my-setup.md` | Wrapper fino del skill como slash-command (fuente única — no re-deriva las fases) |
 | Comando `/release` | `commands/release.md` | PR de release integración → producción con notas legibles; lee las ramas reales del pack del scanner en vez de asumir `dev → main` |
 | Hook activo `guard-append-only` | `hooks/guard-append-only.py` | Viene activado. Bloquea editar ficheros append-only ya commiteados (migraciones aplicadas, ledgers). **Fail-closed**: no puede verificar git → bloquea con exit 2 |
 | Hook templates ×4 | `templates/hooks/` | `guard-main` (nada de commit/push directo a ramas protegidas), `commit-msg-lint` (Conventional Commits), `secrets-guard` (11 patrones de secretos), `ui-diff-design-review` (un diff de UI dispara design review). Wiring en `templates/hooks/README.md` |
@@ -35,15 +34,9 @@ multi-select. Nada toca disco hasta que lo marcas.
 
 ## El pipeline de 5 fases
 
-```mermaid
-flowchart TD
-    A["/optimize-my-setup"] --> B["1. Detecta plugins instalados"]
-    B --> C["2. scan.mjs → context pack<br/>(ecosistema, ramas, invariantes)"]
-    C --> D["3. Abre 1 agente read-only<br/>por superficie .claude (8 superficies)"]
-    D --> E{"4. Multi-check obligatorio<br/>(cada item un checkbox)"}
-    E -- "sin marcar" --> F["No se toca"]
-    E -- "marcado" --> G["5. Aplica SOLO lo marcado"]
-```
+[![/optimize-my-setup — tú marcas qué se aplica](docs/diagrams/optimize-my-setup.png)](docs/diagrams/optimize-my-setup.html)
+
+*Versión interactiva: [docs/diagrams/optimize-my-setup.html](docs/diagrams/optimize-my-setup.html) (ábrela en local).*
 
 ## Demo de 60 segundos
 

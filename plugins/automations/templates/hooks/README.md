@@ -5,7 +5,7 @@ ones you pick into `.claude/settings.json`; you can also copy them by hand.
 
 | Hook | Event / matcher | What it enforces | Key env |
 |------|-----------------|------------------|---------|
-| `guard-main.py` | PreToolUse · `Bash` | No `git commit`/`push` direct to a protected branch — feature branch + PR only. (`/release` assumed this existed; now it ships.) | `PROTECTED_BRANCHES` |
+| `guard-main.py` | PreToolUse · `Bash` | No `git commit`/`push` direct to a protected branch — feature branch + PR only. | `PROTECTED_BRANCHES` |
 | `commit-msg-lint.py` | PreToolUse · `Bash` | `git commit -m` follows Conventional Commits. | `COMMIT_TYPES`, `COMMIT_MIN_DESC` |
 | `secrets-guard.py` | PreToolUse · `Edit\|Write\|MultiEdit` | Blocks writing secrets (keys, tokens, private keys, DSN passwords) into the repo. | `SECRETS_ALLOW_GLOBS`, `SECRETS_GUARD_MODE` |
 | `ui-diff-design-review.py` | PostToolUse · `Edit\|Write\|MultiEdit` | On a UI diff, **fires** `design-review` (injects context) instead of just recommending it. | `UI_GLOBS` |

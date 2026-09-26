@@ -33,7 +33,7 @@ verifiable signals — if **BOTH** hold, propose the relay yourself, in one sent
    the next objective is independent of the accumulated context.
 
 BOTH → one sentence: *"Good moment for a relay — `<milestone>` merged, context at ~X%. New session
-with a handoff? Works better than continuing to compact (your own rule)."* Only one → keep working.
+with a handoff? Works better than continuing to compact."* Only one → keep working.
 A long session with a closed block that does NOT propose a relay is burning the window instead of
 starting fresh.
 

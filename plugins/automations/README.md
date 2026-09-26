@@ -25,7 +25,6 @@ Nothing touches disk until you tick it.
 |---|---|---|
 | Skill `optimize-my-setup` | `skills/optimize-my-setup/SKILL.md` | The 5-phase pipeline: detect installed plugins → context pack → per-surface fan-out → **mandatory multi-check** → apply only what's ticked |
 | Deterministic scanner | `skills/optimize-my-setup/scan.mjs` | Repo → context pack (ecosystem, commit convention, branches, `.claude` surfaces, CI, domain invariants from `CLAUDE.md` **+ code signals**). No deps, no randomness — same repo, same output |
-| Command `/optimize-my-setup` | `commands/optimize-my-setup.md` | Thin slash-command wrapper around the skill (single source — it doesn't re-derive the phases) |
 | Command `/release` | `commands/release.md` | Integration → production release PR with human-readable notes; reads the real branch names from the scanner pack instead of assuming `dev → main` |
 | Active hook `guard-append-only` | `hooks/guard-append-only.py` | Ships enabled. Blocks editing committed append-only files (applied migrations, ledgers). **Fail-closed**: can't verify git state → blocks with exit 2 |
 | Hook templates ×4 | `templates/hooks/` | `guard-main` (no direct commit/push to protected branches), `commit-msg-lint` (Conventional Commits), `secrets-guard` (11 secret patterns), `ui-diff-design-review` (UI diff fires a design review). Wiring guide in `templates/hooks/README.md` |
@@ -35,15 +34,9 @@ Nothing touches disk until you tick it.
 
 ## The 5-phase pipeline
 
-```mermaid
-flowchart TD
-    A["/optimize-my-setup"] --> B["1. Detect installed plugins"]
-    B --> C["2. scan.mjs → context pack<br/>(ecosystem, branches, invariants)"]
-    C --> D["3. Fan out 1 read-only agent<br/>per .claude surface (8 surfaces)"]
-    D --> E{"4. Mandatory multi-check<br/>(every item a checkbox)"}
-    E -- "unchecked" --> F["Not touched"]
-    E -- "checked" --> G["5. Apply ONLY ticked items"]
-```
+[![/optimize-my-setup — you tick what applies](docs/diagrams/optimize-my-setup.png)](docs/diagrams/optimize-my-setup.html)
+
+*Interactive version: [docs/diagrams/optimize-my-setup.html](docs/diagrams/optimize-my-setup.html) (open locally).*
 
 ## 60-second demo
 
@@ -68,7 +61,7 @@ Tick two, leave the rest — only those two files are written, each with scope a
 
 ## The multi-check guarantee
 
-The gate is a hard rule in the skill (`skills/optimize-my-setup/SKILL.md`, Fase 4), quoted verbatim:
+The gate is a hard rule in the skill (`skills/optimize-my-setup/SKILL.md`, Phase 4), quoted verbatim:
 
 > **PROHIBIDO cualquier Write/Edit/instalación ANTES de que el multi-check devuelva** —
 > una recomendación sin marcar no existe.

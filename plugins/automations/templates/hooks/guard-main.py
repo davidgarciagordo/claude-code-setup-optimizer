@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """TEMPLATE — PreToolUse(Bash): prevents committing/pushing DIRECTLY to a
 protected branch (main/master/production). Work goes on a feature branch → PR.
-
-`/release` and the README assumed this ("a guard-main-style hook should block
-this") but the hook wasn't shipped. Here it is, parametrizable.
+`/release` relies on this guard being wired.
 
 Config (env):
   PROTECTED_BRANCHES   comma-separated list (default: "main,master,production")

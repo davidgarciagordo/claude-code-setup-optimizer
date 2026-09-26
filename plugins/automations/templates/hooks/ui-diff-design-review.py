@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""TEMPLATE — PostToolUse(Edit|Write|MultiEdit): cuando un cambio toca UI, DISPARA
-la revisión de diseño en vez de solo recomendar instalarla. No bloquea: inyecta
-contexto (additionalContext) que le dice a Claude que pase el `design-review` skill
-+ los reviewers de diseño por la superficie tocada antes de cerrar.
+"""TEMPLATE — PostToolUse(Edit|Write|MultiEdit): when a change touches UI, it FIRES
+the design review instead of only recommending it. Never blocks: it injects context
+(additionalContext) telling Claude to run the `design-review` skill and the design
+reviewers on the touched surface before closing.
 
-Esto hace la integración REAL: el diseño se revisa por defecto en diffs de UI, no
-"si te acuerdas". El `/forge-run` ya lo hace en su fase verify de forma codificada;
-este hook lo extiende a CUALQUIER edición de UI fuera de un run.
+This makes the integration real: design is reviewed by default on UI diffs, not
+"if you remember". `/forge-run` already does this in its verify phase; this hook
+extends it to ANY UI edit outside a run.
 
 Config (env):
-  UI_GLOBS   globs de UI separados por comas (default: front-end común)
+  UI_GLOBS   comma-separated UI globs (default: common front-end paths)
 
-Wiring — copia a `.claude/hooks/ui-diff-design-review.py` y añade a settings.json:
+Wiring — copy to `.claude/hooks/ui-diff-design-review.py` and add to settings.json:
   { "hooks": { "PostToolUse": [ { "matcher": "Edit|Write|MultiEdit", "hooks": [
       { "type": "command",
         "command": "python3 \\"$CLAUDE_PROJECT_DIR/.claude/hooks/ui-diff-design-review.py\\"" } ] } ] } }

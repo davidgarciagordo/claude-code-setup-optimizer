@@ -85,7 +85,7 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
 - Phase `regrill`: two focused passes on the SPEC — (a) do the checkpoint-1 fixes hold, (b) the
   new seams those fixes created + re-verify assumptions against the real repo. Not a third full
   grill. Verdicts → `regrill-verdicts.md`. **Before writing the plan, run the executor-eye check
-  (`references/executor-eye-check.md`) on the spec AND on any agent prompts the plan will dispatch**
+  (`${CLAUDE_PLUGIN_ROOT}/references/executor-eye-check.md`) on the spec AND on any agent prompts the plan will dispatch**
   — the spec/plan/prompts are instructions other agents execute; catch ambiguous triggers,
   repeated rules, cross-file contradiction, and tacit assumptions before they fan out.
 - Phase `checkpoint-2` (owner checkpoint #2): same mechanism as checkpoint-1 — **ONE multi-select

@@ -36,7 +36,7 @@ Forge run spine — codified order (gates are machine-checked):
        produces: handoff.md
 
   Pre-PR / pre-merge gate: spec.md, acceptance-matrix.md, grill-verdicts.md, decisions-1.md,
-  regrill-verdicts.md, decisions-2.md, plan.md must exist & be non-empty.
+  regrill-verdicts.md, decisions-2.md, plan.md must be tracked by git & non-empty.
 ```
 
 Cuándo correrlo: el discriminador es **diseño vs ejecución**, no el número de ficheros.
@@ -46,23 +46,9 @@ barrido mecánico, aplicar un plan escrito) → trabaja directo.
 
 ## La columna — 12 fases, cada una con gate por artefactos
 
-```mermaid
-flowchart TD
-    A["1. align"] --> B["2. reference-decomposition"]
-    B --> C["3. draft"]
-    C --> D["4. grill ×3 + lente de completitud"]
-    D --> E{"5. checkpoint-1<br/>(lote del responsable)"}
-    E --> F["6. spec + Matriz de Aceptación"]
-    F --> G["7. regrill ×2"]
-    G --> H{"8. checkpoint-2<br/>(spec cerrado)"}
-    H --> I["9. plan + propuesta de ejecución"]
-    I --> J["10. execute<br/>(worktrees + context pack compartido)"]
-    J --> K["11. verify<br/>(audita la matriz, no el diff)"]
-    K --> L["12. handoff<br/>(aprobación del responsable)"]
-    L --> M{"gh pr create / ready / merge"}
-    M -- "faltan artefactos" --> N["hook BLOQUEA (fail-closed)"]
-    M -- "los 7 artefactos del gate presentes" --> O["el PR avanza"]
-```
+[![/forge-run — 12 fases con gate](docs/diagrams/forge-run.png)](docs/diagrams/forge-run.html)
+
+*Versión interactiva: [docs/diagrams/forge-run.html](docs/diagrams/forge-run.html) (ábrela en local).*
 
 Generado desde `node workflows/forge.js phases` (ese comando es la fuente única de verdad; si
 esta tabla y el script discrepan, gana el script):
@@ -86,7 +72,7 @@ Todos los artefactos se versionan bajo `docs/forge/<slug>/`. Al owner se le inte
 **exactamente dos veces** (checkpoints 5 y 8), cada una UNA tanda multi-select con las
 recomendaciones premarcadas. Gate pre-PR: `spec.md`, `acceptance-matrix.md`,
 `grill-verdicts.md`, `decisions-1.md`, `regrill-verdicts.md`, `decisions-2.md`, `plan.md`
-deben existir y no estar vacíos.
+deben estar trackeados por git y no vacíos; un `docs/forge/*/run.json` ilegible también bloquea.
 
 ## Componentes
 
@@ -140,5 +126,5 @@ No necesitas un run de Forge para usarlos:
   comando no es `gh pr create/ready/merge`, pero el arranque del intérprete se paga cada vez).
 - Un run activo por repo: `forge.js init` rechaza mientras otro `docs/forge/*/run.json` esté
   `active` (se anula con `FORGE_RUN_MANIFEST`).
-- Los gates comprueban que los artefactos **existen y no están vacíos** — no pueden juzgar la
+- Los gates comprueban que los artefactos **están trackeados por git y no vacíos** — no pueden juzgar la
   calidad del contenido. Para eso están las lentes del grill y los checkpoints del owner.

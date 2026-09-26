@@ -36,7 +36,7 @@ Forge run spine — codified order (gates are machine-checked):
        produces: handoff.md
 
   Pre-PR / pre-merge gate: spec.md, acceptance-matrix.md, grill-verdicts.md, decisions-1.md,
-  regrill-verdicts.md, decisions-2.md, plan.md must exist & be non-empty.
+  regrill-verdicts.md, decisions-2.md, plan.md must be tracked by git & non-empty.
 ```
 
 When to run it: the discriminator is **design vs execution**, not file count. New
@@ -46,23 +46,9 @@ applying a written plan) → work directly.
 
 ## The spine — 12 phases, each gated by artifacts
 
-```mermaid
-flowchart TD
-    A["1. align"] --> B["2. reference-decomposition"]
-    B --> C["3. draft"]
-    C --> D["4. grill ×3 + completeness lens"]
-    D --> E{"5. checkpoint-1<br/>(owner batch)"}
-    E --> F["6. spec + Acceptance Matrix"]
-    F --> G["7. regrill ×2"]
-    G --> H{"8. checkpoint-2<br/>(spec locked)"}
-    H --> I["9. plan + execution proposal"]
-    I --> J["10. execute<br/>(worktrees + shared context pack)"]
-    J --> K["11. verify<br/>(audit the matrix, not the diff)"]
-    K --> L["12. handoff<br/>(owner sign-off)"]
-    L --> M{"gh pr create / ready / merge"}
-    M -- "artifacts missing" --> N["hook BLOCKS (fail-closed)"]
-    M -- "all 7 gate artifacts present" --> O["PR proceeds"]
-```
+[![/forge-run — 12 gated phases](docs/diagrams/forge-run.png)](docs/diagrams/forge-run.html)
+
+*Interactive version: [docs/diagrams/forge-run.html](docs/diagrams/forge-run.html) (open locally).*
 
 Generated from `node workflows/forge.js phases` (that command is the single source of truth;
 if this table and the script ever disagree, the script wins):
@@ -85,7 +71,8 @@ if this table and the script ever disagree, the script wins):
 All artifacts are versioned under `docs/forge/<slug>/`. The owner is interrupted **exactly
 twice** (checkpoints 5 and 8), each time as ONE multi-select batch with recommendations
 pre-marked. Pre-PR gate: `spec.md`, `acceptance-matrix.md`, `grill-verdicts.md`,
-`decisions-1.md`, `regrill-verdicts.md`, `decisions-2.md`, `plan.md` must exist and be non-empty.
+`decisions-1.md`, `regrill-verdicts.md`, `decisions-2.md`, `plan.md` must be tracked by git and
+non-empty; an unreadable `docs/forge/*/run.json` also blocks.
 
 ## Components
 
@@ -138,5 +125,5 @@ You don't need a Forge run to use them:
   is not `gh pr create/ready/merge`, but the interpreter startup is paid each time).
 - One active run per repo: `forge.js init` refuses while another `docs/forge/*/run.json` is
   `active` (override via `FORGE_RUN_MANIFEST`).
-- Gates check that artifacts **exist and are non-empty** — they cannot judge content quality.
+- Gates check that artifacts **are tracked by git and non-empty** — they cannot judge content quality.
   That's what the grill lenses and the owner checkpoints are for.

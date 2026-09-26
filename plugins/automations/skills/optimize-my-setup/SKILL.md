@@ -56,8 +56,7 @@ before proposing it** — reread it through the executor's eyes, without your se
 3. **No contradiction** — doesn't clash with config the repo already has or its sibling file.
 4. **No tacit assumption** — no step assumes a path/decision/file only your session knows about.
 
-(Canonical extended source: `references/executor-eye-check.md` from the `working-methods` plugin,
-if installed.) Covers:
+Covers:
 
 - **`CLAUDE.md`** — generate it if missing; if it exists, targeted improvements + a reference
   block to the marketplace (`${CLAUDE_PLUGIN_ROOT}/templates/claude-md-rules-reference.md`).

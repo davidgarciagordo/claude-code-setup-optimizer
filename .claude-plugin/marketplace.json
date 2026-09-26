@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "version": "1.0.0",
   "name": "claude-code-setup-optimizer",
-  "description": "Dos plugins propios de David García Gordo para trabajar con Claude Code: working-methods (la columna /forge-run — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify, con 2 checkpoints del dueño en lote; /grill, /handoff) y automations (la skill optimize-my-setup, hooks, /release, plantillas de permisos). Para la suite completa (+ forge-methodology, design-review, token-economy) usa el catálogo dedicado davidgarciagordo/claude-plugins.",
+  "description": "Two Claude Code plugins by David García Gordo: working-methods (the /forge-run spine — align → draft + grill ×3 → spec → re-grill ×2 → plan → verify, with 2 batched owner checkpoints; /grill, /handoff) and automations (the optimize-my-setup skill, hooks, /release, permission templates). For the full suite (+ forge-methodology, design-review, token-economy, swarm) use the dedicated catalog davidgarciagordo/claude-plugins — working-methods needs it to resolve its dependencies.",
   "owner": {
     "name": "David García Gordo",
     "url": "https://github.com/davidgarciagordo"
@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "working-methods",
-      "displayName": "Working Methods (David)",
+      "displayName": "Working Methods",
       "description": "/forge-run — the Forge methodology with ENFORCEMENT: 12 phases whose order lives in code (forge.js), machine-checked gates, and a hook that blocks the PR until the run's artifacts exist. Plus /grill (adversarial ×3 on any artifact) and /handoff (session relay), both usable standalone.",
       "source": "./plugins/working-methods"
     },
