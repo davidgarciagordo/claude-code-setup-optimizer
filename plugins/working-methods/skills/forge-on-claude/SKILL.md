@@ -1,6 +1,6 @@
 ---
 name: forge-on-claude
-description: Maps the (vendor-neutral) Forge methodology to concrete Claude Code tools — ultrathink for grill/plan, several Task subagents in one message to orchestrate in parallel, git worktrees for isolation, a chained context pack for shared memory, /handoff as the resume capsule. Use it when running Forge on Claude Code and you need to know which tool to use at each step.
+description: Maps the (vendor-neutral) Forge methodology to concrete Claude Code tools — Opus at high effort for grill/plan, several Task subagents in one message to orchestrate in parallel, git worktrees for isolation, a chained context pack for shared memory, /handoff as the resume capsule. Use it when running Forge on Claude Code and you need to know which tool to use at each step.
 ---
 
 # Forge on Claude Code — tool map
@@ -11,7 +11,7 @@ Forge is vendor-neutral; this table gives the concrete equivalent in **Claude Co
 
 | Forge concept (neutral) | In Claude Code |
 |---|---|
-| **Deep-reasoning tier** (grill ×3, global plan, arbitration, critical review) | **`ultrathink`** in the prompt (deep reasoning) + **Opus** model. |
+| **Deep-reasoning tier** (grill ×3, global plan, arbitration, critical review) | **Opus** at high effort (adaptive thinking; depth comes from the effort configuration, not prompt keywords). |
 | **Entry gate + owner gate** (grill doubts → owner decides: accept/change/add/disagree) | **`AskUserQuestion`** with `multiSelect: true` (≤4 questions/call, 2–4 options; recommendation marked "(recommended)"; "Other" = add-your-own / disagree). **Run by the orchestrator, NEVER a subagent** (subagents don't ask the owner). |
 | **Orchestrate disjoint units in parallel** | Several **`Task` subagents in one message** (they run in parallel). This is the standard, portable way in Claude Code; if your harness ships its own fan-out orchestrator, you can use it, but don't assume it. |
 | **Isolated workspace** (1 unit = 1 workspace) | **git worktree + branch per unit** (`git worktree add`). If the repo has its own flow (e.g. `/new-session`), use it. **1 session = 1 worktree = 1 branch.** |

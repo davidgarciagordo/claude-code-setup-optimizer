@@ -64,7 +64,8 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
 `docs/forge/<slug>/`, then calling `advance <nextPhase>` to open the next gate.
 
 **Execution notes that forge.js does not carry** (forge-run-specific):
-- `ultrathink` for every reasoning-heavy phase (grill, regrill, plan, arbitration, verify).
+- Reasoning-heavy phases (grill, regrill, plan, arbitration, verify) run on Opus at high effort;
+  depth is set through the model/effort configuration, not a prompt keyword.
 - Model routing: **Opus** directs / decides / grills / reviews critical work ·
   **Sonnet** executes closed plans / refactors / migrations · **Haiku** the trivial.
   Tool map per phase: `forge-on-claude` skill.
@@ -104,7 +105,7 @@ Drive each phase by invoking its listed command/skill/agent, producing its artif
 
 ---
 
-## Rules (non-negotiable)
+## Rules
 - **The order is codified, not remembered.** Use `forge.js gate`/`advance`; never hand-wave a phase.
 - **The draft is grilled BEFORE the spec exists** — never write the formal spec first and grill it after.
 - **Artifacts are versioned** in `docs/forge/<slug>/` — they are the gate and the memory.

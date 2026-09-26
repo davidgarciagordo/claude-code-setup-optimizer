@@ -18,6 +18,6 @@ Este repo sigue las normas de trabajo cross-project. Fuente única, no duplicar:
   (CONTRIBUTING, docs de estilo). Ejemplos de normas que suelen vivir ahí: inmutabilidad,
   ficheros pequeños, cobertura mínima, nada de secretos en git, validación en boundaries.
 - **Orquestación y modelos:** Opus dirige/decide/revisa lo crítico · Sonnet ejecuta planes cerrados · Haiku lo trivial. Áreas disjuntas entre agentes paralelos; context-pack con `fichero:línea` entre fases.
-- **Metodología y comandos:** instala el marketplace `claude-code-setup-optimizer`
-  (`/plugin marketplace add davidgarciagordo/claude-code-setup-optimizer`) → Forja, `/grill`, `/handoff`, caveman.
+- **Metodología y comandos:** instala el catálogo `davidgarciagordo/claude-plugins`
+  (`/plugin marketplace add davidgarciagordo/claude-plugins`, luego `/install-family`) → Forja, `/grill`, `/handoff`.
 - **Flujo git:** rama de feature → PR contra la rama de integración; merge en verde (review antes de merge); nunca commit directo a producción.

@@ -21,7 +21,6 @@
     "handoff",
     "forge",
     "worktrees",
-    "ultrathink",
     "requires-forge-methodology"
   ],
   "skills": "./skills/",

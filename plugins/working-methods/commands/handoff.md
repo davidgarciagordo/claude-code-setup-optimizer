@@ -45,16 +45,14 @@ Detect whether there's NO human watching: the session was started by cron/`/loop
 background (`$CLAUDE_JOB_DIR` set), or is unattended overnight work. In that mode the handoff MD is a
 **checkpoint, NOT a stop.** Writing the MD and stopping leaves the chain broken: a passive document
 needs a human to read it and launch the new session — and if you're asleep, that doesn't happen. The
-turn's MANDATORY last act is to arm an **active trigger** (this is what a command/skill does NOT do
-on its own):
+turn's last act is to arm an **active trigger**, because a command or skill does not re-launch
+itself:
 
 - **Context remains + the session is still alive** → `ScheduleWakeup` / `CronCreate` with the resume
-  prompt (below): they re-enter THIS same session after the delay and continue the SAME task.
-  **DOUBLE WARNING (verify it, don't assume it):** (1) these tools are **specific to some harnesses,
-  NOT a Claude Code standard** — check they exist in your tool list before relying on them; (2) where
-  they exist, in many harnesses they are **session-only** — in-memory, they die when the session
-  closes (`CronCreate`: "gone when Claude exits", `durable` has no effect). They work to continue
-  WHILE the session is alive, **NOT** to survive its death.
+  prompt (below): they re-enter this same session after the delay and continue the same task.
+  Two caveats: these tools exist only in some harnesses, so check your tool list before relying on
+  them; and they are session-only (in-memory — `CronCreate` jobs are gone when Claude exits and
+  `durable` has no effect), so they continue work while the session is alive but do not survive it.
 - **The session might die / context exhausted** → you need a scheduler that's **DURABLE outside the
   session**: the **`schedule`** skill (cloud routines that run server-side) or an **OS-level / external
   cron** whose prompt is the resume. This is the ONLY thing that starts a NEW session surviving this
@@ -62,7 +60,7 @@ on its own):
   session). Check the scheduler's durability BEFORE trusting it with the relay; if it's not durable,
   the relay is lost when it sleeps.
 
-**Hard rule — endings, don't mix them up (the classic bug is treating autonomous+pending as a stop):**
+**Endings** (autonomous mode with pending work is not a stop):
 
 | Situation | Correct action |
 |---|---|
@@ -97,10 +95,9 @@ Imperative and self-sufficient; the new session does NOT re-plan, it resumes aga
 3. **State/memory up to date BEFORE closing:** project status doc, backlog, and persistent memory
    (decisions, lessons with PR number, the user's principles). The handoff points, it doesn't duplicate.
 4. **Merge the handoff** (the relay doesn't depend on the machine or the session).
-5. **PRINT the launch prompt IN-SESSION** (ALWAYS, last step): after writing/merging the MD, drop
-   the copy-paste prompt the owner should launch in the new session into the chat, in a fenced block
-   (```), ready to copy WITHOUT opening the file. Burying it only in the MD is NOT enough — the owner
-   wants it visible in the conversation. In autonomous mode the prompt is what feeds
+5. **Print the launch prompt in the chat** (last step): after writing/merging the MD, put the
+   copy-paste prompt for the new session in a fenced block (```) so the owner can copy it without
+   opening the file. In autonomous mode the prompt is what feeds
    `ScheduleWakeup`/`CronCreate` (same text); in live mode it's printed so the owner can paste it. The
    prompt is the same one that goes inside the MD (§ "Copy-paste prompt"): DETERMINISTIC and
    idempotent against git, not a bare "continue".

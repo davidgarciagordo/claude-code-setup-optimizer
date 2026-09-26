@@ -180,8 +180,8 @@ global plan + execution proposal → `forge-on-claude` (worktrees + shared conte
 /forge-run <your task>
 ```
 
-Run any single section above standalone instead when you only need that one piece. `ultrathink`
-is applied automatically by `/forge-run` for the reasoning-heavy phases (grill, plan, verify).
+Run any single section above standalone instead when you only need that one piece. `/forge-run`
+runs the reasoning-heavy phases (grill, plan, verify) on Opus at high effort.
 
 ---
 

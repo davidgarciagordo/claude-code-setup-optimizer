@@ -35,7 +35,7 @@ section. **The 3–4 lenses read this pack; they do NOT re-scan the repo or re-d
 (e.g. resolving ambiguous terms in the artifact against repo intent); it does NOT redo the
 mechanical file scan.
 
-## The 3 lenses (non-negotiable) — READ-ONLY agents, TERSE output
+## The 3 lenses — read-only agents, one-line findings
 Dispatch them **in parallel as sub-agents with a read-only tool list** (they cannot edit — they only
 return findings), passing them `.forge/grill-context.md`. Each agent returns TERSE (`OK`/`KO` +
 1-line findings `Pn · file:line · problem → fix`):

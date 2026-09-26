@@ -167,7 +167,7 @@ Ejemplos de invariante → reviewer generado: event bus → `event-bus-reviewer`
 /forge-run <tu tarea>
 ```
 
-Para uso independiente, coge cualquier sección de arriba. `/forge-run` aplica `ultrathink` solo en las fases de razonamiento (grill, plan, verify).
+Para uso independiente, coge cualquier sección de arriba. `/forge-run` ejecuta las fases de razonamiento (grill, plan, verify) en Opus con effort alto.
 
 ---
 

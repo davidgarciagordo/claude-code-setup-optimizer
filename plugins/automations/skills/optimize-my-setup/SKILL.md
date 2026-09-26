@@ -77,8 +77,8 @@ Covers:
 `AskUserQuestion` with `multiSelect: true`, ≤4 questions per call (more items: several
 batches, highest impact first, say how many remain). Each option in the fixed format
 `surface · file · effect · scope (project/global) · risk`. The user can tick zero.
-**Any Write/Edit/install BEFORE the multi-check returns is FORBIDDEN** —
-an unticked recommendation doesn't exist.
+Write, edit or install nothing until the multi-check returns: the user's ticks are the only
+approval, and an unticked recommendation is not applied.
 
 ## Phase 5 — Apply ONLY what was ticked
 
