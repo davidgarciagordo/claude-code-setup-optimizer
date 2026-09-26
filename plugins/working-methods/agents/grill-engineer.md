@@ -1,6 +1,6 @@
 ---
 name: grill-engineer
-description: "Grill lens 3/3 (domain technical engineer). Adversarially attacks a spec/plan on concurrency, idempotency, edge cases, partial failures — what breaks in production under load or dirty data. READ-ONLY (returns findings, never edits). Reads the shared grill context-pack instead of re-scanning."
+description: "Spawned by /working-methods:grill (engineer lens); not for direct use."
 tools: ["Read", "Grep", "Glob"]
 model: sonnet
 ---
