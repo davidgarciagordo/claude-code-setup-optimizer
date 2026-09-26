@@ -1,6 +1,6 @@
 ---
 name: grill-architect
-description: "Spawned by /working-methods:grill (architect lens); not for direct use."
+description: "Grill lens (architect); internal, spawned by /working-methods:grill or a review orchestrator (e.g. swarm)."
 tools: ["Read", "Grep", "Glob"]
 model: sonnet
 ---

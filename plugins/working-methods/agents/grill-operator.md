@@ -1,6 +1,6 @@
 ---
 name: grill-operator
-description: "Spawned by /working-methods:grill (operator lens); not for direct use."
+description: "Grill lens (operator); internal, spawned by /working-methods:grill or a review orchestrator (e.g. swarm)."
 tools: ["Read", "Grep", "Glob"]
 model: sonnet
 ---
